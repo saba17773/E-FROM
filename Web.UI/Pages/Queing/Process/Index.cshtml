@@ -1,0 +1,101 @@
+﻿@page
+@model Web.UI.Pages.Queing.Process.IndexModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Queing Main";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Q-ING Process (Select Company)" }
+    };
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<form method="post" enctype="multipart/form-data" id="form_submit">
+    <div class="container2">
+        <h5> Select Company</h5>
+        <table style="width:80%" align="center">
+            <tr>
+                <td width="20%">
+                    <select class="form-control" asp-for="Plant" asp-items="Model.PlantMaster" id="selectPlant">
+                        <option value="company"> Company </option>
+                    </select>
+                </td>
+                <td width="80%" rowspan="2">
+                    <div class="text-center">
+                        <img id="imgPlant" name="imgPlant" width="500" height="400" src="/images/Queing/company.png" class="rounded">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    <button type="submit" class="btn btn-info btn-lg btn-block" id="btn_submit">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <a href="/Queing/Home" class="btn btn-light">
+            <i class="fa fa-reply"></i> Back
+        </a>
+    </div>
+
+</form>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+
+@section Scripts {
+    <script>
+
+        $("#selectPlant").on("change", function () {
+            var plant = $("#selectPlant").val();
+
+            document.getElementById('imgPlant').src = "/images/Queing/" + plant + ".jpg";
+        });
+
+        $("#form_submit").submit(function (e) {
+            $(".overlay").show();
+            $('#btn_submit').html("Loading...");
+        });
+
+    </script>
+}

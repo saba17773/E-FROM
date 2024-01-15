@@ -1,0 +1,313 @@
+﻿@page
+@model Web.UI.Pages.S2E.Qtech.MaterialRequestApproveModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Material Request";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();"},
+        new BreadcrumbModel { Text = "Approve Material Request", Link = "javascript:void();" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3> Approve Material Request </h3>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <table style="width:80%" align="center">
+                <tr>
+                    <td style="text-align:center" colspan="4">
+                        @if (@Model.Plant == "DSL")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DRB")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีรับเบอร์ จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DSI")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน อินเตอร์เนชั่นแนล จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DSR")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท สวิซซ์-วัน คอร์ปอเรชั่น จำกัด </b> </span>
+                        }
+                        else
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท สยามทรัค เรเดียล จำกัด </b> </span>
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center" colspan="4">
+                        <span> <b style="font-size:x-large;"> ใบเบิกวัตถุดิบ </b> </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;" width="20%">
+                        <b>Request Code : </b> @Model.RequestCode
+                    </td>
+                    <td style="text-align:left;" width="50%">
+                    </td>
+                    <td style="text-align:right;" width="10%">
+                        <b>เลขที่ : </b>
+                    </td>
+                    <td style="text-align:left;" width="20%">
+                        <input type="text" class="form-control" asp-for="No" readonly autocomplete="off" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;" width="20%">
+                    </td>
+                    <td style="text-align:left;" width="50%">
+                    </td>
+                    <td style="text-align:right;" width="10%">
+                        <b>วันที่ : </b>
+                    </td>
+                    <td style="text-align:left;" width="20%">
+                        @Model.RequestDate
+                    </td>
+                </tr>
+
+            </table>
+            <br />
+            <table width="80%" align="center">
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> แผนก : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="Department" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> ฝ่าย : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="SupGroup" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> ขอเบิกของตามรายการต่อไปนี้ : </td>
+                    <td width="50%" style="text-align:left;">
+                        <label for="RM">
+                            <input type="radio" asp-for="ItemGroup" id="RM" name="ItemGroup" value="RM" class="radio2" disabled />
+                            <b> RM </b>
+                        </label>
+                        &nbsp;&nbsp;
+                        <label for="FS">
+                            <input type="radio" asp-for="ItemGroup" id="FS" name="ItemGroup" value="FS" class="radio2" disabled />
+                            <b> FS </b>
+                        </label>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> Item Code : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> Item Name : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <textarea asp-for="ItemName" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                @*<tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> จำนวนที่เบิกได้ : </td>
+                    <td width="50%" style="text-align:left;">
+                        @String.Format("{0:#,##0.#0}", Model.QtyTotal)  @Model.Unit
+                    </td>
+                    <td width="20%"></td>
+                </tr>*@
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> จำนวน : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="Qty" asp-format="{0:#,##0.#0}" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> หน่วย : </td>
+                    <td width="50%" style="text-align:left;">
+                        @Model.Unit
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ผู้ที่อนุมัติ</b>
+            <br />
+            <table id="gridViewApprove" style="text-align:left;" width="50%" class="table table-hover"></table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ส่วนของผู้อนุมัติ</b>
+            <br /><br />
+            <table style="width:50%">
+                <tr style="text-align:left;">
+                    <td width="20%">
+                        <label>
+                            <input type="radio" asp-for="ApproveResult" id="Approve" value="1" class="radio2" />
+                            <b>อนุมัติ</b>
+                        </label>
+                    </td>
+                    <td width="20%">
+                        <label>
+                            <input type="radio" asp-for="ApproveResult" id="Reject" value="2" class="radio2" />
+                            <b>ไม่อนุมัติ</b>
+                        </label>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr style="text-align:left;">
+                    <td colspan="3">
+                        <b>เหตุผล : </b>
+                        &nbsp;&nbsp;
+                        <textarea rows="2" style="white-space:normal;display:block;"
+                                  asp-for="ApproveRemark" id="ApproveRemark" class="form-control" readonly></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success" onclick="return confirm('ต้องการดำเนินการต่อหรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+            var gridViewApprove = "#gridViewApprove";
+            $(gridViewApprove).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Qtech/MaterialRequestApprove?handler=GridViewApprove&RMREQID=@Model.RMReqID&RMREQLINEID=@Model.RMReqLineID",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "Approve Date", data: "approvedate" },
+                    { title: "Approve By", data: "email" },
+                    { title: "Approve Remark", data: "remark" }
+                ]
+            });
+        });
+
+        $(":radio[name=ApproveResult]").on("change", function () {
+
+            var val = $(this).val();
+
+            if (val == 2) {
+                document.getElementById("ApproveRemark").readOnly = false;
+                $("#ApproveRemark").val("");
+            }
+            else {
+                document.getElementById("ApproveRemark").readOnly = true;
+                $("#ApproveRemark").val("");
+            }
+        });
+
+        $("#form_submit").submit(function (e) {
+            $(".overlay").show();
+             $('#btn_submit').html("Submit...");
+        });
+
+    </script>
+}

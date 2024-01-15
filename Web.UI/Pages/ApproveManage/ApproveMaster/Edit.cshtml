@@ -1,0 +1,43 @@
+﻿@page "/ApproveManage/ApproveMaster/{id}/Edit"
+@model Web.UI.Pages.ApproveManage.ApproveMaster.EditModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Edit";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Approve Manage", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Master", Link = "/ApproveManage/ApproveMaster" },
+        new BreadcrumbModel { Text = "Edit" }
+    };
+}
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <h1>Edit Approve Master</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-12 col-sm-12">
+            <form method="post">
+                <div class="form-group">
+                    <label asp-for="GroupDescription">Group Description</label>
+                    <input type="text" asp-for="GroupDescription" class="form-control" autocomplete="off">
+                    <span asp-validation-for="GroupDescription" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="IsActive">Active</label>
+                    <select asp-for="IsActive" class="form-control">
+                        <option value="0">Deactive</option>
+                        <option value="1">Active</option>
+                    </select>
+                    <span asp-validation-for="IsActive" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>

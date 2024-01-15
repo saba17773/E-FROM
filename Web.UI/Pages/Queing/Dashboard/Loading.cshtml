@@ -1,0 +1,50 @@
+@page "/Queing/Dashboard/Loading"
+@model Web.UI.Pages.Queing.Dashboard.LoadingModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueingDashboard";
+}
+@{
+    ViewData["Title"] = "Queing Dashboard";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "OVER SEA TRANSPORTATION" }
+    };
+}
+
+<body>
+<div id="container" style="height: 350px; width: 40%;"></div>
+</body>
+
+
+@section Scripts {
+    <script>
+        var data = [
+            {x: "Not Start", value: 43},
+            {x: "Not Finish", value: 3},
+            {x: "Waiting", value: 10},
+            {x: "Loading", value: 27},
+            {x: "Loaded", value: 17}
+        ];
+        anychart.theme(anychart.themes.sea);
+
+        // create a chart and set the data
+        chart = anychart.pie(data);
+
+        // enable title
+        title = chart.title();
+        title.enabled(true);
+        title.text("Loading Situation");
+        
+        // set the position of labels
+        chart.labels().position("outside");
+        
+        // set the container id
+        chart.container("container");
+
+        // initiate drawing the chart
+        chart.draw();
+
+    </script>
+}

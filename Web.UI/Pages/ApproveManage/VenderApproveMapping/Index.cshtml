@@ -1,0 +1,86 @@
+﻿@page
+@model Web.UI.Pages.ApproveManage.VenderApproveMapping.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Mapping Page";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Approve Manage", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Mapping" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Vender Approve Mapping</h1>
+
+    <div>
+        <a class="btn btn-primary" href="/ApproveManage/VenderApproveMapping/Add"><i></i> Add New Mapping</a>
+    </div>
+</div>
+
+<form method="post">
+    <table id="gridMapping" width="100%" class="table table-hover"></table>
+</form>
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            var gridMapping = "#gridMapping";
+
+            var dtMapping = $(gridMapping).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/ApproveManage/VenderApproveMapping/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtMapping.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Username", data: "username" },
+                    { title: "Email", data: "email" },
+                    { title: "Approve Master", data: "groupDescription" },
+                    { title: "Approve Group", data:"description"},
+                    { title: "Step", data: "step" },
+                    { title: "Plant", data: "dataAreaID" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 6,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/ApproveManage/VenderApproveMapping/" + row.id + "/Edit", "fa fa-edit", "Edit");
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridMapping + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridMapping + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridMapping + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

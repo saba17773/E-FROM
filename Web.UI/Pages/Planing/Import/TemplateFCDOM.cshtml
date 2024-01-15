@@ -1,0 +1,141 @@
+@page
+@model Web.UI.Pages.Planing.Import.TemplateFCDOMModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Import Template Forcast DOM";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Import Template Forcast DOM+CLM" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 5%;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Import Template Forcast DOM+CLM
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id = "form_import">
+            
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateFC.Year">Year</label>
+                        <select asp-for="TicketTamplateFC.Year" asp-items="Model.YearMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateFC.Year"></span>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateFC.Month">Month</label>
+                        <select asp-for="TicketTamplateFC.Month" class="form-control">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateFC.Month"></span>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateFC.VersionId">Version</label>
+                        <select asp-for="TicketTamplateFC.VersionId" asp-items="Model.VersionMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateFC.VersionId"></span>
+                    </div>
+                </div>
+                @* <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateFC.Status">Status</label>
+                        <select asp-for="TicketTamplateFC.Status" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                            <option value="New">New</option>
+                            <option value="Update">Update</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateFC.Status"></span>
+                    </div>
+                </div> *@
+            </div>
+
+            <div class="row table-active">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateFC.Remark">Remark </label>
+                        <input type="text" asp-for="TicketTamplateFC.Remark" class="form-control" autocomplete="off"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label>FileUpload </label></label>
+                        <input type="file" name="TemplateUpload" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <button type="submit" id="btn_submit" class="btn btn-success"> <i class="fa fa-upload"></i> Import</button>
+                        <button type="reset" class="btn btn-danger"> <i class="fa fa-times"></i> Clear</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#form_import").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("Submit...");
+            });
+        });
+    </script>
+}

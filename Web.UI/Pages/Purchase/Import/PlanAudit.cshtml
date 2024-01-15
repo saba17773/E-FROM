@@ -1,0 +1,27 @@
+﻿@page
+@model Web.UI.Pages.Purchase.Import.PlanAuditModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Plan Audit";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Import", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Import Plan Audit" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Plan Audit
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="TemplateUpload" />
+
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>
+

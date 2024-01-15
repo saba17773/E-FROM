@@ -1,0 +1,246 @@
+﻿@page "/CreditControl/Export/DOM/{id}"
+@model Web.UI.Pages.CreditControl.Export.DOMModel
+@{
+    Layout = null;
+
+    string IsNotEmpty(string txt)
+    {
+        if (txt != "" && txt != null)
+        {
+            return txt;
+        }
+        else
+        {
+            return "-";
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export DOM</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style='font-weight: bold; font-size: 1.2em; margin-bottom: 20px; text-align: center;'>แบบฟอร์มคำขอเพิ่มทะเบียนลูกค้ารายใหม่</div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> เลขที่คำขอ </td>
+            <td>@Model.DomData.RequestNumber</td>
+            <td style='font-weight: bold; width: 200px;'> วันที่ </td>
+            <td>@Model.RequestDate</td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> เลขทะเบียน ลูกค้าใหม่ </td>
+            <td> @IsNotEmpty(Model.DomData.CustomerCode) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> ลักษณะกิจการ </td>
+            <td> @Model.DomData.TypeOfBusiness </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> ประเภทกลุ่มลูกค้าในระบบ </td>
+            <td> @Model.DomData.TypeOfProduct </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> ชื่อจดทะเบียนประกอบการ </td>
+            <td> @Model.DomData.CompanyName </td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='8' style='font-weight: bold; background: #eeeeee;'> ที่อยู่ตามทะเบียนการค้า </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 50px;'> เลขที่ </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_AddressNo) </td>
+
+            <td style='font-weight: bold; width: 50px;'> หมู่ </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_Moo) </td>
+
+            <td style='font-weight: bold; width: 50px;'> ซอย </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_Soi) </td>
+
+            <td style='font-weight: bold; width: 100px;'> ถนน </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_Street) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> ตำบล </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_SubDistrict) </td>
+
+            <td style='font-weight: bold;'> อำเภอ </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_District) </td>
+
+            <td style='font-weight: bold;'> จังหวัด </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_Province) </td>
+
+            <td style='font-weight: bold; width: 70px;'> รหัสไปรษณีย์ </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_ZipCode) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> โทร </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_Tel) </td>
+
+            <td style='font-weight: bold;'> โทรสาร </td>
+            <td> @IsNotEmpty(Model.DomData.Address1_Fax) </td>
+
+            <td style='font-weight: bold;'> Email </td>
+            <td colspan='3'> @IsNotEmpty(Model.DomData.Address1_Email) </td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='8' style='font-weight: bold; background: #eeeeee;'> ที่อยู่ที่สามารถติดต่อได้ </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 50px;'> เลขที่ </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_AddressNo) </td>
+
+            <td style='font-weight: bold; width: 50px;'> หมู่ </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_Moo) </td>
+
+            <td style='font-weight: bold; width: 50px;'> ซอย </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_Soi) </td>
+
+            <td style='font-weight: bold; width: 100px;'> ถนน </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_Street) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> ตำบล </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_SubDistrict) </td>
+
+            <td style='font-weight: bold;'> อำเภอ </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_District) </td>
+
+            <td style='font-weight: bold;'> จังหวัด </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_Province) </td>
+
+            <td style='font-weight: bold;'> รหัสไปรษณีย์ </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_ZipCode) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> โทร </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_Tel) </td>
+
+            <td style='font-weight: bold;'> โทรสาร </td>
+            <td> @IsNotEmpty(Model.DomData.Address2_Fax) </td>
+
+            <td style='font-weight: bold;'> Email </td>
+            <td colspan='3'> @IsNotEmpty(Model.DomData.Address2_Email) </td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='8' style='font-weight: bold; background: #eeeeee;'> รายละเอียดของส่วนงานขาย </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'>พนักงานขาย</td>
+            <td>@IsNotEmpty(Model.DomData.SaleName)</td>
+            <td style='font-weight: bold; width: 200px;'>เขตการขาย</td>
+            <td>@IsNotEmpty(Model.DomData.SaleZone)</td>
+            <td style='font-weight: bold; width: 150px;'>Dimension No.</td>
+            <td>@IsNotEmpty(Model.DomData.DimensionNo)</td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'>ส่วนลดการค้าตายตัว(%)</td>
+            <td>@IsNotEmpty(Model.DomData.DiscountByConstant)</td>
+            <td style='font-weight: bold;'>ส่วนลดการค้าเป็นขั้น(%)</td>
+            <td colspan='3'>@IsNotEmpty(Model.DomData.DiscountByStep)</td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'>เงื่อนไขการชำระเงิน</td>
+            <td colspan='7'>@IsNotEmpty(Model.DomData.TermOfPayment)</td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'>เงื่อนไขการขนส่งสินค้า</td>
+            <td colspan='7'>@IsNotEmpty(Model.DomData.TermOfDelivery)</td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='4' style='font-weight: bold; background: #eeeeee;'> รายละเอียดของส่วนงานสินเชื่อ </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 300px;'>วงเงินเครดิตทีเสนอขออนุมัติ</td>
+            <td style='font-weight: bold;'>@IsNotEmpty(Model.DomData.CreditLimited)</td>
+            <td style='font-weight: bold; width: 100px;'>Credit Rating</td>
+            <td style='font-weight: bold;'>@IsNotEmpty(Model.DomData.CreditRating)</td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'>หลักประกัน</td>
+            <td colspan="3">@IsNotEmpty(Model.DomData.GuaranteeDOM_BGTotal)</td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'>ระยะสินเชื่อ</td>
+            <td colspan="3">@IsNotEmpty(Model.DomData.TermOfPayment)</td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td style='font-weight: bold; background: #eeeeee;'> ความเห็นของฝ่ายขาย </td>
+        </tr>
+        <tr>
+            <td>
+                @IsNotEmpty(Model.DomData.CommentFromSale)
+            </td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td style='font-weight: bold; background: #eeeeee;'> ความเห็นของผู้อนุมัติ </td>
+        </tr>
+        <tr>
+            <td>
+                <ul>
+                    @if (Model.ApproveRemark.Count > 0)
+                    {
+                    @foreach (var item in Model.ApproveRemark)
+                        {
+                            if (item.Remark == "" || item.Remark == null)
+                            {
+                    <li> - By <b>@item.Name</b></li>
+                            }
+                            else
+                            {
+                    <li>@item.Remark <b>By @item.Name</b></li>
+                            }
+                        }
+                    }
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <div style="width: 400px; margin: auto;">
+        <div class="text-align: left;">
+            <p>Created By @Model.RequesterInfo.Name</p>
+            @foreach (var item in Model.ApprovalRemark)
+        {
+            if (item.Name != "" && item.Name != null)
+            {
+            <p>Approved By @item.Name</p>
+            }
+        }
+        </div>
+    </div>
+</body>
+</html>

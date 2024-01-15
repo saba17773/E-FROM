@@ -1,0 +1,383 @@
+﻿@page "/S2E/ApproveMapping/{id}/Edit"
+@model Web.UI.Pages.S2E.ApproveMapping.EditModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Edit Approve Mapping";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Approve Mapping", Link = "/S2E/ApproveMapping" },
+        new BreadcrumbModel { Text = "Edit Approve Mapping" }
+    };
+}
+<div class="card">
+    <div class="card-header">
+        Edit Approve Mapping
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <table width="90%">
+                <tr>
+                    <td width="10%"> Approve Group : </td>
+                    <td width="40%">
+                        <div class="form-group">
+                            <select asp-for="ApproveGroupID" asp-items="Model.ApproveGroupIDMaster" class="form-control">
+                                <option value="">--- SELECT ---</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td width="10%">
+                        Create By :
+                        <span id="selectUser" class="badge badge-info"><i class="fa fa-search"></i>ค้นหา</span>
+                    </td>
+                    <td width="40%">
+                        <div class="form-group">
+                            <input type="text" asp-for="CreateName" name="CreateName" id="CreateName" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="10%">
+                        Approve Master :
+                        <span id="selectApproveMaster" class="badge badge-info"><i class="fa fa-search"></i>ค้นหา</span>
+                    </td>
+                    <td colspan="3">
+                        <div class="form-group">
+                            <input type="text" asp-for="ApproveMasterName" name="ApproveMasterName" id="ApproveMasterName" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="10%">
+                        Description Mapping :
+                    </td>
+                    <td colspan="3">
+                        <div class="form-group">
+                            <input type="text" asp-for="DescriptionMapping" name="DescriptionMapping" class="form-control" autocomplete="off">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="10%">
+                        Plant :
+                    </td>
+                    <td width="40%">
+                        @if (Model.IsPlant == 0)
+                        {
+                            <div class="form-group">
+                                <select asp-for="Plant" id="Plant" class="form-control" disabled>
+                                    <option value="">--- SELECT ---</option>
+                                    <option value="DSL"> DSL </option>
+                                    <option value="DRB"> DRB </option>
+                                    <option value="DSI"> DSI </option>
+                                    <option value="DSR"> DSR </option>
+                                    <option value="STR"> STR </option>
+                                </select>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <select asp-for="Plant" id="Plant" class="form-control">
+                                    <option value="">--- SELECT ---</option>
+                                    <option value="DSL"> DSL </option>
+                                    <option value="DRB"> DRB </option>
+                                    <option value="DSI"> DSI </option>
+                                    <option value="DSR"> DSR </option>
+                                    <option value="STR"> STR </option>
+                                </select>
+                            </div>
+                        }
+
+                    </td>
+                    <td width="10%">
+                        Step :
+                    </td>
+                    <td width="40%">
+                        <div class="form-group">
+                            <input type="text" asp-for="Step" name="Step" class="form-control" autocomplete="off">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsNewRequest" />
+                            <label asp-for="IsNewRequest">สามารถสร้างใบ New Request?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsRMAssessment" />
+                            <label asp-for="IsRMAssessment">สามารถสร้างใบขอประเมินวัตถุดิบ?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsAddRMSample" />
+                            <label asp-for="IsAddRMSample">สามารถสร้างใบเพิ่มวัตถุดิบเข้าระบบ (Sample)?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsRequestRMSample" />
+                            <label asp-for="IsRequestRMSample">สามารถสร้างใบเบิก (Sample)?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsLabTest" />
+                            <label asp-for="IsLabTest">สามารถสร้างใบ Lab Test?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsPurchaseSample" />
+                            <label asp-for="IsPurchaseSample">Is Purchase sample?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsAddRM" />
+                            <label asp-for="IsAddRM">สามารถสร้างใบเพิ่มวัตถุดิบเข้าระบบ?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsRequestRM" />
+                            <label asp-for="IsRequestRM">สามารถสร้างใบเบิก?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsAddMoreRM" />
+                            <label asp-for="IsAddMoreRM">สามารถสร้างใบเพิ่มวัตถุดิบเข้าระบบเพิ่มเติม?</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="form-check pl-0 my-2">
+                            <input type="checkbox" asp-for="IsTrialtest" />
+                            <label asp-for="IsTrialtest">สามารถสร้าง Trial Test?</label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <input type="hidden" asp-for="CreateBy" class="form-control" readonly>
+            <input type="hidden" asp-for="ApproveMasterID" class="form-control" readonly>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check"></i>
+                    Submit
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@* Model User *@
+<div class="modal" id="modalUser" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Search User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:left">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridUser" style="text-align:left;" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Model Approve Master *@
+<div class="modal" id="modalApproveMaster" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Search Approve Master</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:left">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridApproveMaster" style="text-align:left;" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        @*Modal User*@
+        $(document).ready(function () {
+            $("#selectUser").on("click", function () {
+                var gridUser = "#gridUser";
+                $("#modalUser").modal({ backdrop: "static" });
+
+                var dtUser = $(gridUser).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    ajax: {
+                        url: "/S2E/ApproveMapping/@Model.ApproveMappingID/Edit?handler=UserGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtUser.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Employee ID", data: "employeeid" },
+                        { title: "Username", data: "username" },
+                        { title: "Email", data: "email" },
+                        { title: "Action", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 3,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<button type='button' class='btn btn-info' onclick='selectCreateBy(\"" + row.createby + "\",\"" + row.username + "\")'><i class='fa fa-check'></i></button>";
+                                return link;
+                            }
+                        }
+                    ],
+                });
+
+                $("body").on("keypress", function (e) {
+                    if (e.which === 13) e.preventDefault();
+                });
+
+            });
+        });
+
+        function selectCreateBy(createby, username) {
+            $("#CreateName").val(username);
+            $("#CreateBy").val(createby);
+
+            $("#modalUser").modal("hide");
+        }
+
+        @* Modal ApproveMaster *@
+        $(document).ready(function () {
+            $("#selectApproveMaster").on("click", function () {
+                var gridApproveMaster = "#gridApproveMaster";
+                $("#modalApproveMaster").modal({ backdrop: "static" });
+
+                var dtApproveMaster = $(gridApproveMaster).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    ajax: {
+                        url: "/S2E/ApproveMapping/@Model.ApproveMappingID/Edit?handler=ApproveMasterGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtApproveMaster.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Approve Master Name", data: "groupDescription" },
+                        { title: "Action", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 1,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<button type='button' class='btn btn-info' onclick='selectApprove(\"" + row.id + "\",\"" + row.groupDescription + "\")'><i class='fa fa-check'></i></button>";
+                                return link;
+                            }
+                        }
+                    ],
+                });
+
+                $("body").on("keypress", function (e) {
+                    if (e.which === 13) e.preventDefault();
+                });
+
+            });
+        });
+
+        function selectApprove(id, groupDescription) {
+
+            $("#ApproveMasterName").val(groupDescription);
+            $("#ApproveMasterID").val(id);
+
+            $("#modalApproveMaster").modal("hide");
+        }
+
+        var isPlant = 0;
+        $("#ApproveGroupID").on("change", function () {
+            var GroupID = $("#ApproveGroupID").val();
+
+             $.ajax({
+                 url: "/S2E/ApproveMapping/@Model.ApproveMappingID/Edit?handler=CheackGroupID&GroupID=" + GroupID,
+                type: "get"
+             }).done(function (data)
+             {
+                if (data == true) {
+                    document.getElementById("Plant").disabled = true;
+                    $("#Plant").val("");
+                    isPlant = 0;
+                }
+                else {
+                    document.getElementById("Plant").disabled = false;
+                    $("#Plant").val("");
+                    isPlant = 1;
+                }
+             });
+        });
+
+    </script>
+}

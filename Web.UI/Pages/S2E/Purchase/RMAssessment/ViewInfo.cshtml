@@ -1,0 +1,844 @@
+﻿@page "/S2E/Purchase/RMAssessment/{AssessmentID}/ViewInfo"
+@model Web.UI.Pages.S2E.Purchase.RMAssessment.ViewInfoModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "View Info RM Assessment Request";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "RM Assessment Main", Link = $"/S2E/Purchase/RMAssessment/{@Model.PageBack}" },
+        new BreadcrumbModel { Text = "RM Assessment View Info" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+        vertical-align: middle;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .table2 {
+        border: 1px solid black;
+        text-align: center;
+    }
+
+        .table2 tr {
+            text-align: center;
+            border: 1px solid black;
+            vertical-align: middle;
+        }
+
+        .table2 td {
+            border: 1px solid black;
+        }
+
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>ใบขอประเมินวัตถุดิบ</h3>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <input type="text" asp-for="CreateBy" autocomplete="off" value="@authService.GetClaim().UserId" hidden="hidden">
+            <table style="width:90%">
+                <tr>
+                    <td width="15%"> Request Code : </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td width="15%"> Request Date : </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" class="form-control" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Plant ที่ใช้งาน : <span class="text-danger font-weight-bold">*</span></td>
+                    <td style="text-align:left;">
+                        <label for="DataAreaID1">
+                            <input type="checkbox" id="DataAreaID1" asp-for="DataAreaID1" name="DataAreaID1" class="checkbox2" onclick="return false;" />
+                            DSL
+                        </label>
+                        <label for="DataAreaID2">
+                            <input type="checkbox" id="DataAreaID2" asp-for="DataAreaID2" name="DataAreaID2" class="checkbox2" onclick="return false;" />
+                            DRB
+                        </label>
+                        <label for="DataAreaID3">
+                            <input type="checkbox" id="DataAreaID3" asp-for="DataAreaID3" name="DataAreaID3" class="checkbox2" onclick="return false;" />
+                            DSI
+                        </label>
+                        <label for="DataAreaID4">
+                            <input type="checkbox" id="DataAreaID4" asp-for="DataAreaID4" name="DataAreaID4" class="checkbox2" onclick="return false;" />
+                            DSR
+                        </label>
+                        <label for="DataAreaID5">
+                            <input type="checkbox" id="DataAreaID5" asp-for="DataAreaID5" name="DataAreaID5" class="checkbox2" onclick="return false;" />
+                            STR
+                        </label>
+                        <input type="hidden" asp-for="Plant" id="Plant" class="form-control" autocomplete="off" readonly />
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td> Section : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <select asp-for="DepartmentID" asp-items="Model.DepartmentMaster" class="form-control" disabled>
+                            <option value="">--- SELECT ---</option>
+                        </select>
+                    </td>
+                    <td colspan="2">
+                        <input type="text" asp-for="DepartmentRemark" maxlength="50" class="form-control" autocomplete="off" readonly />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>รายละเอียดวัตถุดิบ</b>
+            <table style="width:90%">
+                <tr>
+                    <td> Material Group : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="MaterialGroup" id="MaterialGroup" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td> Material Name : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="MaterialName" id="MaterialName" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Item Group : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemGroup" id="ItemGroup" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>จุดประสงค์การขอประเมิน / Reason of evaluation <span class="text-danger font-weight-bold">*</span></b><br />
+            <table width="80%" align="center">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef1">
+                            <input type="checkbox" asp-for="DocRef1" id="DocRef1" name="DocRef1" class="checkbox2" onclick="return false;" />
+                            New material / วัตถุดิบชนิดใหม่ไม่เคยใช้มาก่อน
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef2">
+                            <input type="checkbox" asp-for="DocRef2" id="DocRef2" name="DocRef2" class="checkbox2" onclick="return false;" />
+                            Second source / Alternate source / วัตถุดิบทดแทน
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef3">
+                            <input type="checkbox" asp-for="DocRef3" id="DocRef3" name="DocRef3" class="checkbox2" onclick="return false;" />
+                            Cost reduction / ลดต้นทุน
+                        </label>
+                    </td>
+                    <td>
+                        <table width="100%" align="left">
+                            <tr>
+                                <td style="text-align:left;">
+                                    <label for="DocRef4">
+                                        <input type="checkbox" asp-for="DocRef4" id="DocRef4" name="DocRef4" class="checkbox2" onclick="return false;">
+                                        Others / อื่นๆ
+                                    </label>
+                                </td>
+                                <td style="text-align:left;">
+                                    <input type="text" class="form-control" asp-for="DocRef4_Desc" id="DocRef4_Desc" name="DocRef4_Desc" autocomplete="off" readonly>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="hidden" class="form-control" asp-for="ReasonOfEvaluation" id="ReasonOfEvaluation" name="ReasonOfEvaluation" readonly>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="100%" class="table2" align="center" >
+                <tr>
+                    <td rowspan="2" width="22%">
+                        Dealer/Supplier Name <br />
+                        ตัวแทนจำหน่าย/ชื่อผู้ขายผู้ผลิต
+                    </td>
+                    <td rowspan="2" width="10%">
+                        Source/Country <br />
+                        แหล่งผลิต
+                    </td>
+                    <td rowspan="2" width="8%">
+                        Item <br />
+                        รหัสสินค้า
+                    </td>
+                    <td rowspan="2" width="20%">
+                        Item Name <br />
+                        ชื่อวัตถุดิบ
+                    </td>
+                    <td rowspan="2" width="7%">
+                        Price <br />
+                        ราคา
+                    </td>
+                    <td colspan="5" width="33%">
+                        ปริมาณการใช้ต่อเดือน ( consumption per month )/(Kgs)
+                    </td>
+                </tr>
+                <tr>
+                    <td>D1</td>
+                    <td>D2</td>
+                    <td>D3</td>
+                    <td>D4</td>
+                    <td>D5</td>
+                </tr>
+                @if (@Model.isCompaire == 1)
+                {
+                    <tr>
+                        <td> <textarea class="form-control" type="text" asp-for="SupplierNameRef" readonly style="white-space:normal;display:block;"></textarea> </td>
+                        <td> <textarea class="form-control" type="text" asp-for="ProductionSiteRef" readonly style="white-space:normal;display:block;"></textarea> </td>
+                        <td> <label>@Model.ItemCodeRef</label> </td>
+                        <td> <textarea class="form-control" type="text" asp-for="ItemNameRef" readonly style="white-space:normal;display:block;"></textarea> </td>
+                        <td>
+                            <label>
+                                @if (Model.PriceRef.ToString().EndsWith(".00"))
+                                {
+                                    @string.Format("{0:#,##0.##}", Model.PriceRef);
+                                }
+                                else
+                                {
+                                    @string.Format("{0:#,##0.#0}", Model.PriceRef);
+                                }
+                            </label> <label>@Model.CurrencyCodeREF / @Model.PerUnitRef</label>
+                        </td>
+                        <td>
+                            @if (Model.SupplierRefD1.ToString().EndsWith(".00"))
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD1" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD1" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                            }
+                        </td>
+                        <td>
+                            @if (Model.SupplierRefD2.ToString().EndsWith(".00"))
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD2" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD2" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                            }
+                        </td>
+                        <td>
+                            @if (Model.SupplierRefD3.ToString().EndsWith(".00"))
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD3" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD3" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                            }
+                        </td>
+                        <td>
+                            @if (Model.SupplierRefD4.ToString().EndsWith(".00"))
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD4" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD4" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                            }
+                        </td>
+                        <td>
+                            @if (Model.SupplierRefD5.ToString().EndsWith(".00"))
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD5" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="text" asp-for="SupplierRefD5" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                            }
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td> <textarea class="form-control" type="text" asp-for="SupplierName" readonly style="white-space:normal;display:block;"></textarea> </td>
+                    <td> <textarea class="form-control" type="text" asp-for="ProductionSite" readonly style="white-space:normal;display:block;"></textarea> </td>
+                    <td> <label>@Model.ItemCode</label> </td>
+                    <td> <textarea class="form-control" type="text" asp-for="ItemName" readonly style="white-space:normal;display:block;"></textarea> </td>
+                    <td>
+                        <label>
+                            @if (Model.Price.ToString().EndsWith(".00"))
+                            {
+                                @String.Format("{0:#,##0.##}", Model.Price);
+                            }
+                            else
+                            {
+                                @String.Format("{0:#,##0.#0}", Model.Price);
+                            }
+                        </label> <label>@Model.CurrencyCode / @Model.PerUnit</label>
+                    </td>
+                    <td>
+                        @if (Model.SupplierD1.ToString().EndsWith(".00"))
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD1" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD1" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                        }
+                    </td>
+                    <td>
+                        @if (Model.SupplierD2.ToString().EndsWith(".00"))
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD2" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD2" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                        }
+                    </td>
+                    <td>
+                        @if (Model.SupplierD3.ToString().EndsWith(".00"))
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD3" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD3" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                        }
+                    </td>
+                    <td>
+                        @if (Model.SupplierD4.ToString().EndsWith(".00"))
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD4" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD4" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                        }
+                    </td>
+                    <td>
+                        @if (Model.SupplierD5.ToString().EndsWith(".00"))
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD5" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="text" asp-for="SupplierD5" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="text-align:right;"> Month save cost (@Model.CurrencyCode) </td>
+                    <td colspan="5">
+                        @if (Model.MonthSaveCost.ToString().EndsWith(".00"))
+                        {
+                            <input class="form-control" type="text" asp-for="MonthSaveCost" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="text" asp-for="MonthSaveCost" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="text-align:right;"> Year save cost (@Model.CurrencyCode) </td>
+                    <td colspan="5">
+                        @if (Model.YearSaveCost.ToString().EndsWith(".00"))
+                        {
+                            <input class="form-control" type="text" asp-for="YearSaveCost" autocomplete="off" readonly asp-format="{0:#,##0.##}" />
+                        }
+                        else
+                        {
+                            <input class="form-control" type="text" asp-for="YearSaveCost" autocomplete="off" readonly asp-format="{0:#,##0.#0}" />
+                        }
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="90%">
+                <tr>
+                    <td> <b>ความเร่งด่วน : <span class="text-danger font-weight-bold">*</span></b> </td>
+                    <td style="text-align:left;">
+                        <label for="DocRef5">
+                            <input type="checkbox" asp-for="DocRef5" id="DocRef5" name="DocRef5" class="checkbox2" onclick="return false;" />
+                            Urgent / High priority / เร่งด่วนมาก
+                        </label>
+                    </td>
+                    <td style="text-align:left;">
+                        <label for="DocRef6">
+                            <input type="checkbox" asp-for="DocRef6" id="DocRef6" name="DocRef6" class="checkbox2" onclick="return false;" />
+                            Medium / ปานกลาง
+                        </label>
+                    </td>
+                    <td style="text-align:left;">
+                        <label for="DocRef7">
+                            <input type="checkbox" asp-for="DocRef7" id="DocRef7" name="DocRef7" class="checkbox2" onclick="return false;" />
+                            Low / ต่ำ
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="90%">
+                <tr>
+                    <td width="15%" style="text-align:right;"> <b>เริ่มทดสอบ : <span class="text-danger font-weight-bold">*</span></b> </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isStartTestYes">
+                            <input type="radio" asp-for="isStartTest" id="isStartTestYes" name="isStartTest" value="1" class="radio2" disabled />
+                            <b>Yes </b>
+                        </label>
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isStartTestNo">
+                            <input type="radio" asp-for="isStartTest" id="isStartTestNo" name="isStartTest" value="2" class="radio2" disabled />
+                            <b>No </b>
+                        </label>
+                    </td>
+                    <td width="55%" style="text-align:left;">
+                        <input type="text" class="form-control" asp-for="isStartTestRemark" id="isStartTestRemark"
+                               name="isStartTestRemark" autocomplete="off" readonly />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="70%" align="center">
+                <tr>
+                    <td colspan="4" style="text-align:center;border: 1px solid black;"> Plant Code </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;border: 1px solid black;">D1/D2</td>
+                    <td style="text-align:center;border: 1px solid black;">D3</td>
+                    <td style="text-align:center;border: 1px solid black;">D4</td>
+                    <td style="text-align:center;border: 1px solid black;">D5</td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD1D2" id="PlantCodeD1D2" name="PlantCodeD1D2" autocomplete="off" readonly />
+                    </td>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD3" id="PlantCodeD3" name="PlantCodeD3" autocomplete="off" readonly />
+                    </td>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD4" id="PlantCodeD4" name="PlantCodeD4" autocomplete="off" readonly />
+                    </td>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD5" id="PlantCodeD5" name="PlantCodeD5" autocomplete="off" readonly />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>สิ่งที่ส่งมาด้วย</b>
+            <table width="80%" align="center">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef10">
+                            <input type="checkbox" asp-for="DocRef10" id="DocRef10" name="DocRef10" class="checkbox2" onclick="return false;">
+                            Certificate of analysis
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef11">
+                            <input type="checkbox" asp-for="DocRef11" id="DocRef11" name="DocRef11" class="checkbox2" onclick="return false;">
+                            Technical data sheet
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef12">
+                            <input type="checkbox" asp-for="DocRef12" id="DocRef12" name="DocRef12" class="checkbox2" onclick="return false;">
+                            REACH  Compliance
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef13">
+                            <input type="checkbox" asp-for="DocRef13" id="DocRef13" name="DocRef13" class="checkbox2" onclick="return false;">
+                            Technical information
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef14">
+                            <input type="checkbox" asp-for="DocRef14" id="DocRef14" name="DocRef14" class="checkbox2" onclick="return false;">
+                            MSDS
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef15">
+                            <input type="checkbox" asp-for="DocRef15" id="DocRef15" name="DocRef15" class="checkbox2" onclick="return false;">
+                            RoHs  Compliance
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef16">
+                            <input type="checkbox" asp-for="DocRef16" id="DocRef16" name="DocRef16" class="checkbox2" onclick="return false;">
+                            อื่นๆ / Other
+                        </label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" asp-for="DocRef16_Desc" id="DocRef16_Desc"
+                               name="DocRef16_Desc" autocomplete="off" readonly>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td colspan="2">
+                        <label for="Sample">
+                            <input type="checkbox" id="Sample" name="Sample" class="checkbox2" checked onclick="return false;">
+                            <b> จำนวนที่ต้องการนำมาทดสอบ : </b>@String.Format("{0:#,##0.#0}", Model.Qty) @Model.Unit
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td colspan="2">
+                        <label for="Sample">
+                            <input type="checkbox" id="Sample2" name="Sample2" class="checkbox2" checked onclick="return false;">
+                            <b> Plant ที่ต้องการทดสอบ  : </b>@Model.Dataarea
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>ผลกระทบประเมินผลกระทบด้านสิ่งแวดล้อม และผู้ปฎิบัติงาน / Ecology & Environmental impact (พิจารณาจาก MSDS)</b>
+            <table width="90%">
+                <tr>
+                    <td width="15%" style="text-align:right;">
+                        1. Ecotoxic / สิ่งแวดล้อม :
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        @if (Model.isEcotoxic == 0)
+                        {
+                            <label for="isEcotoxicNo">
+                                <input type="radio" id="isEcotoxicNo" name="isEcotoxic" class="radio2" disabled />
+                                No Effect / ไม่กระทบ
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="isEcotoxicNo">
+                                <input type="radio" asp-for="isEcotoxic" id="isEcotoxicNo" name="isEcotoxic" value="2" class="radio2" disabled />
+                                No Effect / ไม่กระทบ
+                            </label>
+                        }
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        @if (Model.isEcotoxic == 0)
+                        {
+                            <label for="isEcotoxicYes">
+                                <input type="radio" id="isEcotoxicYes" name="isEcotoxic" class="radio2" disabled />
+                                Effect / กระทบ
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="isEcotoxicYes">
+                                <input type="radio" asp-for="isEcotoxic" id="isEcotoxicYes" name="isEcotoxic" value="1" class="radio2" disabled />
+                                Effect / กระทบ
+                            </label>
+                        }
+                    </td>
+                    <td width="55%" style="text-align:left;">
+                        <input type="text" class="form-control" asp-for="isEcotoxicRemark" id="isEcotoxicRemark"
+                               name="isEcotoxicRemark" autocomplete="off" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%" style="text-align:right;">
+                        2. Human Toxic / คน :
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        @if (Model.isEcotoxic == 0)
+                        {
+                            <label for="isHumantoxicNo">
+                                <input type="radio" id="isHumantoxicNo" name="isHumantoxic" class="radio2" disabled />
+                                No Effect / ไม่กระทบ
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="isHumantoxicNo">
+                                <input type="radio" asp-for="isHumantoxic" id="isHumantoxicNo" name="isHumantoxic" value="2" class="radio2" disabled />
+                                No Effect / ไม่กระทบ
+                            </label>
+                        }
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        @if (Model.isEcotoxic == 0)
+                        {
+                            <label for="isHumantoxicYes">
+                                <input type="radio" id="isHumantoxicYes" name="isHumantoxic" class="radio2" disabled />
+                                Effect / กระทบ
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="isHumantoxicYes">
+                                <input type="radio" asp-for="isHumantoxic" id="isHumantoxicYes" name="isHumantoxic" value="1" class="radio2" disabled />
+                                Effect / กระทบ
+                            </label>
+                        }
+                    </td>
+                    <td width="55%" style="text-align:left;">
+                        <input type="text" class="form-control" asp-for="isHumantoxicRemark" id="isHumantoxicRemark"
+                               name="isHumantoxicRemark" autocomplete="off" readonly />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>ความสอดคล้องด้านการรับรองระบบ ( พิจารณาจากการรับรองระบบต่างๆ )</b>
+            <table width="80%" align="center">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef21">
+                            <input type="checkbox" asp-for="DocRef21" id="DocRef21" name="DocRef21" class="checkbox2" onclick="return false;">
+                            ISO 9001
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef22">
+                            <input type="checkbox" asp-for="DocRef22" id="DocRef22" name="DocRef22" class="checkbox2" onclick="return false;">
+                            ISO 50001
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef23">
+                            <input type="checkbox" asp-for="DocRef23" id="DocRef23" name="DocRef23" class="checkbox2" onclick="return false;">
+                            IATF 16949
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef24">
+                            <input type="checkbox" asp-for="DocRef24" id="DocRef24" name="DocRef24" class="checkbox2" onclick="return false;">
+                            ISO 14001
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef25">
+                            <input type="checkbox" asp-for="DocRef25" id="DocRef25" name="DocRef25" class="checkbox2" onclick="return false;">
+                            ISO 45001
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef26">
+                            <input type="checkbox" asp-for="DocRef26" id="DocRef26" name="DocRef26" class="checkbox2" onclick="return false;">
+                            OHAS 18001
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef27">
+                            <input type="checkbox" asp-for="DocRef27" id="DocRef27" name="DocRef27" class="checkbox2" onclick="return false;">
+                            อื่น ๆ
+                        </label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" asp-for="DocRef27_Desc" id="DocRef27_Desc"
+                               name="DocRef27_Desc" autocomplete="off" readonly>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>RFQ <span class="text-danger font-weight-bold">*</span></b>
+            <br />
+            <table width="90%">
+                <tr>
+                    <td width="5%"></td>
+                    <td width="20%" style="text-align:left;">
+                        <label for="DocRef28">
+                            <input type="checkbox" asp-for="DocRef28" id="DocRef28" name="DocRef28" class="checkbox2" onclick="return false;"/>
+                            Open
+                        </label>
+                    </td>
+                    <td width="20%" style="text-align:left;">
+                        <label for="DocRef29">
+                            <input type="checkbox" asp-for="DocRef29" id="DocRef29" name="DocRef29" class="checkbox2" onclick="return false;"/>
+                            Close
+                        </label>
+                    </td>
+                    <td width="55%">
+                        
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>File (จากหน้าเขียนใบ Request)</b>
+            <br />
+            <table id="gridViewFileUpload" style="text-align:left;" width="50%" class="table table-hover"></table>
+            <br />
+            <b>File (จากหน้าเขียนใบขอประเมินวัตถุดิบ)</b>
+            <br />
+            <table id="gridViewFileRMAssessmentUpload" style="text-align:left;" width="50%" class="table table-hover"></table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ผู้ที่อนุมัติ</b>
+            <br />
+            <table id="gridViewApprove" style="text-align:left;" width="50%" class="table table-hover"></table>
+        </div>
+    </form>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridViewFileUpload = "#gridViewFileUpload";
+
+            var dtViewFileUpload = $(gridViewFileUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Purchase/RMAssessment/@Model.AssessmentId/ViewInfo?handler=GridViewFileUpload&RequestID=@Model.RequestId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/Purchase/RMAssessment/@Model.AssessmentId/ViewInfo?handler=DownloadFileUpload&RequestID=@Model.RequestId&Fileid=" + row.id, "fa fa-download", "<span> Download </span>");
+                         }
+                    }
+                ]
+            });
+
+            var gridViewFileRMAssessmentUpload = "#gridViewFileRMAssessmentUpload";
+
+            var dtViewFileRMAssessmentUpload = $(gridViewFileRMAssessmentUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Purchase/RMAssessment/@Model.AssessmentId/ViewInfo?handler=GridViewRMAssessmentFileUpload&AssessmentID=@Model.AssessmentId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/Purchase/RMAssessment/@Model.AssessmentId/ViewInfo?handler=DownloadFileRMAssessmentUpload&AssessmentID=@Model.AssessmentId&Fileid=" + row.id +"&RequestID=" + @Model.RequestId, "fa fa-download", "<span> Download </span>");
+                         }
+                    }
+                ]
+            });
+
+            var gridViewApprove = "#gridViewApprove";
+
+            $(gridViewApprove).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Purchase/RMAssessment/@Model.AssessmentId/ViewInfo?handler=GridViewApprove&AssessmentID=@Model.AssessmentId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "Approve Date", data: "approvedate" },
+                    { title: "Approve By", data: "email" },
+                    { title: "Approve Remark", data: "remark" }
+                ]
+            });
+        });
+
+    </script>
+}

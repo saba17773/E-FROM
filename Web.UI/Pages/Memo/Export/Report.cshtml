@@ -1,0 +1,272 @@
+@page "/Memo/Export/Report/{id}"
+@model Web.UI.Pages.Memo.Export.ReportModel
+@{
+    Layout = "_LayoutReport";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Internal Memo</title>
+
+    <style>
+        .tablemain {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+
+        td, tr, th {
+            font-size: 30px;
+            text-align: left;
+            font-family: Browallia New;
+        }
+        hr {
+            margin-top: 0.1em;
+            margin-bottom: 0.1em;
+            border: 0;
+            height: 0;
+            border-bottom: 1px solid black;
+        }
+        .tabledetail {
+            font-size: 30px;
+            text-align: left;
+            font-family: Browallia New;
+            line-height: 0.5;
+        }
+    </style>
+
+</head>
+<body>
+    @*<table width="100%" cellpadding="7" class="tabledetail">
+            <tr><td valign="top" width="100%" align="center"><img src="/images/DSC.jpg" width="900px;" height="110px;"></td></tr>
+        </table>
+        <div style="font-size:20px; text-align:center" ;><b>INTERNAL MEMO</b></div>
+        <table width="100%" cellpadding="7" class="tabledetail">
+            <thead style="display:table-header-group">
+                <tr><td valign="top"><b>No : </b>@Model.Memo.MemoNumber</td></tr>
+                <tr><td valign="top"><b>Date : </b>@Model.requestDate</td></tr>
+                <tr><td valign="top"><b>Attn : </b>@Model.txtAttn</td></tr>
+                <tr><td valign="top"><b>Subject : </b>@Model.txtSubject</td></tr>
+                <tr><td valign="top"><b>Customer Code : </b>@Model.Memo.CustomerCode</td></tr>
+                <tr><td valign="top"><b>Customer Name : </b>@Model.txtCustomername</td></tr>
+            </thead>
+        </table>*@
+    <table width="100%" cellpadding="5">
+        <tr>
+            <td>
+                <b>Description :</b>
+                @Html.Raw(@Model.txtDescription)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Remark :</b>
+                @Html.Raw(@Model.txtRemark)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Attach File :</b>
+                @if (Model.AttachFile.Count > 0)
+                {
+                    foreach (var item in Model.AttachFile)
+                    {
+                        <a href="/Memo/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a>
+                    }
+                }
+            </td>
+        </tr>
+    </table>
+
+    <table width="100%" cellpadding="5">
+        <tr>
+            @if (!String.IsNullOrEmpty(@Model.Memo.SO))
+            {
+                <td>
+                    <b>@Model.Memo.SO</b>
+                </td>
+            }
+            @if (!String.IsNullOrEmpty(@Model.Memo.QA))
+            {
+                <td>
+                    <b>@Model.Memo.QA</b>
+                </td>
+            }
+            @if (!String.IsNullOrEmpty(@Model.Memo.Enquiry))
+            {
+                <td>
+                    <b>@Model.Memo.Enquiry</b>
+                </td>
+            }
+        </tr>
+    </table>
+    <table width="100%" cellpadding="5">
+        @if (Model.MemoItem.Count > 0)
+        {
+            <tr>
+                <td>Item By SKU : </td>
+            </tr>
+
+        }
+    </table>
+    <table width="100%" cellpadding="5">
+        @if (Model.MemoItem.Count > 0)
+        {
+            <thead style="display:table-header-group">
+                <tr class='table-secondary' style="white-space: nowrap">
+                    <td style="width:10%">Item Number</td>
+                    <td style="width:60%">Item Name</td>
+                    <td style="width:10%">Quantity</td>
+                    <td style="width:5%">Unit</td>
+                    <td style="width:5%">ยกเลิก</td>
+                    <td style="width:5%">ผลิตแล้ว</td>
+                    <td style="width:5%">ยังไม่ผลิต</td>
+                </tr>
+            </thead>
+        }
+        @foreach (var item in Model.MemoItem)
+        {
+            <tr>
+                <td>@item.ItemId</td>
+                <td style="text-align:left;">@item.ItemName</td>
+                <td>@item.Qty</td>
+                <td>@item.Unit</td>
+
+                @if (item.Cancel == 1)
+                {
+                    <td style="text-align:center;"><input type="checkbox" value="1" checked></td>
+                }
+                else if (item.Cancel == 0)
+                {
+                    <td style="text-align:center;"><input type="checkbox" value="0"></td>
+                }
+
+                @if (item.Produced == 1)
+                {
+                    <td style="text-align:center;"><input type="checkbox" value="1" checked></td>
+                }
+                else if (item.Produced == 0)
+                {
+                    <td style="text-align:center;"><input type="checkbox" value="0"></td>
+                }
+
+                @if (item.NoProduced == 1)
+                {
+                    <td style="text-align:center;"><input type="checkbox" value="1" checked></td>
+                }
+                else if (item.NoProduced == 0)
+                {
+                    <td style="text-align:center;"><input type="checkbox" value="0"></td>
+                }
+            </tr>
+        }
+
+    </table>
+    @if (Model.Memo.Id == 333)
+    {
+        <br>
+    }
+    else if (Model.Memo.Id == 5)
+    {
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    }
+    else if (Model.CountItem == 0 && Model.Memo.Description.Length > 450 || Model.Memo.Remark.Length > 450)
+    {
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    }
+    else if (Model.CountItem == 0 && Model.Memo.Description.Length < 450 && Model.Memo.Remark.Length < 450)
+    {
+    }
+
+    else if (Model.CountItem > 2 && Model.CountItem < 10)
+    {
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    }
+    else if (Model.CountItem > 9 && Model.CountItem < 20)
+    {
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    }
+    else if (Model.CountItem > 27 && Model.CountItem < 38)
+    {
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    }
+    else if (Model.CountItem > 0 && Model.CountItem < 3 && Model.Memo.Description.Length < 100 && Model.Memo.Remark.Length < 100)
+    {
+
+    }
+    else if (Model.CountItem > 1 && Model.Memo.Description.Length > 300 && Model.Memo.Remark.Length > 300)
+    {
+
+    }
+    else
+    {
+
+    }
+    @* Signature *@
+    @* <table width="100%" cellpadding="8" style="text-align: center; font-size: 16px;">
+            <tr>
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    Requested By
+                </td>
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    Approved By
+                </td>
+            </tr>
+            <tr>
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    <br><br>
+                    <div style="margin-left: 120px; width: 50%; border-bottom: 1px solid #333333; font-size: 10px;"></div>
+                    Global Sales
+                    <br>
+                    <br>
+                </td>
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    <br><br>
+                    <div style="margin-left: 120px; width: 50%; border-bottom: 1px solid #333333; font-size: 10px;"></div>
+                    Global Regional, Sales Manager
+                    <br>
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    Approved By
+                </td>
+                @if (@Model.Memo.SubjectId==5 || Model.Memo.SubjectId==7)
+                {
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    Approved By
+                </td>
+                }
+            </tr>
+            <tr>
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    <br><br>
+                    <div style="margin-left: 120px; width: 50%; border-bottom: 1px solid #333333; font-size: 10px;"></div>
+                    Global Sales Administration Manager
+                    <br>
+                    <br>
+                </td>
+                @if (@Model.Memo.SubjectId==5 || Model.Memo.SubjectId==7)
+                {
+                <td width="50%" style="text-align: center; font-size: 16px;">
+                    <br><br>
+                    <div style="margin-left: 120px; width: 50%; border-bottom: 1px solid #333333; font-size: 10px;"></div>
+                    Production planning Manager
+                    <br>
+                    <br>
+                </td>
+                }
+            </tr>
+        </table> *@
+
+</body>
+</html>
+@section Scripts {
+    <script>
+    
+    </script>
+}

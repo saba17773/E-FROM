@@ -1,0 +1,95 @@
+﻿@page
+@model Web.UI.Pages.FixAssets.ApproveMapping.IndexModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Approve Mapping";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "FixAssets", Link = "/FixAssets" },
+        new BreadcrumbModel { Text = "Approve Mapping" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Approve Mapping
+    </div>
+    <div class="card-body overflow-auto">
+        <div class="mb-3">
+            <a href="/FixAssets/ApproveMapping/Add" class="btn btn-primary mr-2 mb-2">
+                <i class="fa fa-plus"></i> Add
+            </a>
+        </div>
+        <form method="post">
+            <table id="gridApproveMapping" width="100%" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridApproveMapping = "#gridApproveMapping";
+
+            var dtRole = $(gridApproveMapping).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                ajax: {
+                    url: "/FixAssets/ApproveMapping?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtRole.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Type", data: "ccType" },
+                    { title: "Approve Master Group", data: "groupDescription" },
+                    { title: "User", data: "username" },
+                    { title: "Type Category", data: "typeProduct" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/FixAssets/ApproveMapping/" + row.id + "/Edit", "fa fa-edit", "Edit");
+                            link += "<a href='javascript:void();' onclick='return deletemap("+row.id+");'><span class='badge badge-danger'><i class='fa fa-times'></i> Delete</span></a>";
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        function deletemap(idmap){
+            $.ajax({
+                url: "/FixAssets/ApproveMapping/Index?handler=DeleteMap",
+                type: "get",
+                data : {
+                    idmap : idmap
+                }
+            }).done(function (data) {
+                window.location.reload();
+            });
+        }
+    </script>
+}

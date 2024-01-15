@@ -1,0 +1,388 @@
+﻿@page "/S2E/Purchase/NewRequest/{RequestID}/{isMainSuccess}/Cancel"
+@model Web.UI.Pages.S2E.Purchase.NewRequest.CancelModel
+@using Infrastructure.Models
+@using Interfaces
+@{
+    ViewData["Title"] = "Cancel Request";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = $"{Model.PageBackTitle}", Link = $"/S2E/Purchase/NewRequest/{Model.PageBack}"  },
+        new BreadcrumbModel { Text = "Cancel Request" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>Cancel Request : </h3>
+</div>
+<div>
+
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <b>Request Code : </b> @Model.Requestcode &nbsp;&nbsp;&nbsp;
+        <b>Request Date : </b> @Model.Requestdate
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <b>เหตุผล : </b>
+                    <textarea rows="2" style="white-space:normal;display:block;"
+                              asp-for="CancelRemark" id="CancelRemark" class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger" id="btn_submit" onclick="return confirm('ต้องการยกเลิกคำร้องใช่หรือไม่?')">
+                        <i class="fa fa-ban"></i>
+                        Cancel Request
+                    </button>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="container2">
+            <table width="50%" align="center">
+                <tr>
+                    <td width="50%" style="text-align:left;">
+                        <label for="rdNewItem">
+                            <input type="radio" name="Process" id="rdNewItem" value="0" class="radio2" asp-for="Process" disabled />
+                            <b> ไม่เปรียบเทียบวัตถุดิบ </b>
+                        </label>
+                    </td>
+                    <td width="50%" style="text-align:left;">
+                        <label for="rdCompaire">
+                            <input type="radio" name="Process" id="rdCompaire" value="1" class="radio2" asp-for="Process" disabled />
+                            <b> เปรียบเทียบวัตถุดิบ </b>
+                        </label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="infobox hidden" id="CompairePanel">
+            <div class="container2">
+
+                <b>รายละเอียดผู้ขาย/วัตถุดิบ (ที่มีอยู่)</b>
+                <table style="width:90%">
+                    <tr>
+                        <td width="25%">
+                            รหัสผู้ขาย :
+                        </td>
+                        <td width="30%">
+                            <div class="input-group">
+                                <input type="text" asp-for="VendorIDREF" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                        <td width="10%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td> ชื่อผู้ขาย/ผู้ผลิต : </td>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" asp-for="SupplierNameREF" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> ตัวแทนจำหน่าย : </td>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" asp-for="DealerREF" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td> แหล่งผลิต : </td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" asp-for="ProductionSiteREF" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                        <td> ที่อยู่ของตัวแทนจำหน่าย : </td>
+                        <td>
+                            <div class="input-group">
+                                <textarea asp-for="DealerAddressREF" rows="2" style="white-space:normal;display:block;"
+                                          autocomplete="off" class="form-control" readonly></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Item Code :
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" asp-for="ItemCodeREF" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td> Item Name : </td>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" asp-for="ItemNameREF" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> ราคา : </td>
+                        <td>
+                            <table width="100%">
+                                <tr>
+                                    <td width="40%">
+                                        <input type="text" asp-for="PriceREF" class="form-control" asp-format="{0:#,##0.#0}" readonly />
+                                    </td>
+                                    <td width="20%"> / หน่วย : </td>
+                                    <td width="40%">
+                                        <select asp-for="PerUnitREF" asp-items="Model.PerUnitREFMaster" class="form-control" disabled>
+                                            <option value="">--- SELECT ---</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td> Currency : </td>
+                        <td>
+                            <select asp-for="CurrencyCodeREF" asp-items="Model.CurrencyCodeREFMaster" class="form-control" disabled>
+                                <option value="">--- SELECT ---</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <br />
+        </div>
+        <div class="infobox hidden" id="NewItemPanel">
+            <div class="container2">
+                <b>รายการวัตถุดิบที่นำเข้า / นำมาเปรียบเทียบ</b>
+                <table style="width:90%">
+                    <tr>
+                        <td width="25%">
+                            รหัสผู้ขาย :
+                        </td>
+                        <td width="30%">
+                            <div class="input-group">
+                                <input type="text" asp-for="VendorID" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                        <td width="10%"></td>
+                        <td width="35%"></td>
+                    </tr>
+                    <tr>
+                        <td> ชื่อผู้ขาย/ผู้ผลิต : </td>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" asp-for="SupplierName" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> ตัวแทนจำหน่าย : </td>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" asp-for="Dealer" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td> แหล่งผลิต : </td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" asp-for="ProductionSite" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                        <td> ที่อยู่ของตัวแทนจำหน่าย : </td>
+                        <td>
+                            <div class="input-group">
+                                <textarea asp-for="DealerAddress" rows="2" style="white-space:normal;display:block;"
+                                          autocomplete="off" class="form-control" readonly></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Item Code :
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" asp-for="ItemCode" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td> Item Name : </td>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" asp-for="ItemName" class="form-control" autocomplete="off" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> ราคา : </td>
+                        <td>
+                            <table width="100%">
+                                <tr>
+                                    <td width="40%">
+                                        <input type="text" asp-for="Price" class="form-control" asp-format="{0:#,##0.#0}" readonly />
+                                    </td>
+                                    <td width="20%"> / หน่วย : </td>
+                                    <td width="40%">
+                                        <select asp-for="PerUnit" asp-items="Model.PerUnitMaster" class="form-control" disabled>
+                                            <option value="">--- SELECT ---</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td> Currency : </td>
+                        <td>
+                            <select asp-for="CurrencyCode" asp-items="Model.CurrencyCodeMaster" class="form-control" disabled>
+                                <option value="">--- SELECT ---</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="infobox hidden" id="submitPanel">
+            <br />
+            <div class="container2">
+                <b>Upload File</b>
+                <br />
+                <table id="gridViewFileUpload" style="text-align:left;" width="50%" class="table table-hover"></table>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section scripts {
+    <script>
+
+        $("#form_submit").submit(function (e) {
+
+            if ($("#CancelRemark").val() == "") {
+
+                alert("กรุณาใส่เหตุผลที่ต้องการยกเลิก");
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btn_submit').html("Submit...");
+
+        });
+
+        var rdCheck = @Model.Process;
+        console.log(rdCheck);
+        if (rdCheck == "1") {
+            $('#NewItemPanel').show();
+            $('#CompairePanel').show();
+            $('#submitPanel').show();
+
+            document.getElementById("rdNewItem").checked = false;
+            document.getElementById("rdCompaire").checked = true;
+        }
+        else {
+            $('#NewItemPanel').show();
+            $('#CompairePanel').hide();
+            $('#submitPanel').show();
+
+            document.getElementById("rdNewItem").checked = true;
+            document.getElementById("rdCompaire").checked = false;
+        }
+
+        $(document).ready(function () {
+
+            var gridViewFileUpload = "#gridViewFileUpload";
+
+            var dtViewFileUpload = $(gridViewFileUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Purchase/NewRequest/@Model.RequestId/@Model.isMainsuccess/Cancel?handler=GridViewFileUpload&RequestID=@Model.RequestId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/Purchase/NewRequest/@Model.RequestId/@Model.isMainsuccess/Cancel?handler=DownloadFileUpload&RequestID=@Model.RequestId&Fileid=" + row.id, "fa fa-download", "<span> Download </span>");
+                         }
+                    }
+                ]
+            });
+        });
+
+    </script>
+}

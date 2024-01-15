@@ -1,0 +1,177 @@
+﻿@page
+@model Web.UI.Pages.User.AddModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Add";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Dashboard", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "User", Link = "/User" },
+        new BreadcrumbModel { Text = "Add" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Add
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="Username">Username</label>
+                <input type="text" asp-for="Username" class="form-control" autocomplete="off">
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Password</label>
+                <input type="password" asp-for="Password" class="form-control">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EmployeeId">Employee Id</label> <span id="selectEmployee" class="badge badge-info" style="cursor: pointer;"><i class="fa fa-search"></i> Search</span>
+                <input type="text" asp-for="EmployeeId" class="form-control" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UserDomain">UserDomain : </label>
+                <input type="text" asp-for="UserDomain" class="form-control" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email">Email</label>
+                <input type="email" asp-for="Email" class="form-control" autocomplete="off">
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Role">Role</label>
+                <select asp-for="Role" asp-items="Model.RoleMaster" class="form-control">
+                    <option value="">--- SELECT ---</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CompanyGroup">Company</label>
+                <select asp-for="CompanyGroup" asp-items="Model.CompanyMaster" class="form-control">
+                    <option value="">--- SELECT ---</option>
+                </select>
+                <span asp-validation-for="CompanyGroup" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="IsActive">Active</label>
+                <select asp-for="IsActive" class="form-control">
+                    <option value="0">Deactive</option>
+                    <option value="1">Active</option>
+                </select>
+                <span asp-validation-for="IsActive" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check"></i>
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Model Employee *@
+<div class="modal" id="modalEmployee" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridEmployee" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            
+            var gridEmployee = "#gridEmployee";
+
+            $("#selectEmployee").on("click", function () {
+                $("#modalEmployee").modal({ backdrop: "static" });
+
+                var dtEmployee = $(gridEmployee).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    ajax: {
+                        url: "/CreditControl/AddDOM?handler=EmployeeGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtEmployee.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Employee Id", data: "employeeId" },
+                        { title: "Name", data: "name" },
+                        { title: "Last Name", data: "lastName" },
+                        { title: "Name Eng", data: "nameEng" },
+                        { title: "Company", data: "company" },
+                        { title: "Position", data: "positionName" },
+                        { title: "Division", data: "divisionName" },
+                        { title: "Department", data: "departmentName" },
+                        { title: "Old Employee Id", data: "employeeIdOld" },
+                        { title: "Email", data: "email" }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 0,
+                            render: function (data, type, row) {
+                                var _name = row.name + " " + row.lastName;
+                                return data + "<div class='mt-2'><span style='cursor: pointer;' class='badge badge-secondary' onclick='selectEmp(" + row.employeeId + ", \"" + row.name + "\", \"" + row.lastName + "\", \"" + row.company + "\", \"" + row.email + "\")'>เลือก</span></div>";
+                            }
+                        }
+                    ],
+                });
+            });
+
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function selectEmp(empid, name, lastname, company, email) {
+            var domainArry = email.split("\u0040");
+            $("#EmployeeId").val(empid);
+            $("#Email").val(email);
+            $("#UserDomain").val("DEESTONEGRP\\"+domainArry[0]);
+            
+            $("#modalEmployee").modal("hide");
+        }
+
+    </script>
+}

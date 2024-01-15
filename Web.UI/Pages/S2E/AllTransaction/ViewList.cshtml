@@ -1,0 +1,229 @@
+﻿@page "/S2E/AllTransaction/{requestid}/ViewList"
+@model Web.UI.Pages.S2E.AllTransaction.ViewListModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "View List Page";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "All Transaction", Link = "/S2E/AllTransaction/Index" },
+        new BreadcrumbModel { Text = "View List" }
+    };
+}
+<style>
+    a:hover {
+        cursor:pointer;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>List : @Model.RequestCode</h3>
+</div>
+
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+<!-- modal Approve Transaction -->
+<div class="modal" id="modalApproveTrans" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title"><span id="ApproveTransAlert"></span></b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"  id="modal_ApproveTransBody">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridApproveTrans" width="100%" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $(gridList).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                "order": [[3, 'asc']],
+                ajax: {
+                    url: "/S2E/AllTransaction/@Model.RequestID/ViewList?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "No.", data: "groupid" },
+                    { title: "Process", data: "groupdescription" },
+                    { title: "Status", data: "statusapprove" },
+                    { title: "Orderby", data: "orderbyprocess" },
+                    { title: "Action", data: null },
+                    { title: "Edit File", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        visible:false
+                    },
+                    {
+                        targets: 2,
+                        render: function (data, type, row)
+                        {
+                            return "<span class='badge badge-"+row.colour+"'>"+data+"</span>";                          
+                        }
+                    },
+                    {
+                        targets: 3,
+                        visible: false
+                    },
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            var link = "";
+                            if (row.ishavelineid === 0) {
+                                link += actionLink(row.urlviewdetail + row.id + row.pagename, "fa fa-eye", "View Detail");
+                            }
+                            else if (row.ishavelineid === 1) {
+                                link += actionLink(row.urlviewdetail + row.id + "/" + row.lineid + row.pagename, "fa fa-eye", "View Detail");
+                            }
+                            else {
+                                link = "";
+                            }
+                            
+                            return link;
+                         }
+                    },
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            if (row.iscanedit === 1 && row.isedit === 0 ) {
+                                link += actionLink("/S2E/AllTransaction/" + row.groupid + "/" + row.id + "/@Model.RequestID/EditFile", "fa fa-file", "Edit File");
+                            }
+                            else if (row.iscanedit === 1 && row.isedit === 2 ) {
+                                link += "<a class='badge badge-light mr-2' onclick='fn_ApproveTrans(" + row.groupid + ",\"" + row.id + "\")'>"
+                                 + "<i class='fa fa-list'></i> Approve Transaction";
+                                 +  "</a>";
+                            }
+                            else {
+                                link = "";
+                            }
+                            
+                            return link;
+                         }
+                    }
+                ]
+            });
+
+            
+
+        });
+
+        function fn_ApproveTrans(groupid,id)
+        {
+            $("#modalApproveTrans").modal({ backdrop: "static" });
+            $("#modal_ApproveTransBody").show();
+
+            $("#ApproveTransAlert").text("Approve Transaction");
+
+            gridApproveTrans = "#gridApproveTrans";
+            $(gridApproveTrans).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                paging: false,
+                "order": [[8, 'asc']],
+                ajax: {
+                    url: "/S2E/AllTransaction/@Model.RequestID/ViewList?handler=GridApproveTrans&GroupID="+groupid+"&Id=" + id +"",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "Level", data: "approvelevel" },
+                    { title: "Email", data: "email" },
+                    { title: "Status", data: "isdone" },
+                    { title: "Send Email Date", data: "sendemaildate" },
+                    { title: "Approve Date", data: "approvedate" },
+                    { title: "Reject Date", data: "rejectdate" },
+                    { title: "Resend Email", data: null },
+                    { title: "Remark", data: "remark" },
+                    { title: "ID", data: "id" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 8,
+                        visible: false
+                    },
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            if (data === 0 &&
+                                row.sendemaildate === null &&
+                                row.approvedate === null &&
+                                row.rejectdate === null) {
+                                return "<span class='badge badge-danger'>ยังไม่ได้ดำเนินการ</span>";
+                            } else if (data === 1 &&
+                                row.sendemaildate !== null &&
+                                row.approvedate !== null &&
+                                row.rejectdate === null) {
+                                return "<span class='badge badge-success'>ดำเนินการแล้ว</span>";
+                            } else if (data === 1 &&
+                                row.sendemaildate !== null &&
+                                row.approvedate === null &&
+                                row.rejectdate !== null) {
+                                return "<span class='badge badge-danger'>ดำเนินการแล้ว (Reject)</span>";
+                            } else if (data === 0 &&
+                                row.sendemaildate !== null &&
+                                row.approvedate === null &&
+                                row.rejectdate === null) {
+                                return "<span class='badge badge-warning'>รอดำเนินการ</span>";
+                            } else if (data === 1 &&
+                                row.sendemaildate !== null &&
+                                row.approvedate === null &&
+                                row.rejectdate === null) {
+                                return "<span class='badge badge-success'>ดำเนินการโดย Level เดียวกัน</span>";
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+
+                            var link = "";
+                            if (row.isdone === 0 && row.sendemaildate !== null &&
+                                row.approvedate === null && row.rejectdate === null)
+                             {
+                                link += link += actionResend("/S2E/AllTransaction/@Model.RequestID/ViewList?handler=ResendEmail&TranID="+row.id, "fa fa-retweet", "<span> Resend Email </span>" );
+                            }
+
+                            return link ;
+
+                        }
+                    }
+                ]
+            });
+        }
+
+    </script>
+}

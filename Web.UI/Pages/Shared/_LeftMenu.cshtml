@@ -1,0 +1,439 @@
+﻿@using Interfaces
+@using Infrastructure.Models
+@inject IAuthService authService
+
+
+    <ul class="navbar-nav mr-auto">
+        @* <li class="nav-item">
+            <a class="nav-link" href="/Index"><i class="fa fa-home"></i> Home</a>
+        </li> *@
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            @if (await authService.CanDisplay(nameof(GeneralPermissionModel.VIEW_DASHBOARD)))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="configDD" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-dashboard"></i> Configuration</a>
+                    <div class="dropdown-menu" aria-labelledby="configDD">
+                        @if (await authService.CanDisplay(nameof(UserPermissionModel.VIEW_USER)))
+                        {
+                            <a class="dropdown-item" href="/User">User</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(RolePermissionModel.VIEW_ROLE)))
+                        {
+                            <a class="dropdown-item" href="/Role">Role</a>
+                        }
+                    </div>
+                </li>
+            }
+
+            @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT)))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="importDD" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-upload"></i> Import</a>
+                    <div class="dropdown-menu" aria-labelledby="importDD">
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_TEMPLATE_SUPPLIER)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/TemplateSupplier">Template Supplier</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_TEMPLATE_SAVING)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/TemplateSaving">Template Saving</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_KPI_AUDIT)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/PlanAudit">KPI : Plan Audit</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_KPI_DELIVERY)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/Delivery">KPI : Delivery</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_KPI_STOCK_ACC)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/StockAcc">KPI : Stock Acc</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_KPI_RM_COST)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/RM_Cost">KPI : RM Cost</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_KPI_TURNOVER)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/TurnOver">KPI : Turn Over</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_KPI_SHORT_SUPPLY)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/ShortSupplyAndExtraCost">KPI : Material short supply and Extra Cost</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_MARKET_KPI)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/MarketKPI">Market : KPI</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_MARKET_FORECAST)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/MarketForecast">Market : Forecast</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_MARKET_FORECAST_ITEM)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/MarketForecastItem">Market : Forecast Item</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_MARKET_FORECAST_SUBGROUP)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/MarketForecastSubgroup">Market : Forecast Subgroup</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(ImportPermissionModel.VIEW_IMPORT_MARKET_SUBGROUP)))
+                        {
+                            <a class="dropdown-item" href="/Purchase/Import/MarketSubgroup">Market : Subgroup</a>
+                        }
+                    </div>
+                </li>
+            }
+
+
+            @if (await authService.CanDisplay(nameof(CreditControlPermissionModel.VIEW_CREDITCONTROL)))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="creditControlDD" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user-plus"></i> Credit Control</a>
+                    <div class="dropdown-menu" aria-labelledby="creditControlDD">
+
+                        @if (await authService.CanDisplay(nameof(CreditControlPermissionModel.VIEW_CREDITCONTROL)))
+                        {
+                            <a class="dropdown-item" href="/CreditControl">Transactions</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(CreditControlPermissionModel.APPROVE_MASTER_CREDITCONTROL)))
+                        {
+                            <a class="dropdown-item" href="/CreditControl/ApproveMaster">Approve Master</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(CreditControlPermissionModel.APPROVE_MAPPING_CREDITCONTROL)))
+                        {
+                            <a class="dropdown-item" href="/CreditControl/ApproveMapping">Approve Mapping</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(CreditControlPermissionModel.ADD_DOM_CREDITCONTROL)))
+                        {
+                            <a class="dropdown-item" href="/CreditControl/AddDOM">Add DOM</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(CreditControlPermissionModel.ADD_OVS_CREDITCONTROL)))
+                        {
+                            <a class="dropdown-item" href="/CreditControl/AddOVS">Add OVS</a>
+                        }
+                    </div>
+                </li>
+            }
+
+            @if (await authService.CanDisplay(nameof(VenderPermissionModel.VIEW_VENDER)))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dashboardDD" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user-circle"></i> Vendor
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dashboardDD">
+                        @if (await authService.CanDisplay(nameof(ApproveMasterPermissionModel.VIEW_APPROVE_MASTER)))
+                        {
+                            <a class="dropdown-item" href="/ApproveManage/ApproveMaster">Vendor Approve Master</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(ApproveMasterPermissionModel.VIEW_APPROVE_MASTER)))
+                        {
+                            <a class="dropdown-item" href="/ApproveManage/VenderApproveMapping">Vendor Approve Mapping</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(VenderPermissionModel.VIEW_VENDER)))
+                        {
+                            <a class="dropdown-item" href="/Vender">Vendor</a>
+                        }
+
+                    </div>
+                </li>
+            }
+
+            @if (await authService.CanDisplay(nameof(VenderPermissionModel.VIEW_VENDORTODOLIST)))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="/Vender/VendorTodolist" id="VendorTodolist"
+                       role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-list"></i> Vendor Todolist
+                    </a>
+
+                </li>
+            }
+
+            @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_S2E)))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dashboardDD" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user-circle"></i> S2E
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dashboardDD">
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.APPROVE_MASTER_MANAGE)))
+                        {
+                            <a class="dropdown-item" href="/S2E/ApproveMaster">Master: Approve Master</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.APPROVE_MAPPING_S2E)))
+                        {
+                            <a class="dropdown-item" href="/S2E/ApproveMapping">Master: Approve Mapping</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_ALLTRANSACTION)))
+                        {
+                            <a class="dropdown-item" href="/S2E/AllTransaction/Index">All Transaction</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_NEWREQUEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/NewRequest/Main">New Request</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_NEWREQUEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/NewRequest/MainSuccess">New Request (Success)</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_NEWREQUEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/NewRequest/MainCancel">New Request (รายการที่ยกเลิก)</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_RMASSESSMENT)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/RMAssessment/Main">ใบขอประเมินวัตถุดิบ</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_RMASSESSMENT)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/RMAssessment/MainCancel">ใบขอประเมินวัตถุดิบ (รายการที่ยกเลิก)</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_ADDRAWMATERIALSAMPLE)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/AddRawMaterialSample/Main">เพิ่มวัตถุดิบเข้าระบบ (LAB SAMPLE)</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_RAWMATERIALREQUESTSAMPLE)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/MaterialRequestSample/Main">เบิกวัตถุดิบ (LAB SAMPLE)</a>
+                        }
+
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_LABTEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/LABTest/Main">Lab Test</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_LABTEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/LABTest/MainSuccess">Lab Test (Success)</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_LABTEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/LABTest/MainCancel">Lab Test (รายการที่ยกเลิก)</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_PURCHASESAMPLE)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/PurchaseSample/Main">แจ้งให้เปิด PR</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_PURCHASESAMPLE)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/PurchaseSample/MainCancel">แจ้งให้เปิด PR (รายการที่ยกเลิก)</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_ADDRAWMATERIAL)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/AddRawMaterial/Main">เพิ่มวัตถุดิบเข้าระบบ</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_ADDRAWMATERIAL)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Purchase/AddRawMaterial/MainCancel">เพิ่มวัตถุดิบเข้าระบบ (รายการที่ยกเลิก)</a>
+                        }
+                        @*@if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_QTECH)) || await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_PURCHASE)))*@
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_RAWMATERIALREQUEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/MaterialRequest/Main">เบิกวัตถุดิบ</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_RAWMATERIALREQUEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/MaterialRequest/MainCancel">เบิกวัตถุดิบ (รายการที่ยกเลิก)</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_TRIALTEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/TRIALTest/Main">Trial Test</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_TRIALTEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/TRIALTest/MainCancel">Trial Test (รายการที่ยกเลิก)</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_TRIALTEST)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Qtech/TRIALTest/MainSuccess">Trial Test (Success)</a>
+                        }
+                        @if (await authService.CanDisplay(nameof(S2EPermissionModel.VIEW_REPORT_STOCKCARD)))
+                        {
+                            <a class="dropdown-item" href="/S2E/Report/StockCard">Stock Card</a>
+                        }
+                    </div>
+                </li>
+            }
+        }
+
+        @if (await authService.CanDisplay(nameof(PromotionPermissionModel.VIEW_PROMOTION)))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="promotionDD" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-newspaper-o"></i> Promotion Discount</a>
+                <div class="dropdown-menu" aria-labelledby="promotionDD">
+
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.VIEW_PROMOTION)))
+                    {
+                        <a class="dropdown-item" href="/Promotion">Transactions</a>
+                    }
+
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.VIEW_PROMOTION_COMPLETE)))
+                    {
+                        <a class="dropdown-item" href="/Promotion/Complete">Transactions Complete</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.VIEW_PROMOTION_CANCEL)))
+                    {
+                        <a class="dropdown-item" href="/Promotion/Cancel">Transactions Cancel</a>
+                    }
+
+                    @if (await authService.CanDisplay(nameof(CreditControlPermissionModel.APPROVE_MASTER_CREDITCONTROL)))
+                    {
+                        <a class="dropdown-item" href="/CreditControl/ApproveMaster">Approve Master</a>
+                    }
+
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.APPROVE_MAPPING_PROMOTION)))
+                    {
+                        <a class="dropdown-item" href="/Promotion/ApproveMapping">Approve Mapping</a>
+                    }
+
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.ADD_DOM_PROMOTION)))
+                    {
+                        <a class="dropdown-item" href="/Promotion/AddDOM">Add DOM</a>
+                    }
+
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.ADD_OVS_PROMOTION)))
+                    {
+                        <a class="dropdown-item" href="/Promotion/AddOVS">Add OVS</a>
+                    }
+
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.ADD_EXP_DOM_PROMOTION)))
+                    {
+                        <a class="dropdown-item" href="/Promotion/AddDOMEXP">Add DOM Exceptional</a>
+                    }
+
+                    @if (await authService.CanDisplay(nameof(PromotionPermissionModel.ADD_EXP_OVS_PROMOTION)))
+                    {
+                        <a class="dropdown-item" href="/Promotion/AddOVSEXP">Add OVS Exceptional</a>
+                    }
+
+
+                </div>
+            </li>
+        }
+
+        @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_MASTER_BP)))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="importDD" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-th"></i> TicketBlock</a>
+                <div class="dropdown-menu" aria-labelledby="ticketDD">
+
+                    @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_MASTER_BP)))
+                    {
+                        <a class="dropdown-item" href="/Planing">Master BP</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_MASTER_FC)))
+                    {
+                        <a class="dropdown-item" href="/Planing/IndexFC">Master FC</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_MASTER_SOD)))
+                    {
+                        <a class="dropdown-item" href="/Planing/IndexSOD">Master SOD For AOT</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_IMPORT_TEMPLATE_BP)))
+                    {
+                        <a class="dropdown-item" href="/Planing/Import/TemplateBP">Import Template BP</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_IMPORT_TEMPLATE_FC_OVS)))
+                    {
+                        <a class="dropdown-item" href="/Planing/Import/TemplateFCOVS">Import Template FC OVS</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_IMPORT_TEMPLATE_FC_DOM)))
+                    {
+                        <a class="dropdown-item" href="/Planing/Import/TemplateFCDOM">Import Template FC DOM+CLM</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(TicketPermissionModel.VIEW_IMPORT_TEMPLATE_SOD)))
+                    {
+                        <a class="dropdown-item" href="/Planing/Import/TemplateSOD">Import Template SOD For AOT</a>
+                    }
+                </div>
+            </li>
+        }
+
+        @if (await authService.CanDisplay(nameof(MemoPermissionModel.VIEW_MEMO)))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="internalmemo" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-file-text"></i> MEMO</a>
+                <div class="dropdown-menu" aria-labelledby="internalmemo">
+
+                    @if (await authService.CanDisplay(nameof(MemoPermissionModel.VIEW_MEMO)))
+                    {
+                        <a class="dropdown-item" href="/Memo">Transactions</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(MemoPermissionModel.ADD_MEMO)))
+                    {
+                        <a class="dropdown-item" href="/Memo/AddMemo">Add Memo</a>
+                    }
+                </div>
+            </li>
+        }
+
+        @if (await authService.CanDisplay(nameof(AssetsPermissionModel.VIEW_ASSETS)))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="fixassets" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-usd"></i> Assets</a>
+                <div class="dropdown-menu" aria-labelledby="fixassets">
+
+                    @if (await authService.CanDisplay(nameof(AssetsPermissionModel.VIEW_ASSETS)))
+                    {
+                        <a class="dropdown-item" href="/FixAssets">Transactions</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(AssetsPermissionModel.ADD_ASSETS)))
+                    {
+                        <a class="dropdown-item" href="/FixAssets/AddAssets">Add Assets</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(AssetsPermissionModel.APPROVE_MASTER_ASSETS)))
+                    {
+                        <a class="dropdown-item" href="/CreditControl/ApproveMaster">Approve Master</a>
+                    }
+                    @if (await authService.CanDisplay(nameof(AssetsPermissionModel.APPROVE_MAPPING_ASSETS)))
+                    {
+                        <a class="dropdown-item" href="/FixAssets/ApproveMapping">Approve Mapping</a>
+                    }
+
+                </div>
+            </li>
+        }
+        @if (await authService.CanDisplay(nameof(QueingPermissionModel.VIEW_QUEING)))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="/Queing/Home" id="QueingMain"
+                   role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-list-ol"></i> Queing
+                </a>
+
+            </li>
+        }
+
+
+
+    </ul>

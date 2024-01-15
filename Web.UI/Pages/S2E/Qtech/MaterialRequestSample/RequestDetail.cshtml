@@ -1,0 +1,434 @@
+﻿@page "/S2E/Qtech/MaterialRequestSample/{RMREQSAMID}/RequestDetail"
+@model Web.UI.Pages.S2E.Qtech.MaterialRequestSample.RequestDetailModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "รายละเอียดเบิกวัตถุดิบ (LAB Sample)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech", Link = "/S2E/Qtech" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Qtech/MaterialRequestSample/Main" },
+        new BreadcrumbModel { Text = "รายละเอียดใบเบิกวัตถุดิบ (LAB Sample)" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3> รายละเอียดใบเบิกวัตถุดิบ (LAB Sample)</h3>
+</div>
+
+<form method="post">
+    <div class="container2">
+        @if (@Model.Plant == "DSL")
+        {
+            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน จำกัด </b> </span>
+        }
+        else if (@Model.Plant == "DRB")
+        {
+            <span> <b style="font-size:x-large;"> บริษัท ดีรับเบอร์ จำกัด </b> </span>
+        }
+        else if (@Model.Plant == "DSI")
+        {
+            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน อินเตอร์เนชั่นแนล จำกัด </b> </span>
+        }
+        else if (@Model.Plant == "DSR")
+        {
+            <span> <b style="font-size:x-large;"> บริษัท สวิซซ์-วัน คอร์ปอเรชั่น จำกัด </b> </span>
+        }
+        else
+        {
+            <span> <b style="font-size:x-large;"> บริษัท สยามทรัค เรเดียล จำกัด </b> </span>
+        }
+        <br />
+        <span><b>Request Code : @Model.RequestCode</b></span>
+        <br /><br />
+        <table width="90%">
+            <tr>
+                <td width="10%" style="text-align:right">
+                    <b>Item Name : </b>
+                </td>
+                <td colspan="3" style="text-align:left">
+                    <b>@Model.ItemName</b>
+                </td>
+            </tr>
+            <tr>
+                <td width="10%" style="text-align:right">
+                    <b>จำนวนที่สามารถเบิกได้ : </b>
+                </td>
+                <td colspan="3" style="text-align:left">
+                    <b>@String.Format("{0:#,##0.#0}", Model.QtyTotal)  @Model.Unit</b>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div class="container2">
+        @if (Model.RequestStatus == 1 && Model.QtyTotal != 0)
+        {
+            <button class="btn btn-success" type="button" id="btnAddRequest">
+                <i class="fa fa-plus"></i>
+                เพิ่มใบเบิกวัตถุดิบ
+            </button>
+            <br /><br />
+        }
+        <h5>รายละเอียดการเบิก</h5>
+        <div class="infobox hidden" id="btnPanel">
+            <br />
+            <button class="btn btn-primary" type="button" id="btnApproveTrans">
+                <i class="fa fa-list"></i>
+                Approve Transaction
+            </button>
+            <button class="btn btn-info" type="button" id="btnViewInfo">
+                <i class="fa fa-eye"></i>
+                View Info
+            </button>
+            <button class="btn btn-warning" type="button" id="btnEdit">
+                <i class="fa fa-pencil-square-o"></i>
+                Edit
+            </button>
+            <button class="btn btn-danger" type="button" id="btnCancel">
+                <i class="fa fa-ban"></i>
+                Cancel
+            </button>
+            <br />
+        </div>
+        <br />
+        <table id="gridList" width="100%" class="table table-hover"></table>
+    </div>
+</form>
+
+<!-- modal Approve Transaction -->
+<div class="modal" id="modalApproveTrans" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title"><span id="ApproveTransAlert"></span></b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal_ApproveTransBody">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridApproveTrans" width="100%" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            document.getElementById('btnApproveTrans').style.visibility = 'hidden';
+            document.getElementById('btnViewInfo').style.visibility = 'hidden';
+            document.getElementById('btnEdit').style.visibility = 'hidden';
+            document.getElementById('btnCancel').style.visibility = 'hidden';
+            $('#btnPanel').hide();
+
+            var gridList = "#gridList";
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Qtech/MaterialRequestSample/@Model.RMReqSamID/RequestDetail?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "No.", data: "no" },
+                    { title: "วันที่", data: "requestdate" },
+                    { title: "แผนก", data: "department" },
+                    { title: "ฝ่าย", data: "supgroup" },
+                    { title: "จำนวน", data: "qty" },
+                    { title: "หน่วย", data: "unit" },
+                    { title: "Compounder", data: "requestby" },
+                    { title: "Status", data: "approvestatus" }
+                    //{ title: "Action", data: null }
+                ],
+                columnDefs: [
+                    { targets: 1, visible: false },
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+
+                            return commaSeparateNumber(data);
+
+                        }
+                    },
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+
+                            if (row.approvestatus === 2) {
+                                return "<span class='badge badge-dark'>Cancel</span>";
+                            }
+                            if (row.approvestatus === 3) {
+                                return "<span class='badge badge-info'>Wait For Approve</span>";
+                            }
+                            if (row.approvestatus === 4) {
+                                return "<span class='badge badge-danger'>Reject</span>";
+                            }
+                            if (row.approvestatus === 7) {
+                                return "<span class='badge badge-success'>Successfully</span>";
+                            }
+                            if (row.approvestatus === 8) {
+                                return "<span class='badge badge-secondary'>Draft</span>";
+                            }
+
+                        }
+                    },
+                ]
+            });
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+            var rmreqsamlineid = 0;
+
+            var table = $('#gridList').DataTable();
+            $('#gridList tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+
+                    document.getElementById('btnApproveTrans').style.visibility = 'hidden';
+                    document.getElementById('btnViewInfo').style.visibility = 'hidden';
+                    document.getElementById('btnEdit').style.visibility = 'hidden';
+                    document.getElementById('btnCancel').style.visibility = 'hidden';
+
+                    $('#btnPanel').hide();
+                }
+                else {
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+
+                    //console.log(table.row(this).data());
+
+                    var addrmsampleid = table.row(this).data().addrmsampleid;
+                    var approvegroupid = table.row(this).data().approvegroupid;
+                    var approvemasterid = table.row(this).data().approvemasterid;
+                    var approvestatus = table.row(this).data().approvestatus;
+                    var department = table.row(this).data().department;
+                    var no = table.row(this).data().no;
+                    var qty = table.row(this).data().qty;
+                    var requestby = table.row(this).data().requestby;
+                    var requestdate = table.row(this).data().requestdate;
+                    var rmreqsamid = table.row(this).data().rmreqsamid;
+                    rmreqsamlineid = table.row(this).data().rmreqsamlineid;
+                    var supgroup = table.row(this).data().supgroup;
+                    var unit = table.row(this).data().unit;
+
+                    $('#btnPanel').show();
+
+                    if (approvestatus == 4 || approvestatus == 8) {
+                        document.getElementById('btnApproveTrans').style.visibility = 'visible';
+                        document.getElementById('btnViewInfo').style.visibility = 'visible';
+                        document.getElementById('btnEdit').style.visibility = 'visible';
+                        document.getElementById('btnCancel').style.visibility = 'visible';
+                    }
+                    else if (approvestatus == 2) {
+                        document.getElementById('btnApproveTrans').style.visibility = 'hidden';
+                        document.getElementById('btnViewInfo').style.visibility = 'hidden';
+                        document.getElementById('btnEdit').style.visibility = 'hidden';
+                        document.getElementById('btnCancel').style.visibility = 'hidden';
+                        $('#btnPanel').hide();
+                    }
+                    else {
+                        document.getElementById('btnApproveTrans').style.visibility = 'visible';
+                        document.getElementById('btnViewInfo').style.visibility = 'visible';
+                        document.getElementById('btnEdit').style.visibility = 'hidden';
+                        document.getElementById('btnCancel').style.visibility = 'hidden';
+
+                        //Approve Transaction View
+                        $("#btnApproveTrans").on("click", function () {
+                            $("#modalApproveTrans").modal({ backdrop: "static" });
+                            $("#modal_ApproveTransBody").show();
+
+                            $("#ApproveTransAlert").text("Approve Transaction NO: " + no);
+                            gridApproveTrans = "#gridApproveTrans";
+                            $(gridApproveTrans).DataTable({
+                                serverSide: true,
+                                processing: true,
+                                destroy: true,
+                                responsive: true,
+                                dom: 'lrtip',
+                                bInfo: false,
+                                bLengthChange: false,
+                                paging: false,
+                                "order": [[8, 'asc']],
+                                ajax: {
+                                    url: "/S2E/Qtech/MaterialRequestSample/@Model.RMReqSamID/RequestDetail?handler=GridApproveTrans&RMReqSamLineID=" + rmreqsamlineid +"",
+                                    type: "post",
+                                    headers: {
+                                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                                    }
+                                },
+                                columns: [
+                                    { title: "Level", data: "approvelevel" },
+                                    { title: "Email", data: "email" },
+                                    { title: "Status", data: "isdone" },
+                                    { title: "Send Email Date", data: "sendemaildate" },
+                                    { title: "Approve Date", data: "approvedate" },
+                                    { title: "Reject Date", data: "rejectdate" },
+                                    { title: "Resend Email", data: null },
+                                    { title: "Remark", data: "remark" },
+                                    { title: "ID", data: "id" }
+                                ],
+                                columnDefs: [
+                                    {
+                                        targets: 8,
+                                        visible: false
+                                    },
+                                    {
+                                        targets: 2,
+                                        render: function (data, type, row) {
+                                            if (data === 0 &&
+                                                row.sendemaildate === null &&
+                                                row.approvedate === null &&
+                                                row.rejectdate === null) {
+                                                return "<span class='badge badge-danger'>ยังไม่ได้ดำเนินการ</span>";
+                                            } else if (data === 1 &&
+                                                row.sendemaildate !== null &&
+                                                row.approvedate !== null &&
+                                                row.rejectdate === null) {
+                                                return "<span class='badge badge-success'>ดำเนินการแล้ว</span>";
+                                            } else if (data === 1 &&
+                                                row.sendemaildate !== null &&
+                                                row.approvedate === null &&
+                                                row.rejectdate !== null) {
+                                                return "<span class='badge badge-danger'>ดำเนินการแล้ว (Reject)</span>";
+                                            } else if (data === 0 &&
+                                                row.sendemaildate !== null &&
+                                                row.approvedate === null &&
+                                                row.rejectdate === null) {
+                                                return "<span class='badge badge-warning'>รอดำเนินการ</span>";
+                                            } else if (data === 1 &&
+                                                row.sendemaildate !== null &&
+                                                row.approvedate === null &&
+                                                row.rejectdate === null) {
+                                                return "<span class='badge badge-success'>ดำเนินการโดย Level เดียวกัน</span>";
+                                            }
+                                            return data;
+                                        }
+                                    },
+                                    {
+                                        targets: 6,
+                                        render: function (data, type, row) {
+
+                                            var link = "";
+                                            if (row.isdone === 0 && row.sendemaildate !== null &&
+                                                row.approvedate === null && row.rejectdate === null)
+                                             {
+
+                                                link += link += actionResend("/S2E/Qtech/MaterialRequestSample/@Model.RMReqSamID/RequestDetail?handler=ResendEmail&TranID="+row.id, "fa fa-retweet", "<span> Resend Email </span>" );
+                                            }
+
+                                            return link ;
+
+                                        }
+                                    }
+                                ]
+                            });
+
+                        });
+                    }
+                }
+            });
+
+            function commaSeparateNumber(val) {
+                while (/(\d+)(\d{3})/.test(val.toString())) {
+                    val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
+                }
+
+                return val;
+            }
+
+            //Add New Request
+            $("#btnAddRequest").on("click", function () {
+                var url = "/S2E/Qtech/MaterialRequestSample/@Model.RMReqSamID/AddRequest";
+                window.location = url;
+            });
+
+            //View Info Request
+            $("#btnViewInfo").on("click", function () {
+                var url = "/S2E/Qtech/MaterialRequestSample/" + rmreqsamlineid +"/ViewInfo";
+                window.location = url;
+            });
+
+            //Edit Request
+            $("#btnEdit").on("click", function () {
+                var url = "/S2E/Qtech/MaterialRequestSample/" + rmreqsamlineid + "/Edit";
+                window.location = url;
+            });
+
+            //Cancel Request
+            $("#btnCancel").on("click", function () {
+                var url = "/S2E/Qtech/MaterialRequestSample/" + rmreqsamlineid + "/Cancel";
+                window.location = url;
+            });
+
+        });
+
+    </script>
+}

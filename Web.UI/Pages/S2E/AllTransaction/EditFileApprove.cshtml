@@ -1,0 +1,268 @@
+﻿@page
+@model Web.UI.Pages.S2E.AllTransaction.EditFileApproveModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Page";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();"},
+        new BreadcrumbModel { Text = "Approve Edit Log File", Link = "javascript:void();" }
+    };
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<form method="post" enctype="multipart/form-data" id="form_submit">
+    <div class="container2">
+        <h3>@Model.GroupDescription : @Model.RequestCode</h3>
+        <br />
+        <b>Old File</b>
+        <br />
+        <table id="gridViewFileUpload" style="text-align:left;" width="70%" class="table table-hover"></table>
+        <br />
+        <table style="width:70%">
+            <tr style="text-align:left;">
+                <td>
+                    <b>เหตุผลที่ต้องการแก้ไข :</b>
+                    <textarea rows="2" style="white-space:normal;display:block;"
+                              id="Remark" asp-for="Remark" class="form-control" readonly></textarea>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <b>New File</b>
+        <br />
+        <table id="gridViewFileUploadNew" style="text-align:left;" width="70%" class="table table-hover"></table>
+    </div>
+    
+    <br />
+    <div class="container2">
+        <b>ส่วนของผู้อนุมัติ</b>
+        <br /><br />
+        <table style="width:50%">
+            <tr style="text-align:left;">
+                <td width="20%">
+                
+                        <input type="radio" asp-for="ApproveResult" id="Approve" value="1" class="radio2" />
+                    <label>
+                        <b>อนุม้ติ</b>
+                    </label>
+                </td>
+                <td width="20%">
+                
+                        <input type="radio" asp-for="ApproveResult" id="Reject" value="2" class="radio2" />
+                    <label>
+                        <b>ไม่อนุม้ติ</b>
+                    </label>
+                </td>
+                <td></td>
+            </tr>
+            <tr style="text-align:left;">
+                <td colspan="3">
+                    <b>เหตุผล : </b>
+                    <textarea rows="2" style="white-space:normal;display:block;"
+                              asp-for="ApproveRemark" id="ApproveRemark" class="form-control" readonly ></textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-6 col-md-12 col-sm-12">
+            <div class="form-group">
+                <button type="submit" class="btn btn-success" onclick="return confirm('ต้องการดำเนินการต่อหรือไม่?')">
+                    <i class="fa fa-check"></i>
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section scripts {
+    <script>
+
+        var resultapprove = 0;
+        $(":radio[name=ApproveResult]").on("change", function () {
+
+            var val = $(this).val();
+            resultapprove = val;
+
+            if (val == 2) {
+                document.getElementById("ApproveRemark").readOnly = false;
+                $("#ApproveRemark").val("");
+            }
+            else {
+                document.getElementById("ApproveRemark").readOnly = true;
+                $("#ApproveRemark").val("");
+            }
+        });
+
+        $("#form_submit").submit(function (e) {
+
+            if(resultapprove == 0){
+
+                alert("กรุณาเลือกว่าจะอนุมัติหรือไม่ !!")
+                return false;
+            }
+            $(".overlay").show();
+            $('#btn_submit').html("Submit...");
+        });
+
+        $(document).ready(function () {
+
+            var gridViewFileUpload = "#gridViewFileUpload";
+
+            var dtViewFileUpload = $(gridViewFileUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/AllTransaction/EditFileApprove?handler=GridViewFileUpload&HeadID=@Model.RequestId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null },
+                    { title: "View", data: null },
+                    { title: "Delete", data: "isdelete" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        width: "50%"
+                    },
+                    {
+                        targets: 1,
+                        width: "20%"
+                    },
+                    {
+                        targets: 2,
+                        width: "10%",
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/AllTransaction/EditFileApprove?handler=DownloadFileUpload&HeadID=@Model.RequestId&Fileid=" + row.fileid, "fa fa-download", "<span> Download </span>");
+                         }
+                    },
+                    {
+                        targets: 3,
+                        width: "10%",
+                        render: function (data, type, row) {
+                            return actionLinkBlank("/S2E/AllTransaction/EditFileApprove?handler=ViewFileUpload&HeadID=@Model.RequestId&Fileid=" + row.fileid, "fa fa-eye", "View", true);
+                        }
+                    },
+                    {
+                        targets: 4,
+                        width: "10%",
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("", "danger", "fa fa-check") : showBadge("", "", "");
+                         }
+                    }
+                ]
+            });
+
+             var gridViewFileUploadNew = "#gridViewFileUploadNew";
+
+            var dtViewFileUploadNew = $(gridViewFileUploadNew).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/AllTransaction/EditFileApprove?handler=GridViewFileUploadNew&HeadID=@Model.RequestId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null },
+                    { title: "View", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        width: "50%"
+                    },
+                    {
+                        targets: 1,
+                        width: "30%"
+                    },
+                    {
+                        targets: 2,
+                        width: "10%",
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/AllTransaction/EditFileApprove?handler=DownloadFileUploadNew&HeadID=@Model.RequestId&Fileid=" + row.fileid, "fa fa-download", "<span> Download </span>");
+                         }
+                    },
+                    {
+                        targets: 3,
+                        width: "10%",
+                        render: function (data, type, row) {
+                            return actionLinkBlank("/S2E/AllTransaction/EditFileApprove?handler=ViewFileUploadNew&HeadID=@Model.RequestId&Fileid=" + row.fileid, "fa fa-eye", "View", true);
+                         }
+                    }
+                ]
+            });
+
+        });
+
+    </script>
+}

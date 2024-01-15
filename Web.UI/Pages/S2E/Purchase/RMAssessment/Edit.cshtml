@@ -1,0 +1,1674 @@
+﻿@page "/S2E/Purchase/RMAssessment/{AssessmentID}/Edit"
+@model Web.UI.Pages.S2E.Purchase.RMAssessment.EditModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "Edit RM Assessment";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "RM Assessment Main", Link = "/S2E/Purchase/RMAssessment/Main" },
+        new BreadcrumbModel { Text = "Edit RM Assessment" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .table2 {
+        border: 1px solid black;
+        text-align: center;
+    }
+
+        .table2 tr {
+            text-align: center;
+            border: 1px solid black;
+            vertical-align: middle;
+        }
+
+        .table2 td {
+            border: 1px solid black;
+        }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>ใบขอประเมินวัตถุดิบ</h3>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <table style="width:90%">
+                <tr>
+                    <td width="15%"> Request Code : </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="15%"> Request Date : </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" class="form-control" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Plant ที่ใช้งาน : <span class="text-danger font-weight-bold">*</span></td>
+                    <td style="text-align:left;">
+                        <label for="DataAreaID1">
+                            <input type="checkbox" id="DataAreaID1" asp-for="DataAreaID1" name="DataAreaID1" class="checkbox2">
+                            DSL
+                        </label>
+                        <label for="DataAreaID2">
+                            <input type="checkbox" id="DataAreaID2" asp-for="DataAreaID2" name="DataAreaID2" class="checkbox2">
+                            DRB
+                        </label>
+                        <label for="DataAreaID3">
+                            <input type="checkbox" id="DataAreaID3" asp-for="DataAreaID3" name="DataAreaID3" class="checkbox2">
+                            DSI
+                        </label>
+                        <label for="DataAreaID4">
+                            <input type="checkbox" id="DataAreaID4" asp-for="DataAreaID4" name="DataAreaID4" class="checkbox2">
+                            DSR
+                        </label>
+                        <label for="DataAreaID5">
+                            <input type="checkbox" id="DataAreaID5" asp-for="DataAreaID5" name="DataAreaID5" class="checkbox2">
+                            STR
+                        </label>
+                        <input type="hidden" asp-for="Plant" id="Plant" class="form-control" autocomplete="off">
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td> Section : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <select asp-for="DepartmentID" asp-items="Model.DepartmentMaster" class="form-control">
+                            <option value="">--- SELECT ---</option>
+                        </select>
+                    </td>
+                    <td colspan="2">
+                        <input type="text" asp-for="DepartmentRemark" maxlength="50" class="form-control" autocomplete="off" readonly />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>รายละเอียดวัตถุดิบ</b>
+            <table style="width:90%">
+                <tr>
+                    <td> Material Group : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <select asp-for="MaterialGroup" asp-items="Model.ProductGroupMaster" class="form-control">
+                                <option value="">--- SELECT ---</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td> Material Name : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="MaterialName" id="MaterialName" class="form-control" autocomplete="off" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Item Group : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <select asp-for="ItemGroup" asp-items="Model.ProductSubGroupMaster" class="form-control">
+                                <option value="">--- SELECT ---</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>จุดประสงค์การขอประเมิน / Reason of evaluation <span class="text-danger font-weight-bold">*</span></b><br />
+            <table width="80%" align="center">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef1">
+                            <input type="checkbox" asp-for="DocRef1" id="DocRef1" name="DocRef1" class="checkbox2" />
+                            New material / วัตถุดิบชนิดใหม่ไม่เคยใช้มาก่อน
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef2">
+                            <input type="checkbox" asp-for="DocRef2" id="DocRef2" name="DocRef2" class="checkbox2" />
+                            Second source / Alternate source / วัตถุดิบทดแทน
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef3">
+                            <input type="checkbox" asp-for="DocRef3" id="DocRef3" name="DocRef3" class="checkbox2" />
+                            Cost reduction / ลดต้นทุน
+                        </label>
+                    </td>
+                    <td>
+                        <table width="100%" align="left">
+                            <tr>
+                                <td style="text-align:left;">
+                                    <label for="DocRef4">
+                                        <input type="checkbox" asp-for="DocRef4" id="DocRef4" name="DocRef4" class="checkbox2" />
+                                        Others / อื่นๆ
+                                    </label>
+                                </td>
+                                <td style="text-align:left;">
+                                    <input type="text" class="form-control" asp-for="DocRef4_Desc" id="DocRef4_Desc" name="DocRef4_Desc" autocomplete="off" readonly />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="hidden" class="form-control" asp-for="ReasonOfEvaluation" id="ReasonOfEvaluation" name="ReasonOfEvaluation" readonly />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="100%" class="table2" align="center">
+                <tr>
+                    <td rowspan="2" width="22%">
+                        Dealer/Supplier Name <br />
+                        ตัวแทนจำหน่าย/ชื่อผู้ขายผู้ผลิต
+                    </td>
+                    <td rowspan="2" width="10%">
+                        Source/Country <br />
+                        แหล่งผลิต
+                    </td>
+                    <td rowspan="2" width="8%">
+                        Item <br />
+                        รหัสสินค้า
+                    </td>
+                    <td rowspan="2" width="20%">
+                        Item Name <br />
+                        ชื่อวัตถุดิบ
+                    </td>
+                    <td rowspan="2" width="7%">
+                        Price <br />
+                        ราคา
+                    </td>
+                    <td colspan="5" width="33%">
+                        ปริมาณการใช้ต่อเดือน ( consumption per month )/(Kgs)
+                    </td>
+                </tr>
+                <tr>
+                    <td>D1</td>
+                    <td>D2</td>
+                    <td>D3</td>
+                    <td>D4</td>
+                    <td>D5</td>
+                </tr>
+                @if (@Model.isCompaire == 1)
+                {
+            <tr>
+                <td> <textarea class="form-control" type="text" asp-for="SupplierNameRef" readonly style="white-space:normal;display:block;"></textarea> </td>
+                <td> <textarea class="form-control" type="text" asp-for="ProductionSiteRef" readonly style="white-space:normal;display:block;"></textarea> </td>
+                <td> <label>@Model.ItemCodeRef</label> </td>
+                <td> <textarea class="form-control" type="text" asp-for="ItemNameRef" readonly style="white-space:normal;display:block;"></textarea> </td>
+                <td>
+                    <label>
+                        @if (Model.PriceRef.ToString().EndsWith(".00"))
+                        {
+                            @string.Format("{0:#,##0.##}", Model.PriceRef)
+                        }
+                        else
+                        {
+                            @string.Format("{0:#,##0.#0}", Model.PriceRef)
+                        }
+                    </label> <label>@Model.CurrencyCodeREF / @Model.PerUnitRef</label>
+                </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierRefD1',1);" asp-for="SupplierRefD1" id="SupplierRefD1" name="SupplierRefD1" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierRefD2',1);" asp-for="SupplierRefD2" id="SupplierRefD2" name="SupplierRefD2" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierRefD3',1);" asp-for="SupplierRefD3" id="SupplierRefD3" name="SupplierRefD3" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierRefD4',1);" asp-for="SupplierRefD4" id="SupplierRefD4" name="SupplierRefD4" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierRefD5',1);" asp-for="SupplierRefD5" id="SupplierRefD5" name="SupplierRefD5" autocomplete="off" /> </td>
+            </tr>
+                }
+            <tr>
+                <td> <textarea class="form-control" type="text" asp-for="SupplierName" readonly style="white-space:normal;display:block;"></textarea> </td>
+                <td> <textarea class="form-control" type="text" asp-for="ProductionSite" readonly style="white-space:normal;display:block;"></textarea> </td>
+                <td> <label>@Model.ItemCode</label> </td>
+                <td> <textarea class="form-control" type="text" asp-for="ItemName" readonly style="white-space:normal;display:block;"></textarea> </td>
+                <td>
+                    <label>
+                        @if (Model.Price.ToString().EndsWith(".00"))
+                        {
+                            @string.Format("{0:#,##0.##}", Model.Price)
+                        }
+                        else
+                        {
+                            @string.Format("{0:#,##0.#0}", Model.Price)
+                        }
+                    </label> <label>@Model.CurrencyCode / @Model.PerUnit</label>
+                </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierD1',0);" asp-for="SupplierD1" id="SupplierD1" name="SupplierD1" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierD2',0);" asp-for="SupplierD2" id="SupplierD2" name="SupplierD2" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierD3',0);" asp-for="SupplierD3" id="SupplierD3" name="SupplierD3" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierD4',0);" asp-for="SupplierD4" id="SupplierD4" name="SupplierD4" autocomplete="off" /> </td>
+                <td> <input class="form-control" type="text" onkeyup="this.value=calD(this.value,'SupplierD5',0);" asp-for="SupplierD5" id="SupplierD5" name="SupplierD5" autocomplete="off" /> </td>
+            </tr>
+                <tr>
+                    <td colspan="5" style="text-align:right;"> Month save cost (@Model.CurrencyCode) </td>
+                    <td colspan="5" style="text-align:left;">
+                        <input type="text" asp-for="MonthSaveCost" class="form-control" 
+                               onkeyup="this.value=addCommas(this.value);" autocomplete="off" asp-format="{0:#,##0.#0}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="text-align:right;"> Year save cost (@Model.CurrencyCode) </td>
+                    <td colspan="5" style="text-align:left;"> 
+                        <input class="form-control" type="text" asp-for="YearSaveCost" 
+                               autocomplete="off" onkeyup="this.value=addCommas(this.value);" asp-format="{0:#,##0.#0}" /> 
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="90%">
+                <tr>
+                    <td> <b>ความเร่งด่วน : <span class="text-danger font-weight-bold">*</span></b> </td>
+                    <td style="text-align:left;">
+                        <label for="DocRef5">
+                            <input type="checkbox" asp-for="DocRef5" id="DocRef5" name="DocRef5" class="checkbox2" />
+                            Urgent / High priority / เร่งด่วนมาก
+                        </label>
+                    </td>
+                    <td style="text-align:left;">
+                        <label for="DocRef6">
+                            <input type="checkbox" asp-for="DocRef6" id="DocRef6" name="DocRef6" class="checkbox2" />
+                            Medium / ปานกลาง
+                        </label>
+                    </td>
+                    <td style="text-align:left;">
+                        <label for="DocRef7">
+                            <input type="checkbox" asp-for="DocRef7" id="DocRef7" name="DocRef7" class="checkbox2" />
+                            Low / ต่ำ
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="hidden" class="form-control" asp-for="Urgent" id="Urgent" name="Urgent" readonly />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="90%">
+                <tr>
+                    <td width="15%" style="text-align:right;"> <b>เริ่มทดสอบ : <span class="text-danger font-weight-bold">*</span></b> </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isStartTestYes">
+                            <input type="radio" asp-for="isStartTest" id="isStartTestYes" name="isStartTest" value="1" class="radio2" />
+                            <b>Yes </b>
+                        </label>
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isStartTestNo">
+                            <input type="radio" asp-for="isStartTest" id="isStartTestNo" name="isStartTest" value="2" class="radio2" />
+                            <b>No </b>
+                        </label>
+                    </td>
+                    <td width="55%" style="text-align:left;">
+                        <input type="text" class="form-control" asp-for="isStartTestRemark" id="isStartTestRemark"
+                               name="isStartTestRemark" autocomplete="off" readonly />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table width="70%" align="center">
+                <tr>
+                    <td colspan="4" style="text-align:center;border: 1px solid black;"> Plant Code </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;border: 1px solid black;">D1/D2</td>
+                    <td style="text-align:center;border: 1px solid black;">D3</td>
+                    <td style="text-align:center;border: 1px solid black;">D4</td>
+                    <td style="text-align:center;border: 1px solid black;">D5</td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD1D2" id="PlantCodeD1D2" name="PlantCodeD1D2" autocomplete="off" />
+                    </td>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD3" id="PlantCodeD3" name="PlantCodeD3" autocomplete="off" />
+                    </td>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD4" id="PlantCodeD4" name="PlantCodeD4" autocomplete="off" />
+                    </td>
+                    <td style="text-align:center;border: 1px solid black;">
+                        <input class="form-control" type="text" asp-for="PlantCodeD5" id="PlantCodeD5" name="PlantCodeD5" autocomplete="off" />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>สิ่งที่ส่งมาด้วย</b>
+            <table width="80%" align="center">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef10">
+                            <input type="checkbox" asp-for="DocRef10" id="DocRef10" name="DocRef10" class="checkbox2" />
+                            Certificate of analysis
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef11">
+                            <input type="checkbox" asp-for="DocRef11" id="DocRef11" name="DocRef11" class="checkbox2" />
+                            Technical data sheet
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef12">
+                            <input type="checkbox" asp-for="DocRef12" id="DocRef12" name="DocRef12" class="checkbox2" />
+                            REACH  Compliance
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef13">
+                            <input type="checkbox" asp-for="DocRef13" id="DocRef13" name="DocRef13" class="checkbox2" />
+                            Technical information
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef14">
+                            <input type="checkbox" asp-for="DocRef14" id="DocRef14" name="DocRef14" class="checkbox2" />
+                            MSDS
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef15">
+                            <input type="checkbox" asp-for="DocRef15" id="DocRef15" name="DocRef15" class="checkbox2" />
+                            RoHs  Compliance
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef16">
+                            <input type="checkbox" asp-for="DocRef16" id="DocRef16" name="DocRef16" class="checkbox2" />
+                            อื่นๆ / Other
+                        </label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" asp-for="DocRef16_Desc" id="DocRef16_Desc"
+                               name="DocRef16_Desc" autocomplete="off" readonly />
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td colspan="2">
+                        <label for="Sample">
+                            <input type="checkbox" id="Sample" name="Sample" class="checkbox2" checked onclick="return false;" />
+                            <b> จำนวนที่ต้องการนำมาทดสอบ : </b>@Model.Qty @Model.Unit
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td colspan="2">
+                        <label for="Sample">
+                            <input type="checkbox" id="Sample2" name="Sample2" class="checkbox2" checked onclick="return false;" />
+                            <b> Plant ที่ต้องการทดสอบ  : </b>@Model.Dataarea
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>ผลกระทบประเมินผลกระทบด้านสิ่งแวดล้อม และผู้ปฎิบัติงาน / Ecology & Environmental impact (พิจารณาจาก MSDS)</b>
+            <table width="90%">
+                <tr>
+                    <td width="15%" style="text-align:right;">
+                        1. Ecotoxic / สิ่งแวดล้อม :
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isEcotoxicNo">
+                            <input type="radio" asp-for="isEcotoxic" id="isEcotoxicNo" name="isEcotoxic" value="2" class="radio2" disabled />
+                            No Effect / ไม่กระทบ
+                        </label>
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isEcotoxicYes">
+                            <input type="radio" asp-for="isEcotoxic" id="isEcotoxicYes" name="isEcotoxic" value="1" class="radio2" disabled />
+                            Effect / กระทบ
+                        </label>
+                    </td>
+                    <td width="55%" style="text-align:left;">
+                        <input type="text" class="form-control" asp-for="isEcotoxicRemark" id="isEcotoxicRemark"
+                               name="isEcotoxicRemark" autocomplete="off" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%" style="text-align:right;">
+                        2. Human Toxic / คน :
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isHumantoxicNo">
+                            <input type="radio" asp-for="isHumantoxic" id="isHumantoxicNo" name="isHumantoxic" value="2" class="radio2" disabled />
+                            No Effect / ไม่กระทบ
+                        </label>
+                    </td>
+                    <td width="15%" style="text-align:left;">
+                        <label for="isHumantoxicYes">
+                            <input type="radio" asp-for="isHumantoxic" id="isHumantoxicYes" name="isHumantoxic" value="1" class="radio2" disabled />
+                            Effect / กระทบ
+                        </label>
+                    </td>
+                    <td width="55%" style="text-align:left;">
+                        <input type="text" class="form-control" asp-for="isHumantoxicRemark" id="isHumantoxicRemark"
+                               name="isHumantoxicRemark" autocomplete="off" readonly />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>ความสอดคล้องด้านการรับรองระบบ ( พิจารณาจากการรับรองระบบต่างๆ )</b>
+            <table width="80%" align="center">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef21">
+                            <input type="checkbox" asp-for="DocRef21" id="DocRef21" name="DocRef21" class="checkbox2">
+                            ISO 9001
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef22">
+                            <input type="checkbox" asp-for="DocRef22" id="DocRef22" name="DocRef22" class="checkbox2">
+                            ISO 50001
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef23">
+                            <input type="checkbox" asp-for="DocRef23" id="DocRef23" name="DocRef23" class="checkbox2">
+                            IATF 16949
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef24">
+                            <input type="checkbox" asp-for="DocRef24" id="DocRef24" name="DocRef24" class="checkbox2">
+                            ISO 14001
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef25">
+                            <input type="checkbox" asp-for="DocRef25" id="DocRef25" name="DocRef25" class="checkbox2">
+                            ISO 45001
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef26">
+                            <input type="checkbox" asp-for="DocRef26" id="DocRef26" name="DocRef26" class="checkbox2">
+                            OHAS 18001
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef27">
+                            <input type="checkbox" asp-for="DocRef27" id="DocRef27" name="DocRef27" class="checkbox2">
+                            อื่น ๆ
+                        </label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" asp-for="DocRef27_Desc" id="DocRef27_Desc"
+                               name="DocRef27_Desc" autocomplete="off" readonly>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>RFQ <span class="text-danger font-weight-bold">*</span></b>
+            <br />
+            <table width="90%">
+                <tr>
+                    <td width="5%"></td>
+                    <td width="20%" style="text-align:left;">
+                        <label for="DocRef28">
+                            <input type="checkbox" asp-for="DocRef28" id="DocRef28" name="DocRef28" class="checkbox2" />
+                            Open
+                        </label>
+                    </td>
+                    <td width="20%" style="text-align:left;">
+                        <label for="DocRef29">
+                            <input type="checkbox" asp-for="DocRef29" id="DocRef29" name="DocRef29" class="checkbox2" />
+                            Close
+                        </label>
+                    </td>
+                    <td width="55%">
+                        <input type="hidden" class="form-control" asp-for="RFQ" id="RFQ" name="RFQ" readonly>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <b>File (จากหน้าเขียนใบ Request)</b>
+            <br />
+            <table id="gridViewFileUpload" style="text-align:left;" width="50%" class="table table-hover"></table>
+            <br />
+            <b>File (จากหน้าเขียนใบขอประเมินวัตถุดิบ)</b>
+            <br />
+            <table id="gridViewFileRMAssessmentUpload" style="text-align:left;" width="50%" class="table table-hover"></table>
+            <br />
+            <table width="60%" id="UploadTable" align="left">
+                <tr style="text-align: left;">
+                    <th>File Upload</th>
+                    <th>Delete</th>
+                </tr>
+                <tr style="text-align: left;" id="tablerow0">
+                    <td width="80%">
+                        <input type="file" id="f0" name="FileUpload" style="width:90%;" />
+                    </td>
+                    <td width="20%">
+                        <button type="button" class="btn btn-danger" id="b0" onclick="removeTr(0);"> ลบ </button>
+                    </td>
+                </tr>
+                <tr style="text-align: left;" id="tablerow1">
+                    <td width="80%">
+                        <input type="file" id="f1" name="FileUpload" style="width:90%;" />
+                    </td>
+                    <td width="20%">
+                        <button type="button" class="btn btn-danger" id="b1" onclick="removeTr(1);"> ลบ </button>
+                    </td>
+                </tr>
+            </table>
+            <table width="70%">
+                <tr>
+                    <td style="text-align:right;">
+                        <button type="button" class="btn btn-primary" id="add"><i class="fa fa-plus"> เพิ่มไฟล์ </i></button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-secondary mr-3" name="draft" value="draft" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-file"></i>
+                        Save Draft
+                    </button>
+                    <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                    <button type="reset" class="btn btn-danger">
+                        <i class="fa fa-times"></i>
+                        ยกเลิก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section scripts {
+    <script>
+
+        $(":radio[name=isStartTest]").on("change", function () {
+            var val = $(this).val();
+            if (val == "1") {
+                $("#isStartTestRemark").val("");
+                document.getElementById("isStartTestRemark").readOnly = true;
+            }
+            else {
+                $("#isStartTestRemark").val("");
+                document.getElementById("isStartTestRemark").readOnly = false;
+            }
+        });
+
+        $("#DataAreaID1").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                DataArea += "DSL,";
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            else {
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+
+            }
+
+            $("#Plant").val(DataArea.slice(0, -1));
+        });
+
+        $("#DataAreaID2").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                DataArea += "DRB,";
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            else {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            $("#Plant").val(DataArea.slice(0, -1));
+
+        });
+
+        $("#DataAreaID3").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                DataArea += "DSI,";
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+
+            }
+            else {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+
+            $("#Plant").val(DataArea.slice(0, -1));
+        });
+
+        $("#DataAreaID4").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                DataArea += "DSR,";
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            else {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("DataAreaID5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            $("#Plant").val(DataArea.slice(0, -1));
+
+        });
+
+        $("#DataAreaID5").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                DataArea += "STR,";
+            }
+            else {
+                if (document.getElementById("DataAreaID1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("DataAreaID2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("DataAreaID3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("DataAreaID4").checked == true) {
+                    DataArea += "DSR,";
+                }
+            }
+            $("#Plant").val(DataArea.slice(0, -1));
+        });
+
+        $("#DocRef1").change(function () {
+            var Reson = "";
+            if (this.checked) {
+                Reson += "1";
+            }
+            if (document.getElementById("DocRef2").checked == true) {
+                Reson += "2";
+            }
+            if (document.getElementById("DocRef3").checked == true) {
+                Reson += "3";
+            }
+            if (document.getElementById("DocRef4").checked == true) {
+                Reson += "4";
+            }
+            $("#ReasonOfEvaluation").val(Reson);
+        });
+
+        $("#DocRef2").change(function () {
+            var Reson = "";
+            if (this.checked) {
+                Reson += "2";
+            }
+            if (document.getElementById("DocRef1").checked == true) {
+                Reson += "1";
+            }
+            if (document.getElementById("DocRef3").checked == true) {
+                Reson += "3";
+            }
+            if (document.getElementById("DocRef4").checked == true) {
+                Reson += "4";
+            }
+            $("#ReasonOfEvaluation").val(Reson);
+        });
+
+        $("#DocRef3").change(function () {
+            var Reson = "";
+            if (this.checked) {
+                Reson += "3";
+            }
+            if (document.getElementById("DocRef2").checked == true) {
+                Reson += "2";
+            }
+            if (document.getElementById("DocRef1").checked == true) {
+                Reson += "1";
+            }
+            if (document.getElementById("DocRef4").checked == true) {
+                Reson += "4";
+            }
+            $("#ReasonOfEvaluation").val(Reson);
+        });
+
+        $("#DocRef4").change(function () {
+            var Reson = "";
+            if (this.checked) {
+                Reson += "4";
+                document.getElementById("DocRef4_Desc").readOnly = false;
+                $("#DocRef4_Desc").val("");
+            }
+            else {
+                document.getElementById("DocRef4_Desc").readOnly = true;
+                $("#DocRef4_Desc").val("");
+            }
+
+            if (document.getElementById("DocRef2").checked == true) {
+                Reson += "2";
+            }
+            if (document.getElementById("DocRef3").checked == true) {
+                Reson += "3";
+            }
+            if (document.getElementById("DocRef1").checked == true) {
+                Reson += "1";
+            }
+            $("#ReasonOfEvaluation").val(Reson);
+        });
+
+        $("#DocRef5").change(function () {
+            if (this.checked) {
+                document.getElementById("DocRef6").checked = false;
+                document.getElementById("DocRef7").checked = false;
+                $("#Urgent").val("5");
+            }
+            else {
+                document.getElementById("DocRef6").checked = false;
+                document.getElementById("DocRef7").checked = false;
+                $("#Urgent").val("");
+            }
+        });
+
+        $("#DocRef6").change(function () {
+            if (this.checked) {
+                document.getElementById("DocRef5").checked = false;
+                document.getElementById("DocRef7").checked = false;
+                $("#Urgent").val("6");
+            }
+            else {
+                document.getElementById("DocRef5").checked = false;
+                document.getElementById("DocRef7").checked = false;
+                $("#Urgent").val("");
+            }
+        });
+
+        $("#DocRef7").change(function () {
+            if (this.checked) {
+                document.getElementById("DocRef5").checked = false;
+                document.getElementById("DocRef6").checked = false;
+                $("#Urgent").val("7");
+            }
+            else {
+                document.getElementById("DocRef5").checked = false;
+                document.getElementById("DocRef6").checked = false;
+                $("#Urgent").val("");
+            }
+        });
+
+        $("#DocRef16").change(function () {
+            if (this.checked) {
+                document.getElementById("DocRef16_Desc").readOnly = false;
+                $("#DocRef16_Desc").val("");
+            }
+            else {
+                document.getElementById("DocRef16_Desc").readOnly = true;
+                $("#DocRef16_Desc").val("");
+            }
+        });
+
+        $("#DocRef27").change(function () {
+            if (this.checked) {
+                document.getElementById("DocRef27_Desc").readOnly = false;
+                $("#DocRef27_Desc").val("");
+            }
+            else {
+                document.getElementById("DocRef27_Desc").readOnly = true;
+                $("#DocRef27_Desc").val("");
+            }
+        });
+
+        $("#DocRef28").change(function () {
+            if (this.checked) {
+                document.getElementById("DocRef29").checked = false;
+                $("#RFQ").val("28");
+            }
+            else {
+                document.getElementById("DocRef29").checked = false;
+                $("#RFQ").val("");
+            }
+        });
+
+        $("#DocRef29").change(function () {
+            if (this.checked) {
+                document.getElementById("DocRef28").checked = false;
+                $("#RFQ").val("29");
+            }
+            else {
+                document.getElementById("DocRef28").checked = false;
+                $("#RFQ").val("");
+            }
+        });
+
+        $(document).ready(function () {
+
+            var gridViewFileUpload = "#gridViewFileUpload";
+
+            $(gridViewFileUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Purchase/RMAssessment/@Model.RequestId/Create?handler=GridViewFileUpload&PCRequestID=@Model.RequestId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/Purchase/RMAssessment/@Model.RequestId/Create?handler=DownloadFileUpload&PCRequestID=@Model.RequestId&Fileid=" + row.id, "fa fa-download", "<span> Download </span>");
+                         }
+                    }
+                ]
+            });
+
+            var gridViewFileRMAssessmentUpload = "#gridViewFileRMAssessmentUpload";
+
+            var dtViewFileRMAssessmentUpload = $(gridViewFileRMAssessmentUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Purchase/RMAssessment/@Model.AssessmentId/ViewInfo?handler=GridViewRMAssessmentFileUpload&AssessmentID=@Model.AssessmentId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null },
+                    { title: "Delete", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/Purchase/RMAssessment/@Model.AssessmentId/ViewInfo?handler=DownloadFileRMAssessmentUpload&AssessmentID=@Model.AssessmentId&Fileid=" + row.id +"&RequestID=" + @Model.RequestId, "fa fa-download", "<span> Download </span>");
+                         }
+                    },
+                    {
+                        targets: 3,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += "<button type='button' class='btn btn-danger' onclick='return del(" + row.id + ")'><i class='fa fa-close'></i></button>";
+                            return link;
+                        }
+                    }
+                ]
+            });
+        });
+
+        var counter = 2;
+        $("#add").click(function () {
+
+            $('<tr style="text-align: left;" id="tablerow' + counter + '">' +
+                '<td width="80%">' +
+                '<input type="file" id="f' + counter + '" name="FileUpload" style="width:90%;" />' +
+                '</td>' +
+                '<td>' +
+                '<button type="button" class="btn btn-danger" id="b' + counter + '" onclick="removeTr(' + counter + ');"> ลบ </button>' +
+                '</td>' +
+                '</tr>'
+            ).appendTo('#UploadTable');
+
+            counter++;
+
+            return false;
+        });
+
+        function removeTr(index) {
+            if (counter > 1) {
+                $('#tablerow' + index).remove();
+                counter--;
+            }
+            return false;
+        }
+
+        function del(id) {
+
+            $.ajax({
+                url: "/S2E/Purchase/RMAssessment/@Model.AssessmentId/Edit?handler=DelelteFile&Fileid=" + id,
+                type: "get"
+            }).done(function (data) {
+                if (data == true) {
+                    reloadGrid(gridViewFileRMAssessmentUpload);
+                }
+            });
+
+            return false;
+
+        }
+
+        $("#form_submit").submit(function (e) {
+
+            if ($("#Plant").val() == "" ||
+                $("#Section").val() == "" ||
+                $("#MaterialGroup").val() == "" ||
+                $("#MaterialName").val() == "" ||
+                $("#ItemGroup").val() == "" ||
+                $("#ReasonOfEvaluation").val() == "" ||
+                $("#Urgent").val() == "" ||
+                $("#isStartTest").val() == "" ||
+                $("#isStartTest").val() == 0 ||
+                $("#RFQ").val() == ""
+               )
+            {
+                alert("กรุณาใส่ข้อมูลที่มี * ให้ครบ");
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btn_submit').html("Submit...");
+        });
+
+        function addCommas(Num) {
+            if (event.key == "1" || event.key == "2" || event.key == "3" || event.key == "4" ||
+                event.key == "5" || event.key == "6" || event.key == "7" || event.key == "8" ||
+                event.key == "9" || event.key == "0" || event.key == "." ||
+                event.key == "Backspace" || event.key == "Tab" || event.key == "Delete" ||
+                event.key == "Del" || event.key == "ArrowUp" || event.key == "ArrowLeft" ||
+                event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "Up" ||
+                event.key == "Left" || event.key == "Down" || event.key == "Right")
+            {
+                Num += '';
+                Num = Num.replace(/,/g, '');
+
+                x = Num.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1))
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                return x1 + x2;
+            }
+            else {
+                alert("ใส่ได้เฉพาะตัวเลข");
+                return "";
+            }
+        }
+
+        $("#DepartmentID").on("change", function () {
+            var DeptID = $("#DepartmentID").val();
+
+             $.ajax({
+                 url: "/S2E/Purchase/RMAssessment/@Model.AssessmentId/Edit?handler=DepartmentISRemark&DeptID=" + DeptID,
+                type: "get"
+             }).done(function (data)
+             {
+                if (data == true) {
+                    document.getElementById("DepartmentRemark").readOnly = false;
+                    $("#DepartmentRemark").val("");
+                    DepIsRemark = 1;
+                }
+                else {
+                    document.getElementById("DepartmentRemark").readOnly = true;
+                    $("#DepartmentRemark").val("");
+                    DepIsRemark = 0;
+                }
+             });
+        });
+
+        function calD(Num ,id, isref)
+        {
+            if (event.key == "1" || event.key == "2" || event.key == "3" || event.key == "4" ||
+                event.key == "5" || event.key == "6" || event.key == "7" || event.key == "8" ||
+                event.key == "9" || event.key == "0" || event.key == "." ||
+                event.key == "Backspace" || event.key == "Tab" || event.key == "Delete" ||
+                event.key == "Del" || event.key == "ArrowUp" || event.key == "ArrowLeft" ||
+                event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "Up" ||
+                event.key == "Left" || event.key == "Down" || event.key == "Right")
+            {
+                Num += '';
+                Num = Num.replace(/,/g, '');
+
+                x = Num.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1))
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+
+                x = x1 + x2;
+
+                var monthval = 0;
+                var yearval = 0;
+
+                var d1 = 0, d2 = 0, d3 = 0, d4 = 0, d5 = 0;
+                var pricecal = 0, totald = 0;
+
+                if (@Model.isCompaire === 1)
+                {
+                    if (isref === 1) {
+                        if (id === "SupplierRefD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierRefD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierRefD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierRefD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierRefD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+                    else {
+                        if (id === "SupplierD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+
+                    if (@Model.Price === 0) {
+                        monthval = 0;
+                        yearval = 0;
+                    }
+                    else
+                    {
+                        d1 = document.getElementById("SupplierD1").value.replace(",", "");
+                        d2 = document.getElementById("SupplierD2").value.replace(",", "");
+                        d3 = document.getElementById("SupplierD3").value.replace(",", "");
+                        d4 = document.getElementById("SupplierD4").value.replace(",", "");
+                        d5 = document.getElementById("SupplierD5").value.replace(",", "");
+
+                        pricecal = @Model.PriceRef - @Model.Price;
+                        totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                        monthval = totald * pricecal;
+                        yearval = monthval * 12;
+
+                    }
+
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+                }
+                else
+                {
+                    d1 = document.getElementById("SupplierD1").value.value.replace(",", "");
+                    d2 = document.getElementById("SupplierD2").value.value.replace(",", "");
+                    d3 = document.getElementById("SupplierD3").value.value.replace(",", "");
+                    d4 = document.getElementById("SupplierD4").value.value.replace(",", "");
+                    d5 = document.getElementById("SupplierD5").value.value.replace(",", "");
+
+                    pricecal = @Model.Price;
+                    totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                    monthval = totald * pricecal;
+                    yearval = monthval * 12;
+
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+
+                }
+
+                if (x1 + x2 === "") {
+                    return 0;
+                }
+                else {
+                    return x1 + x2;
+                }
+
+            }
+            else {
+
+                alert("ใส่ได้เฉพาะตัวเลข");
+                x = 0;
+
+                var monthval = 0;
+                var yearval = 0;
+
+                var d1 = 0, d2 = 0, d3 = 0, d4 = 0, d5 = 0;
+                var pricecal = 0, totald = 0;
+
+                if (@Model.isCompaire === 1)
+                {
+                    if (isref === 1) {
+                        if (id === "SupplierRefD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierRefD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierRefD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierRefD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierRefD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+                    else {
+                        if (id === "SupplierD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+
+                    if (@Model.Price === 0) {
+                        monthval = 0;
+                        yearval = 0;
+                    }
+                    else
+                    {
+                        d1 = document.getElementById("SupplierD1").value.value.replace(",", "");
+                        d2 = document.getElementById("SupplierD2").value.value.replace(",", "");
+                        d3 = document.getElementById("SupplierD3").value.value.replace(",", "");
+                        d4 = document.getElementById("SupplierD4").value.value.replace(",", "");
+                        d5 = document.getElementById("SupplierD5").value.value.replace(",", "");
+
+                        pricecal = @Model.PriceRef - @Model.Price;
+                        totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                        monthval = totald * pricecal;
+                        yearval = monthval * 12;
+                    }
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+                }
+                else
+                {
+                    if (id === "SupplierD1") {
+                        $("#SupplierD1").val(x);
+                    }
+                    if (id === "SupplierD2") {
+                        $("#SupplierD2").val(x);
+                    }
+                    if (id === "SupplierD3") {
+                        $("#SupplierD3").val(x);
+                    }
+                    if (id === "SupplierD4") {
+                        $("#SupplierD4").val(x);
+                    }
+                    if (id === "SupplierD5") {
+                        $("#SupplierD5").val(x);
+                    }
+
+                    d1 = document.getElementById("SupplierD1").value.value.replace(",", "");
+                    d2 = document.getElementById("SupplierD2").value.value.replace(",", "");
+                    d3 = document.getElementById("SupplierD3").value.value.replace(",", "");
+                    d4 = document.getElementById("SupplierD4").value.value.replace(",", "");
+                    d5 = document.getElementById("SupplierD5").value.value.replace(",", "");
+
+                    pricecal = @Model.Price;
+                    totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                    monthval = totald * pricecal;
+                    yearval = monthval * 12;
+
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+
+                }
+
+                return 0;
+            }
+        }
+
+        @*function calD(Num ,id, isref)
+        {
+            if (event.key == "1" || event.key == "2" || event.key == "3" || event.key == "4" ||
+                event.key == "5" || event.key == "6" || event.key == "7" || event.key == "8" ||
+                event.key == "9" || event.key == "0" || event.key == "." ||
+                event.key == "Backspace" || event.key == "Tab" || event.key == "Delete" ||
+                event.key == "Del" || event.key == "ArrowUp" || event.key == "ArrowLeft" ||
+                event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "Up" ||
+                event.key == "Left" || event.key == "Down" || event.key == "Right")
+            {
+                Num += '';
+                Num = Num.replace(/,/g, '');
+                x = Num.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1))
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+
+                x = x1 + x2;
+
+                var monthval = 0;
+                var yearval = 0;
+
+                var d1 = 0, d2 = 0, d3 = 0, d4 = 0, d5 = 0;
+                var pricecal = 0, totald = 0;
+
+                if (@Model.isCompaire === 1)
+                {
+                    if (isref === 1) {
+                        if (id === "SupplierRefD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierRefD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierRefD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierRefD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierRefD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+                    else {
+                        if (id === "SupplierD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+
+                    if (@Model.Price === 0) {
+                        monthval = 0;
+                        yearval = 0;
+                    }
+                    else
+                    {
+                        d1 = document.getElementById("SupplierD1").value.value.replace(",", "");
+                        d2 = document.getElementById("SupplierD2").value.value.replace(",", "");
+                        d3 = document.getElementById("SupplierD3").value.value.replace(",", "");
+                        d4 = document.getElementById("SupplierD4").value.value.replace(",", "");
+                        d5 = document.getElementById("SupplierD5").value.value.replace(",", "");
+
+                        pricecal = @Model.PriceRef - @Model.Price;
+                        totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                        monthval = totald * pricecal;
+                        yearval = monthval * 12;
+                    }
+
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+                }
+                else
+                {
+                    d1 = document.getElementById("SupplierD1").value.value.replace(",", "");
+                    d2 = document.getElementById("SupplierD2").value.value.replace(",", "");
+                    d3 = document.getElementById("SupplierD3").value.value.replace(",", "");
+                    d4 = document.getElementById("SupplierD4").value.value.replace(",", "");
+                    d5 = document.getElementById("SupplierD5").value.value.replace(",", "");
+
+                    pricecal = @Model.Price;
+                    totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                    monthval = totald * pricecal;
+                    yearval = monthval * 12;
+
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+
+                }
+
+                if (x1 + x2 === "") {
+                    return 0;
+                }
+                else {
+                    return x1 + x2;
+                }
+
+            }
+            else {
+
+                alert("ใส่ได้เฉพาะตัวเลข");
+                x = 0;
+
+                var monthval = 0;
+                var yearval = 0;
+
+                var d1 = 0, d2 = 0, d3 = 0, d4 = 0, d5 = 0;
+                var pricecal = 0, totald = 0;
+
+                if (@Model.isCompaire === 1)
+                {
+                    if (isref === 1) {
+                        if (id === "SupplierRefD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierRefD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierRefD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierRefD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierRefD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+                    else {
+                        if (id === "SupplierD1") {
+                            $("#SupplierD1").val(x);
+                        }
+                        if (id === "SupplierD2") {
+                            $("#SupplierD2").val(x);
+                        }
+                        if (id === "SupplierD3") {
+                            $("#SupplierD3").val(x);
+                        }
+                        if (id === "SupplierD4") {
+                            $("#SupplierD4").val(x);
+                        }
+                        if (id === "SupplierD5") {
+                            $("#SupplierD5").val(x);
+                        }
+                    }
+
+                    if (@Model.Price === 0) {
+                        monthval = 0;
+                        yearval = 0;
+                    }
+                    else
+                    {
+                        d1 = document.getElementById("SupplierD1").value.value.replace(",", "");
+                        d2 = document.getElementById("SupplierD2").value.value.replace(",", "");
+                        d3 = document.getElementById("SupplierD3").value.value.replace(",", "");
+                        d4 = document.getElementById("SupplierD4").value.value.replace(",", "");
+                        d5 = document.getElementById("SupplierD5").value.value.replace(",", "");
+
+                        pricecal = @Model.PriceRef - @Model.Price;
+                        totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                        monthval = totald * pricecal;
+                        yearval = monthval * 12;
+                    }
+
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+                }
+                else
+                {
+                    if (id === "SupplierD1") {
+                        $("#SupplierD1").val(x);
+                    }
+                    if (id === "SupplierD2") {
+                        $("#SupplierD2").val(x);
+                    }
+                    if (id === "SupplierD3") {
+                        $("#SupplierD3").val(x);
+                    }
+                    if (id === "SupplierD4") {
+                        $("#SupplierD4").val(x);
+                    }
+                    if (id === "SupplierD5") {
+                        $("#SupplierD5").val(x);
+                    }
+
+                    d1 = document.getElementById("SupplierD1").value.value.replace(",", "");
+                    d2 = document.getElementById("SupplierD2").value.value.replace(",", "");
+                    d3 = document.getElementById("SupplierD3").value.value.replace(",", "");
+                    d4 = document.getElementById("SupplierD4").value.value.replace(",", "");
+                    d5 = document.getElementById("SupplierD5").value.value.replace(",", "");
+
+                    pricecal = @Model.Price;
+                    totald = Number(d1) + Number(d2) + Number(d3) + Number(d4) + Number(d5);
+
+                    monthval = totald * pricecal;
+                    yearval = monthval * 12;
+
+                    monthval = Number((monthval * 100).toString().match(/^\d+/) / 100);
+                    yearval = Number((yearval * 100).toString().match(/^\d+/) / 100);
+
+                    $("#MonthSaveCost").val(monthval.toLocaleString("en-US"));
+                    $("#YearSaveCost").val(yearval.toLocaleString("en-US"));
+
+                }
+
+                return 0;
+            }
+        }*@
+
+
+    </script>
+}

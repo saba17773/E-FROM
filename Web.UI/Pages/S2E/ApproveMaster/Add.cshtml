@@ -1,0 +1,54 @@
+﻿@page
+@model Web.UI.Pages.S2E.ApproveMaster.AddModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Add New Approve Master";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Approve Master", Link = "/S2E/ApproveMaster" },
+        new BreadcrumbModel { Text = "Add New Approve Master" }
+    };
+}
+    <div class="card">
+        <div class="card-header">
+            Add
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveMaster.GroupDescription">Name</label>
+                            <input type="text" asp-for="ApproveMaster.GroupDescription" class="form-control" autocomplete="off" />
+                            <span class="text-danger" asp-validation-for="ApproveMaster.GroupDescription"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveMaster.IsActive">Is Active?</label>
+                            <select asp-for="ApproveMaster.IsActive" class="form-control">
+                                <option value="1">Enable</option>
+                                <option value="0">Disable</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="ApproveMaster.IsActive"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-check"></i>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>

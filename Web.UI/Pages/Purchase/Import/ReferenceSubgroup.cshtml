@@ -1,0 +1,126 @@
+﻿@page
+@model Web.UI.Pages.Purchase.Import.ReferenceSubgroupModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Reference Subgroup";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Import", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Reference Subgroup" }
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Reference Subgroup</h1>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data">
+        <table width="90%" id="SubGroupRefTable">
+            <tr>
+                <th>SubGroup ID</th>
+                <th>Reference SubGroup ID</th>
+                <th>Group ID</th>
+            </tr>
+            <tr id="tablerow0">
+                <td width="30%">
+                    <select class="form-control" name="SubGroupID" id="0" style="width:80%;" asp-items="Model.SubGroupIDMaster">
+                        <option value="">--- SELECT ---</option>
+                    </select>
+                </td>
+                <td width="30%">
+                    <input type="text" class="form-control" id="R0" name="RefSubGroupID" style="width:80%;" maxlength="20" autocomplete="off">
+                </td>
+                <td width="30%">
+                    <input type="text" class="form-control" id="G0"  name="GroupID" style="width:80%;" maxlength="50" autocomplete="off">
+                </td>
+            </tr>
+            <tr id="tablerow1">
+                <td width="30%">
+                    <select class="form-control" name="SubGroupID" id="1" style="width:80%;" asp-items="Model.SubGroupIDMaster">
+                        <option value="">--- SELECT ---</option>
+                    </select>
+                </td>
+                <td width="30%">
+                    <input type="text" class="form-control" id="R1" name="RefSubGroupID" style="width:80%;" maxlength="20" autocomplete="off">
+                </td>
+                <td width="30%">
+                    <input type="text" class="form-control" id="G1"  name="GroupID" style="width:80%;" maxlength="50" autocomplete="off">
+                </td>
+            </tr>
+            <tr id="tablerow2">
+                <td width="30%">
+                    <select class="form-control" name="SubGroupID" id="2" style="width:80%;" asp-items="Model.SubGroupIDMaster">
+                        <option value="">--- SELECT ---</option>
+                    </select>
+                </td>
+                <td width="30%">
+                    <input type="text" class="form-control" id="R2" name="RefSubGroupID" style="width:80%;" maxlength="20" autocomplete="off">
+                </td>
+                <td width="30%">
+                    <input type="text" class="form-control" id="G2"  name="GroupID" style="width:80%;" maxlength="50" autocomplete="off">
+                </td>
+            </tr>
+        </table>
+        <table width="90%">
+            <tr>
+                <td style="text-align:right;">
+                    <button type="button" class="btn btn-outline-secondary" id="add" ><i class="fa fa-plus"></i></button>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@section scripts {
+    <script>
+
+        var counter = 3; 
+
+        $("#add").click(function ()
+        {
+
+            $('<tr id="tablerow' + counter + '">' +
+                '<td>' +
+                '<select class="form-control" id="' + counter +'" name="SubGroupID" style="width:80%;" >'+
+                       ' <option value="">--- SELECT ---</option>'+
+                    '</select >' +
+                '</td>' +
+                '<td>' +
+                    '<input type="text" class="form-control" id="R' + counter +'" name="RefSubGroupID"  style="width:80%;" maxlength="20" autocomplete="off">' +
+                '</td>' +
+                '<td>' +
+                    '<input type="text" class="form-control" id="G' + counter +'" name="GroupID" style="width:80%;" maxlength="50" autocomplete="off">' +
+                '</td>' +
+                '</tr>').appendTo('#SubGroupRefTable');
+
+            $.ajax({
+                url: "/Purchase/Import/ReferenceSubgroup?handler=SubGroupID2",
+                type: "get"
+            }).done(function (data)
+            {
+                //console.log(data);
+                $("select[id=" + counter + "]").html("<option value=''>--- SELECT ---</option>");
+
+                $.each(data, function (i, v) {
+                    $("select[id=" + counter + "]").append("<option value='" + v.DSGSUBGROUPID + "'>" + v.DSGSUBGROUPID + "</option>");
+                });
+                counter++;
+            });
+
+            return false;
+        });
+
+    </script>
+}

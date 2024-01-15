@@ -1,0 +1,149 @@
+﻿@page
+@model Web.UI.Pages.S2E.Purchase.AddRawMaterial.MainModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "หน้าหลักใบร้องขอเพิ่มวัตถุดิบเข้าระบบ";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "หน้าหลักใบร้องขอเพิ่มวัตถุดิบเข้าระบบ" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>หน้าหลักใบร้องขอเพิ่มวัตถุดิบเข้าระบบ</h3>
+</div>
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Purchase/AddRawMaterial/Main?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST NO", data: "projectrefno" },
+                    { title: "VENDOR ID", data: "vendorid" },
+                    { title: "SUPPLIER NAME", data: "suppliername" },
+                    { title: "Request By", data: "requestby" },
+                    { title: "สั่งซื้อเพิ่มหรือไม่ ?", data: "ispurchasesample" },
+                    { title: "Status", data: "pcsamplestatus" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("Yes", "success", "fa fa-check") : showBadge("No", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            if (row.pcsamplestatus === 5 && row.addrmapprovestatus === 0 && row.isaddmore === 0) {
+                                return "<span class='badge badge-warning'>Waiting Add Raw Material</span>";
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 3 && (row.isaddmore === 0 || row.isaddmore === 1)) {
+                                return "<span class='badge badge-info'>Wait For Approve<span>";
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 9 && (row.isaddmore === 0 || row.isaddmore === 1)) {
+                                return "<span class='badge badge-danger'>More Detail</span>";
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 8 && row.isaddmore === 0) {
+                                return "<span class='badge badge-secondary'>Draft</span>";
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 5 && row.isaddmore === 0) {
+                                return "<span class='badge badge-primary'>Complete</span>";
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 7 && row.isaddmore === 0) {
+                                return "<span class='badge badge-success'>Successfully</span>";
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 7 && row.isaddmore === 1) {
+                                return "<span class='badge badge-info'>Wait Add More Raw Material</span>";
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 8 && row.isaddmore === 1) {
+                                return "<span class='badge badge-secondary'>Draft</span>";
+                            }
+                        }
+                    },
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            var link = "";
+                            if (row.pcsamplestatus === 5 && row.addrmapprovestatus === 0 && row.isaddmore === 0) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.pcsampleid + "/Create", "fa fa-plus", "Add Raw Material");
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 3 && (row.isaddmore === 0 || row.isaddmore === 1)) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/" + row.approvegroupid + "/" + row.addrmapprovestatus + "/" + row.addrmlineid + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/ViewInfo", "fa fa-eye", "View");
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 9 && (row.isaddmore === 0 || row.isaddmore === 1)) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/" + row.approvegroupid + "/" + row.addrmapprovestatus + "/" + row.addrmlineid + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/ViewInfo", "fa fa-eye", "View");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/Edit", "fa fa-pencil-square-o", "Edit");
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 8 && row.isaddmore === 0) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/" + row.approvegroupid + "/" + row.addrmapprovestatus + "/" + row.addrmlineid + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/ViewInfo", "fa fa-eye", "View");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/Edit", "fa fa-pencil-square-o", "Edit");
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 5 && row.isaddmore === 0) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/" + row.approvegroupid + "/" + row.addrmapprovestatus + "/" + row.addrmlineid + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/ViewInfo", "fa fa-eye", "View");
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 7 && row.isaddmore === 1) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/AddMore", "fa fa-plus", "Add More Raw Material");
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 8 && row.isaddmore === 1) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/" + row.approvegroupid + "/" + row.addrmapprovestatus + "/" + row.addrmlineid + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/ViewInfo", "fa fa-eye", "View");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/Edit", "fa fa-pencil-square-o", "Edit");
+                            }
+                            if (row.pcsamplestatus === 7 && row.addrmapprovestatus === 7 && row.isaddmore === 0) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/" + row.approvegroupid + "/" + row.addrmapprovestatus + "/" + row.addrmlineid + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterial/" + row.addrmid + "/ViewInfo", "fa fa-eye", "View");
+                            }
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

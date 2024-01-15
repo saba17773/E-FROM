@@ -1,0 +1,89 @@
+﻿@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/home" class="brand-link text-center">
+        <div class="brand-text">
+            <img src="/images/header_logo.png" width="150" alt="Deestone" />
+        </div>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @if (await authService.CanDisplay(nameof(CovidTrackerPermission.PROJECT_COVID_TRACKER)))
+                    {
+                        <li class="nav-header">COVID-19 Tracker</li>
+
+                        @*<li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-users"></i>
+                                    <p>
+                                        พนักงาน
+                                    </p>
+                                </a>
+                            </li>*@
+
+                        <li class="nav-item">
+                            <a href="/CovidTracker/VaccineInjection" class="nav-link">
+                                <i class="nav-icon fas fa-syringe"></i>
+                                <p>
+                                    ฉีดวัคซีน/จองวัคซีน
+                                </p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="http://report.deestonegrp.com/Reports/Pages/Report.aspx?ItemPath=%2fEnterprise+Application%2fCovid+Tracker%2fVaccine+Injection+Summary" class="nav-link" target="_blank">
+                                <i class="nav-icon fas fa-file"></i>
+                                <p>
+                                    รายงาน
+                                </p>
+                            </a>
+
+                        </li>
+
+                        @*<li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-house-user"></i>
+                                    <p>
+                                        Work From Home
+                                    </p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-disease"></i>
+                                    <p>
+                                        พนักงานติด COVID
+                                    </p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-ban"></i>
+                                    <p>
+                                        พนักงานติดกักตัว
+                                    </p>
+                                </a>
+                            </li>*@
+                    }
+                }
+
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>

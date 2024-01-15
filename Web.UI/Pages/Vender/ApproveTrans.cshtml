@@ -1,0 +1,135 @@
+﻿@page "/Vender/{id}/ApproveTrans"
+@model Web.UI.Pages.Vender.ApproveTransModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Vendor Approve Transaction";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "AVMS", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Vendor", Link = "/Vender" },
+        new BreadcrumbModel { Text = "Vendor Approve Transaction" }
+    };
+}
+<div class="card">
+    <div class="card-header">
+        Approve Transaction
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridApproveTrans" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        var gridApproveTrans = "#gridApproveTrans";
+
+        var dtApproveTrans = $(gridApproveTrans).DataTable({
+            serverSide: false,
+            processing: false,
+            destroy: true,
+            responsive: false,
+            ajax: {
+                url: "/Vender/@Model.RequestID/ApproveTrans?handler=Grid&id=@Model.RequestID",
+                type: "post",
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                }
+            },
+            initComplete: function () {
+                $('.dataTables_filter input').unbind();
+                $('.dataTables_filter input').on("keyup", function (e) {
+                    if (e.keyCode == 13) {
+                        dtApproveTrans.search($(this).val()).draw();
+                    }
+                });
+            },
+            columns: [
+                { title: "APPROVEMASTERID", data: "approvemasterid" },
+                { title: "Vendor Type", data: "description" },
+                { title: "Level", data: "approvelevel" },
+                { title: "Email", data: "email" },
+                @*{ title: "Remark", data: "remark" },*@
+                { title: "Status", data: "isdone"},
+                { title: "Send Email Date", data: "sendemaildate" },
+                { title: "Approve Date", data: "approvedate" },
+                { title: "Reject Date", data: "rejectdate" },
+                { title: "Resend Email", data: null },
+                { title: "Remark", data: "remark" }
+
+            ],
+            columnDefs: [
+                {
+                    targets:0,
+                    visible: false
+                },
+                {
+                    targets: 1,
+                    render: function (data, type, row) {
+                        if (row.description == 'Vendor Sample') {
+                            return "<span class='badge badge-light'>" + row.description + "</span>";
+                        }
+                        else if (row.description == 'Release') {
+                            return "<span class='badge badge-dark'>" + row.description + "</span>";
+                        }
+                        else if (row.description == 'Vendor Normal') {
+                            return "<span class='badge badge-light'>" + row.description + "</span>";
+                        }
+                        else if (row.description == 'Revise') {
+                            return "<span class='badge badge-info'>" + row.description + "</span>";
+                        }
+                        else if (row.description == 'InActive') {
+                            return "<span class='badge badge-danger'>" + row.description + "</span>";
+                        }
+                        else if (row.description == 'Active') {
+                            return "<span class='badge badge-success'>" + row.description + "</span>";
+                        }
+
+                        @*else {
+                            return "<span class='badge badge-secondary'>" + row.description + "</span>";
+                        }*@
+                    }
+                },
+                {
+                    targets: 4,
+                    render: function (data, type, row) {
+                        if (data === 0 &&
+                            row.sendemaildate === null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-danger'>ยังไม่ได้ดำเนินการ</span>";
+                        } else if (data === 1) {
+                            return "<span class='badge badge-success'>ดำเนินการแล้ว</span>";
+                        } else if (data === 0 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-warning'>รอดำเนินการ</span>";
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 8,
+                    //visible : false,
+                    render: function (data, type, row) {
+
+                        var link = "";
+                        if (row.isdone === 0 && row.sendemaildate !== null &&
+                            row.approvedate === null && row.rejectdate === null)
+                         {
+
+                            link += actionResend("/Vender/@Model.RequestID/ApproveTrans?handler=ResendEmail&TranID=" + row.id, "fa fa-retweet", "<span> Resend Email </span>" );
+
+                         }
+                        return link ;
+
+                    }
+                }
+            ]
+        });
+    });
+    </script>
+}

@@ -1,0 +1,26 @@
+﻿@page
+@model Web.UI.Pages.Purchase.Import.StockACCModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "KPI Stock Acc";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Import", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Import KPI Stock Acc" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        KPI Stock Acc
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="TemplateUpload" />
+
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>

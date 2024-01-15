@@ -1,0 +1,342 @@
+﻿@page
+@model Web.UI.Pages.Queing.Master.Role.IndexModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Role & Permission";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Queing", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Role & Permission" }
+    };
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .table_modal {
+        padding: 5px;
+        width: 100%;
+        text-align: right;
+    }
+
+        .table_modal tr {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <div class="card mb-3">
+        <div class="card-header">
+            <span>Role & Permission</span>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <button class="btn btn-outline-primary" id="btnAddRole">
+                    <i class="fa fa-user-plus"></i>
+                    Add New Role
+                </button>
+            </div>
+            <form method="post">
+                <table id="gridRole" width="100%" class="table table-hover"></table>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Modal Add Role*@
+<div class="modal" tabindex="-1" id="modalAddRole">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="form_add">
+                    <div class="form-group row">
+                        <label for="txtAddRole" class="col-sm-2 col-form-label">Role : </label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="AddRoleDesc" class="form-control" id="txtAddRole" autocomplete="off" />
+                        </div>
+                    </div>
+                    <fieldset class="form-group row">
+                        <legend class="col-form-label col-sm-2 float-sm-left pt-0">isActive : </legend>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input type="radio" asp-for="AddRoleisActive" name="AddRoleisActive" id="rdAddisActive1" value="1" class="form-check-input" />
+                                <label class="form-check-label" for="rdAddisActive1">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" asp-for="AddRoleisActive" name="AddRoleisActive" id="rdAddisActive2" value="2" class="form-check-input" />
+                                <label class="form-check-label" for="rdAddisActive2">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-success" value="add" name="add"> Submit </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Edit Role*@
+<div class="modal" tabindex="-1" id="modalEditRole">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="form_edit">
+
+                    <div class="form-group row">
+                        <label for="txtEditRoleDesc" class="col-sm-2 col-form-label">Role : </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="txtEditRoleDesc" asp-for="EditRoleDesc" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <fieldset class="form-group row">
+                        <legend class="col-form-label col-sm-2 float-sm-left pt-0">isActive : </legend>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input type="radio" asp-for="EditRoleisActive" name="EditRoleisActive" 
+                                       id="rdEditisActive1" value="1" class="form-check-input" />
+                                <label class="form-check-label" for="rdEditisActive1">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" asp-for="EditRoleisActive" name="EditRoleisActive" 
+                                       id="rdEditisActive2" value="2" class="form-check-input" />
+                                <label class="form-check-label" for="rdEditisActive2">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <input type="hidden" class="form-control" id="txtEditRoleId" asp-for="EditRoleId">
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-success" value="edit" name="edit"> Submit </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+
+        $("#btnAddRole").on("click", function ()
+        {
+            $("#form_add").trigger("reset");
+            $("#modalAddRole").modal({ backdrop: "static" });
+            $("#modalAddRole").show();
+
+          
+        });
+
+        function btnEditRole(id, desc, isactive) {
+
+            $("#form_edit").trigger("reset");
+
+            $("#txtEditRoleId").val(id);
+            $("#txtEditRoleDesc").val(desc);
+            if (isactive == 1) {
+                document.getElementById("rdEditisActive1").checked = true;
+                document.getElementById("rdEditisActive2").checked = false;
+            }
+            else {
+                document.getElementById("rdEditisActive1").checked = false;
+                document.getElementById("rdEditisActive2").checked = true;
+            }
+
+            $("#modalEditRole").modal({ backdrop: "static" });
+            $("#modalEditRole").show();
+
+        }
+
+        $(document).ready(function () {
+
+            var gridRole = "#gridRole";
+
+            var dtRole = $(gridRole).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/Queing/Master/Role/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtRole.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Role", data: "description" },
+                    { title: "isActive?", data: "isActive" },
+                    { title: "Edit", data: null },
+                    { title: "Delete", data: null },
+                    { title: "Permission", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        width: '50%'
+                    },
+                    {
+                        targets: 1,
+                        width: '10%',
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("", "success", "fa fa-check") : showBadge("", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 2,
+                        width: '10%',
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += "<button type='button' class='btn btn-outline-info btn-sm' onclick='btnEditRole(" + row.id + ",\"" + row.description + "\"," + row.isActive +")'>"
+                                 + "<i class='fa fa-edit'></i> Edit";
+                                 +  "</button>";
+
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 3,
+                        width: '10%',
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += "<a href='/Queing/Master/Role?handler=DeleteRole&roleid="+ row.id +"' class='btn btn-outline-danger btn-sm'>"
+                                + "<i class='fa fa-times'></i> Delete";
+                            +   "</a>";
+
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 4,
+                        width: '20%',
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += "<a href='/Queing/Master/Role/" + row.id +"/Permission' class='btn btn-outline-secondary btn-sm'>"
+                                +    "<i class='fa fa-cog'></i> Permission";
+                                +   "</a>";
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridUserMapping + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridUserMapping + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridUserMapping + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        $("#form_edit").submit(function (e)
+        {
+            if ($("#txtEditRoleDesc").val() == "") {
+                alert("Please input Role Name !!");
+                return false;
+            }
+            $('#modalEditRole').modal('hide');
+            $(".overlay").show();
+        });
+
+        $("#form_add").submit(function (e)
+        {
+            if ($("#txtAddRole").val() == "") {
+                alert("Please input Role Name !!");
+                return false;
+            }
+
+            $('#modalAddRole').modal('hide');
+            $(".overlay").show();
+        });
+
+    </script>
+}

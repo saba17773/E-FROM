@@ -1,0 +1,159 @@
+﻿@page
+@model Web.UI.Pages.S2E.Qtech.MaterialRequestSample.MainModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "หน้าเบิกวัตถุดิบ (LAB Sample)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech", Link = "/S2E/Qtech" },
+        new BreadcrumbModel { Text = "หน้าเบิกวัตถุดิบ (LAB Sample)" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3> หน้าเบิกวัตถุดิบ (LAB Sample) </h3>
+</div>
+
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var gridList = "#gridList";
+
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Qtech/MaterialRequestSample/Main?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Code.", data: "requestcode" },
+                    { title: "Supplier Name", data: "suppliername" },
+                    //{ title: "Item Code", data: "itemcode" },
+                    { title: "Item Name", data: "itemname" },
+                    { title: "Status", data: "requeststatus" },
+                    { title: "Action", data: null }
+                ]
+                , columnDefs: [
+                    {
+                        targets: 3,
+                        render: function (data, type, row) {
+
+                            if (row.addrmsampleapprovestatus === 5 && row.requeststatus === 0 && row.iscomplete === 0) {
+                                return "<span class='badge badge-warning'>รอสร้างใบเบิกวัตถุดิบ</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 5 && row.requeststatus === 1 && row.iscomplete === 0) {
+                                return "<span class='badge badge-warning'>สามารถเบิกเพิ่มได้</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 3 && row.requeststatus === 1 && row.iscomplete === 1) {
+                                return "<span class='badge badge-warning'>อยู่ระหว่างรอเพิ่มวัตถุดิบเพิ่มเติม</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 3 && row.requeststatus === 1 && row.iscomplete === 0) {
+                                return "<span class='badge badge-warning'>อยู่ระหว่างรอเพิ่มวัตถุดิบเพิ่มเติม</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 1 && row.iscomplete === 0) {
+                                return "<span class='badge badge-info'>สามารถเบิกเพิ่มได้</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 5 && row.iscomplete === 0) {
+                                return "<span class='badge badge-danger'>ไม่สามารถเบิกเพิ่มได้</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 5 && row.iscomplete === 1) {
+                                return "<span class='badge badge-light'>รอผลการทดสอบ (Trial Test)</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 7 && row.iscomplete === 1) {
+                                return "<span class='badge badge-success'>Successfully</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 1 && row.iscomplete === 1) {
+                                return "<span class='badge badge-info'>รอเพิ่มวัตถุดิบเข้าระบบเพิ่ม</span>";
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 7 && row.iscomplete === 0) {
+                                return "<span class='badge badge-success'>Successfully</span>";
+                            }
+                        }
+                    },
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            if (row.addrmsampleapprovestatus === 5 && row.requeststatus === 0 && row.iscomplete === 0
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.addrmsampleid + "/Create", "fa fa-plus", "สร้างใบเบิกวัตถุดิบ");
+                            }
+
+                            if (row.addrmsampleapprovestatus === 5 && row.requeststatus === 1 && row.iscomplete === 0
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+
+                            if (row.addrmsampleapprovestatus === 3 && row.requeststatus === 1 && row.iscomplete === 0
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+
+                            if (row.addrmsampleapprovestatus === 3 && row.requeststatus === 1 && row.iscomplete === 1
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 1 && row.iscomplete === 0
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 5 && row.iscomplete === 0
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 5 && row.iscomplete === 1
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 7 && row.iscomplete === 1
+                                && @Model.isPurchase === 0) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+                            if (row.addrmsampleapprovestatus === 7 && row.requeststatus === 7 && row.iscomplete === 0
+                                && (@Model.isPurchase === 0 || @Model.isPurchase === 1)) {
+                                link += actionLink("/S2E/Qtech/MaterialRequestSample/" + row.rmreqsamid + "/RequestDetail", "fa fa-eye", "รายละเอียดใบเบิก");
+                            }
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

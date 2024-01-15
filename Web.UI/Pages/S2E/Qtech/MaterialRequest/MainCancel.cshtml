@@ -1,0 +1,93 @@
+﻿@page
+@model Web.UI.Pages.S2E.Qtech.MaterialRequest.MainCancelModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "หน้าเบิกวัตถุดิบ (รายการที่ยกเลิก)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech", Link = "/S2E/Qtech" },
+        new BreadcrumbModel { Text = "หน้าเบิกวัตถุดิบ (รายการที่ยกเลิก)" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1> หน้าเบิกวัตถุดิบ (รายการที่ยกเลิก) </h1>
+</div>
+
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                "scrollX": true,
+                ajax: {
+                    url: "/S2E/Qtech/MaterialRequest/MainCancel?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Code.", data: "requestcode" },
+                    { title: "Project REF. NO.", data: "projectrefno" },
+                    { title: "Supplier Name", data: "suppliername" },
+                    { title: "Item Code", data: "itemcode" },
+                    { title: "Item Name", data: "itemname" },
+                    { title: "Status", data: "requeststatus" },
+                    { title: "Remark", data: "cancelremark" },
+                    { title: "Action", data: null }
+                ]
+                ,columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+
+                            return "<span class='badge badge-danger'>Cancel</span>";
+                        }
+                    },
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += actionLink("/S2E/Qtech/MaterialRequest/" + row.rmreqid + "/RequestDetailCancel", "fa fa-eye", "รายละเอียดใบเบิก");
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

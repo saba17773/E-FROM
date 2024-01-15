@@ -1,0 +1,275 @@
+﻿@page "/S2E/Qtech/MaterialRequest/{ADDRMID}/Create"
+@model Web.UI.Pages.S2E.Qtech.MaterialRequest.CreateModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "สร้างใบเบิกวัตถุดิบ";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech", Link = "/S2E/Qtech" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Qtech/MaterialRequest/Main" },
+        new BreadcrumbModel { Text = "สร้างใบเบิกวัตถุดิบ" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>สร้างใบเบิกวัตถุดิบ</h3>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <table style="width:80%" align="center">
+                <tr>
+                    <td style="text-align:center" colspan="4">
+                        @if (@Model.Plant == "DSL")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DRB")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีรับเบอร์ จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DSI")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน อินเตอร์เนชั่นแนล จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DSR")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท สวิซซ์-วัน คอร์ปอเรชั่น จำกัด </b> </span>
+                        }
+                        else
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท สยามทรัค เรเดียล จำกัด </b> </span>
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center" colspan="4">
+                        <span> <b style="font-size:x-large;"> ใบเบิกวัตถุดิบ </b> </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;" width="20%">
+                        <b>Request Code : </b> @Model.RequestCode
+                    </td>
+                    <td style="text-align:left;" width="50%">
+                    </td>
+                    <td style="text-align:right;" width="10%">
+                        <b>เลขที่ : </b> 
+                    </td>
+                    <td style="text-align:left;" width="20%">
+                        <input type="text" class="form-control" readonly autocomplete="off" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;" width="20%">
+                    </td>
+                    <td style="text-align:left;" width="50%">
+                    </td>
+                    <td style="text-align:right;" width="10%">
+                        <b>วันที่ : </b>
+                    </td>
+                    <td style="text-align:left;" width="20%">
+                        @DateTime.Now.ToString("dd/MM/yyyy")
+                    </td>
+                </tr>
+                
+            </table>
+            <br />
+            <table width="80%" align="center">
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"> แผนก : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="Department" class="form-control" autocomplete="off" />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"> ฝ่าย : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="SupGroup" class="form-control" autocomplete="off" />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"> ขอเบิกของตามรายการต่อไปนี้ : </td>
+                    <td width="50%" style="text-align:left;">
+                        <label for="RM">
+                            <input type="radio" asp-for="ItemGroup" id="RM" name="ItemGroup" value="RM" class="radio2" disabled />
+                            <b> RM </b>
+                        </label>
+                        &nbsp;&nbsp;
+                        <label for="FS">
+                            <input type="radio" asp-for="ItemGroup" id="FS" name="ItemGroup" value="FS" class="radio2" disabled />
+                            <b> FS </b>
+                        </label>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"> Item Code : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"> Item Name : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <textarea asp-for="ItemName" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"> จำนวน : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="Qty" asp-format="{0:#,##0.#0}" onkeyup="this.value=addCommas(this.value);" 
+                                   class="form-control" autocomplete="off" />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"> หน่วย : </td>
+                    <td width="50%" style="text-align:left;">
+                        @Model.Unit
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-secondary mr-3" name="draft" value="draft" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-file"></i>
+                        Save Draft
+                    </button>
+                    <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                    <button type="reset" class="btn btn-danger">
+                        <i class="fa fa-times"></i>
+                        ยกเลิก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section scripts {
+    <script>
+
+        $("#form_submit").submit(function (e) {
+            if ($("#Qty").val() == "0" || $("#Qty").val() == "0.00") {
+
+                alert("กรุณาใส่จำนวน");
+
+                return false;
+            }
+
+            $(".overlay").show();
+             $('#btn_submit').html("Submit...");
+        });
+
+        function addCommas(Num) {
+            if (event.key == "1" || event.key == "2" || event.key == "3" || event.key == "4" ||
+                event.key == "5" || event.key == "6" || event.key == "7" || event.key == "8" ||
+                event.key == "9" || event.key == "0" || event.key == "." ||
+                event.key == "Backspace" || event.key == "Tab" || event.key == "Delete" ||
+                event.key == "Del" || event.key == "ArrowUp" || event.key == "ArrowLeft" ||
+                event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "Up" ||
+                event.key == "Left" || event.key == "Down" || event.key == "Right") {
+                Num += '';
+                Num = Num.replace(/,/g, '');
+
+                x = Num.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1))
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                return x1 + x2;
+            }
+            else {
+                alert("ใส่ได้เฉพาะตัวเลข");
+                return "";
+            }
+        }
+
+    </script>
+}

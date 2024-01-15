@@ -1,0 +1,223 @@
+@page
+@model Web.UI.Pages.Planing.IndexFCModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Master FC";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Master FC"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Master FC
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridFC" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delete FC List</h4>
+        
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group row">
+            <label for="Year" class="col-sm-2 col-form-label">Year</label>
+            <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="Txtyear">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="CustGroup" class="col-sm-2 col-form-label">CustGroup</label>
+            <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="Txtcustgroup">
+            <input type="hidden" id="TxtcustgroupVal">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Quarter" class="col-sm-2 col-form-label">Quarter</label>
+            <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="Txtquarter">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Version" class="col-sm-2 col-form-label">Version</label>
+            <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="Txtversion">
+            </div>
+        </div>
+        <div class="form-group row" id="divmonth">
+            <label for="Month" class="col-sm-2 col-form-label">Month</label>
+            <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="TxtMonth">
+                @* <select id="TxtMonth" class="form-control">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select> *@
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="btn_del">Submit</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridFC = "#gridFC";
+
+            var dtCreditControl = $(gridFC).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Planing/IndexFC?handler=GridFC",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtCreditControl.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Year", data: "year" },
+                    { title: "Month", data: "month" },
+                    { title: "Version", data: "version" },
+                    { title: "Remark", data: "remark" },
+                    { title: "CustGroup", data: "custGroup"},
+                    { title: "Quarter", data: "quarter"},
+                    { title: "CreateBy", data: "createName" },
+                    { title: "CreateDate", data: "createDate" },
+                    { title: "Actions", data: null },
+                    { title: "Download", data: null },
+                    { title: "Cancel", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 8,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Planing/" + row.year +"/"+ row.custGroup +"/"+ row.versionId + "/LineFC", "fa fa-list", "ตรวจสอบข้อมูล");
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 9,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Planing/" +row.year+"/"+row.versionId+"/"+row.custGroup+"/"+row.quarter+"/"+row.month+ "/Download/Fc?handler=DownLoadFc", "fa fa-download", "download", true);
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 10,
+                        render: function (data, type, row) {
+                            var cg = row.custGroup;
+                            if(cg=="DOM"){
+                                cg = 1;
+                            }else if(cg=="OVS"){
+                                cg = 2;
+                            }else if(cg=="CLM"){
+                                cg = 3;
+                            }
+                            var link = "";
+                            link += "<a href='javascript:void();' onclick='return deleteTrans("+row.year+","+row.month+","+cg+","+row.quarter+","+row.versionId+");'><span class='badge badge-danger'><i class='fa fa-times'></i> ยกเลิก</span></a>";
+                            @* link += actionLink("/Planing/" + row.year +"/"+ row.custGroup +"/"+ row.versionId +"/"+ row.status + "/DeleteFC", "fa fa-times", "ยกเลิก"); *@
+                            return link;
+                        }
+                    }
+                ]
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+            $("#divmonth").hide();
+            $('#btn_del').click(function() {
+                $.ajax({
+                    url: "/Planing/IndexFC?handler=DeleteFC",
+                    type: "get",
+                    data : {
+                        year : $("#Txtyear").val(),
+                        quarter : $("#Txtquarter").val(),
+                        version : $("#Txtversion").val(),
+                        custgroup : $("#TxtcustgroupVal").val(),
+                        month : $("#TxtMonth").val()
+                    }
+                }).done(function (data) {
+                    window.location.reload();
+                });
+            });
+        });
+
+        function deleteTrans(year,month,custgroup,quarter,version){
+            $('#myModal').modal('show');
+            $("#Txtyear").val(year);
+            $("#Txtcustgroup").val(custgroup);
+            $("#Txtquarter").val(quarter);
+            $("#Txtversion").val(version);
+            if(custgroup==1){
+                $("#Txtcustgroup").val("DOM");
+            }else if(custgroup==2){
+                $("#Txtcustgroup").val("OVS");
+            }else if(custgroup==3){
+                $("#Txtcustgroup").val("CLM");
+            }
+            $("#TxtcustgroupVal").val(custgroup);
+
+            if($("#Txtcustgroup").val()!="OVS"){
+                $("#divmonth").show();
+                $("#TxtMonth").val(month);
+            }else{
+                $("#divmonth").hide();
+            }
+            @* $.ajax({
+                url: "/Planing/Index?handler=DeleteFC",
+                type: "get",
+                data : {
+                    year : year,
+                    quarter : quarter,
+                    version : version,
+                    custgroup : custgroup
+                }
+            }).done(function (data) {
+                window.location.reload();
+            }); *@
+        }
+
+    </script>
+
+}

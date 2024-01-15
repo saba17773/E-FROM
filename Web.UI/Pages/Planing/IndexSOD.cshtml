@@ -1,0 +1,110 @@
+@page
+@model Web.UI.Pages.Planing.IndexSODModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Master SOD For AOT";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Master SOD For AOT"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Master SOD For AOT
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridSOD" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridSOD = "#gridSOD";
+
+            var dtCreditControl = $(gridSOD).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Planing/IndexSOD?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtCreditControl.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Year", data: "year" },
+                    { title: "Month", data: "month" },
+                    { title: "CreateBy", data: "createName" },
+                    { title: "CreateDate", data: "createDate" },
+                    { title: "Actions", data: null },
+                    { title: "Download", data: null },
+                    { title: "Cancel", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Planing/" + row.year +"/"+ row.month + "/LineSOD", "fa fa-list", "ตรวจสอบข้อมูล");
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Planing/" +row.year+"/"+row.month+ "/Download/Sod?handler=DownLoadSOD", "fa fa-download", "download", true);
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += "<a href='javascript:void();' onclick='return deleteTrans("+row.year+","+row.month+");'><span class='badge badge-danger'><i class='fa fa-times'></i> ยกเลิก</span></a>";
+                            return link;
+                        }
+                    }
+                ]
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function deleteTrans(year,month){
+            if (confirm("Are You Sure!")) {
+                $.ajax({
+                    url: "/Planing/IndexSOD?handler=DeleteSOD",
+                    type: "get",
+                    data : {
+                        year : year,
+                        month : month
+                    }
+                }).done(function (data) {
+                    window.location.reload();
+                });
+            }
+        }
+
+    </script>
+
+}

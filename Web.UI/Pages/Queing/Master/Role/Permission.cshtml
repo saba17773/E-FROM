@@ -1,0 +1,120 @@
+﻿@page "/Queing/Master/Role/{roleid}/Permission"
+@model Web.UI.Pages.Queing.Master.Role.PermissionModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Permission";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Queing", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Role", Link = "/Queing/Master/Role" },
+        new BreadcrumbModel { Text = "Permission" }
+    };
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .table_modal {
+        padding: 5px;
+        width: 100%;
+        text-align: right;
+    }
+
+        .table_modal tr {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <div class="card mb-3">
+        <div class="card-header">
+            <b> Permission Role Name : </b>  @Model.RoleName
+        </div>
+        <form method="post" id="form_submit">
+            <div class="card-body" style="width:60%">
+                <table class="table table-bordered" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th style="width:80%;text-align:left;">Permission Name</th>
+                            <th style="width:20%;text-align:center;">Can?</th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in typeof(QueingPermissionModel).GetProperties())
+                    {
+                        <tr>
+                            <td style="width:80%;text-align:left;">
+                                @QueingPermissionModel.GetPermissionText(item.Name.ToString())
+                            </td>
+                            <td style="width:20%;text-align:center;">
+                                @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                                {
+                                    <input type="checkbox" name="QueingPermission" style="width:15px;height:15px;" value="@item.Name" checked />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="QueingPermission" style="width:15px;height:15px;" value="@item.Name" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check-circle"></i>
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+
+@section Scripts {
+    <script>
+        $("#form_submit").submit(function (e) {
+            $(".overlay").show();
+        });
+
+    </script>
+}

@@ -1,0 +1,611 @@
+﻿@page "/Queing/Process/OVS/{Plant}/Checkin"
+@model Web.UI.Pages.Queing.Process.OVS.CheckinModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "CHECK IN OVS";
+    ViewData["Plant"] = Model.PlantView;
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Process", Link = $"/Queing/Process/{Model.Plant}/Process" },
+        new BreadcrumbModel { Text = "Oversea (OVS)", Link = $"/Queing/Process/OVS/{Model.Plant}/Index" },
+        new BreadcrumbModel { Text = "List", Link = $"/Queing/Process/OVS/{Model.Plant}/CheckinList" },
+        new BreadcrumbModel { Text = "Check In" }
+    };
+
+    ViewData["status"] = "1";
+
+    ViewData["status1"] = "CHECK IN";
+    ViewData["status2"] = "ASSIGN BAY";
+    ViewData["status3"] = "CHECK OUT";
+
+    ViewData["status1href"] = $"/Queing/Process/OVS/{Model.Plant}/CheckinList";
+    ViewData["status2href"] = $"/Queing/Process/OVS/{Model.Plant}/AssignBay";
+    ViewData["status3href"] = $"/Queing/Process/OVS/{Model.Plant}/CheckOut";
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<form method="post" enctype="multipart/form-data" id="form_submit">
+    <div class="container2">
+        <h5>Over Sea</h5>
+
+        <div class="card">
+            <div class="card-body text-white bg-info">
+
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label><b>Work Order Number</b></label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber1" value="LSWR" readonly />
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label style="color:#17a2b8;">year</label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber2" id="WorkOrderNumber2" value="@System.DateTime.Now.Year" />
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label style="color:#17a2b8;">number</label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber3" id="WorkOrderNumber3" autocomplete="off" pattern="[0-9]{1,6}" maxlength="6" />
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label>
+                            <span id="selecetSubWorkOrderNo" class="badge badge-light" style="cursor: pointer;">
+                                <i class="fa fa-search"></i>
+                                เลือกตู้
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" asp-for="SubWorkOrderNo" id="SubWorkOrderNo" readonly />
+                    </div>
+                    <div class="form-group col-md-1"></div>
+                    <div class="form-group col-md-3">
+                        <label>
+                            <b>Load ID (WMS)</b>
+                            &nbsp;
+                            @if (Model.Plant != "STR")
+                            {
+                                <span id="selectLoadID" class="badge badge-light" style="cursor: pointer;">
+                                    <i class="fa fa-search"></i>
+                                    search
+                                </span>
+                            }
+                        </label>
+                        <input type="text" class="form-control" id="txtLoadid" asp-for="Loadid" readonly />
+
+                    </div>
+
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Agent</b>
+                        </label>
+                        <select class="form-control" id="ddlAgent" asp-for="Agent" asp-items="Model.AgentMaster">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2"></div>
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Booking Number</b>
+                        </label>
+                        <input type="text" class="form-control" id="txtBookingNumber" asp-for="BookingNumber" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="form-row">
+
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Invoice No</b>
+                        </label>
+                        <input type="text" class="form-control" id="txtInvoiceNo" asp-for="InvoiceNo" autocomplete="off" />
+                    </div>
+                    <div class="form-group col-md-2"></div>
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Seal No</b>
+                        </label>
+                        <input type="text" class="form-control" id="txtSealNo" asp-for="SealNo" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label> <b>ประเภทรถ</b></label>
+                        <select class="form-control" id="ddlCateTruck" asp-for="CateTruck" asp-items="Model.CateTruckMaster">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>ทะเบียนรถ</b>
+                        </label>
+                        <input type="text" class="form-control" id="txtTruckId" asp-for="TruckId" autocomplete="off" />
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label><b>DriverID</b></label>
+                        <input type="text" class="form-control" id="txtDriverID" asp-for="DriverId" readonly />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><b>ชื่อคนขับ</b></label>
+                        &nbsp;
+                        <span id="selectDriver" class="badge badge-light" style="cursor: pointer;">
+                            <i class="fa fa-search"></i>
+                            search
+                        </span>
+                        <input type="text" class="form-control" id="txtDrivername" asp-for="DriverName" maxlength="25" autocomplete="off" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><b>เบอร์โทร (EX:0800000000) </b></label>
+                        <input type="text" class="form-control" id="txtDriverTel" asp-for="DriverTel"
+                               autocomplete="off" maxlength="10" pattern="[0-9]{10}" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>Container Size</b>
+                        </label>
+                        <select class="form-control" id="ddlContainerSize" asp-for="ContainerSizeId" asp-items="Model.ContainerSizeMaster">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>
+                            <b>Container No</b>
+                        </label>
+                        <input type="text" class="form-control" id="txtContainerNo" maxlength="11" asp-for="ContainerNo" autocomplete="off" />
+                    </div>
+                    <div class="form-group col-md-1"></div>
+
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>Route</b>
+                        </label>
+                        <select class="form-control" id="ddlRoute" asp-for="RouteId" asp-items="Model.RouteMaster"></select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Remark</b>
+                        </label>
+                        <textarea asp-for="Remark" rows="2" style="white-space:normal;display:block;"
+                                  autocomplete="off" class="form-control"></textarea>
+                    </div>
+                </div>
+                <input type="hidden" class="form-control" id="txtPlant" value="@Model.Plant" autocomplete="off" />
+            </div>
+            <div class="card-footer bg-white text-right">
+                <button class="btn btn-warning" type="submit">
+                    <i class="fa fa-thumb-tack"></i> Check in
+                </button>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <a href="/Queing/Process/OVS/@Model.Plant/CheckinList" class="btn btn-light">
+                <i class="fa fa-reply"></i> Back
+            </a>
+        </div>
+
+    </div>
+</form>
+
+<!-- Modal Driver -->
+<div class="modal" id="modalDriver" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Driver</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalDriver_Body">
+                <div class="table-responsive">
+                    <table id="gridDriver" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal LoadID -->
+<div class="modal" id="modalLoadID" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Load ID</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalLoadID_Body">
+                <div class="table-responsive">
+                    <table id="gridLoadID" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sub Work Order No -->
+<div class="modal" id="modalSubWoNo" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Sub Work Order No</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalSubWoNo_Body">
+                <div class="table-responsive">
+                    <table id="gridSubWoNo" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+<!-- ModalAlert -->
+<div class="modal" id="modalAlert" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="color:red;"> Warning &nbsp; <i class="fa fa-exclamation-triangle"></i> </h5>
+            </div>
+            <div class="modal-body" id="modalAlert_Body">
+                <div class="table-responsive">
+                    <h4>
+                        <label id="txtAlert"></label>
+                    </h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-times"></i> &nbsp; Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        //
+        $("#WorkOrderNumber3").on("keyup", function () {
+            $("#SubWorkOrderNo").val("");
+        });
+
+        $("#selectDriver").on("click", function () {
+
+            $("#modalDriver").modal({ backdrop: "static" });
+            $("#modalDriver").show();
+
+            gridDriver = "#gridDriver";
+            var dtDriver = $(gridDriver).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Queing/Process/OVS/@Model.Plant/Checkin?handler=DriverGrid&plant=@Model.Plant",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtDriver.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "ชื่อคนขับ", data: "fullname" },
+                    { title: "เบอร์โทรศัพท์", data: "phone" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='selectDriverdata(\"" + row.driverid + "\",\"" + row.fullname + "\",\"" + row.phone + "\")'> " +
+                                "<i class='fa fa-check'></i>" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        function selectDriverdata(driverid, fullname, phone) {
+            $("#txtDrivername").val(fullname);
+            $("#txtDriverTel").val(phone);
+            $("#txtDriverID").val(driverid);
+            $("#modalDriver").modal("hide");
+        }
+
+        $("#selecetSubWorkOrderNo").on("click", function () {
+
+            var txtwono1 = $("#WorkOrderNumber1").val();
+            var txtwono2 = $("#WorkOrderNumber2").val();
+            var txtwono3 = $("#WorkOrderNumber3").val();
+
+            if (txtwono2 == "" || txtwono3 == "") {
+                alert("กรุณาใส่ข้อมูล Work Order Number ให้ครบ");
+                return false;
+            }
+
+            $("#modalSubWoNo").modal({ backdrop: "static" });
+            $("#modalSubWoNo").show();
+
+            gridSubWoNo = "#gridSubWoNo";
+
+            $(gridSubWoNo).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/Queing/Process/OVS/@Model.Plant/Checkin?handler=SubWONoGrid&txtwono1=" + txtwono1 + "&txtwono2=" + txtwono2 + "&txtwono3=" + txtwono3,
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "ตู้", data: "dsgid" },
+                    { title: "รายละเอียด", data: "remarks" },
+                    { title: "", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='SubWorkOrderNodata(\"" + row.dsgnum + "\")'> " +
+                                "<i class='fa fa-check'></i> เลิอก" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+        });
+
+        function SubWorkOrderNodata(dsgnum) {
+            $("#SubWorkOrderNo").val(dsgnum);
+
+            $("#modalSubWoNo").modal("hide");
+        }
+
+        $("#selectLoadID").on("click", function () {
+
+            $("#modalLoadID").modal({ backdrop: "static" });
+            $("#modalLoadID").show();
+
+            gridLoadID = "#gridLoadID";
+
+            $(gridLoadID).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                "order": [[1, 'asc']],
+                ajax: {
+                    url: "/Queing/Process/OVS/@Model.Plant/Checkin?handler=LoadidGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "", data: null },
+                    { title: "Load ID", data: "loadid" },
+                    { title: "Route", data: "route" },
+                    { title: "Door", data: "door" },
+                    { title: "Seal Number", data: "sealnumber" },
+                    { title: "Appointment Time", data: "appointmenttime" },
+                    { title: "Trailer Id", data: "trailerid" },
+                    { title: "Driver Name", data: "drivername" },
+                    { title: "ENDLOADTIME", data: "endloadtime" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='selectLoadiddata(\"" + row.loadid + "\")'> " +
+                                "<i class='fa fa-check'></i>" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+        });
+
+        function selectLoadiddata(loadid) {
+            $("#txtLoadid").val(loadid);
+
+            $("#modalLoadID").modal("hide");
+        }
+
+        $("#form_submit").submit(function (e) {
+
+            if ($("#WorkOrderNumber2").val() == "" || $("#WorkOrderNumber3").val() == "")
+            {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Work Order Number !!");
+
+                return false;
+            }
+
+            if ($("#txtLoadid").val() == "" && $("#txtPlant").val() != "STR") {
+                    $("#modalAlert").modal({ backdrop: "static" });
+                    $("#modalAlert").show();
+
+                    $('#txtAlert').text("Plase select Load ID !!");
+
+                    return false;
+             }
+
+
+            if ($("#ddlAgent").val() == "0") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase select Agent !!");
+
+                return false;
+            }
+
+            if ($("#txtBookingNumber").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Booking Number  !!");
+
+                return false;
+            }
+
+            if ($("#txtInvoiceNo").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Invoice No  !!");
+
+                return false;
+            }
+
+            if ($("#txtSealNo").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Seal No  !!");
+
+                return false;
+            }
+
+            if ($("#ddlCateTruck").val() == "0") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase select Category Truck !!");
+
+                return false;
+            }
+
+            if ($("#txtTruckId").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Truck ID !!");
+
+                return false;
+            }
+
+            if ($("#txtDriverID").val() == "" &&
+                $("#txtDrivername").val() == "" )
+            {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Driver Detail  !!");
+
+                return false;
+            }
+
+            if ($("#ddlContainerSize").val() == "0") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase select Container Size !!");
+
+                return false;
+            }
+
+            if ($("#txtContainerNo").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Container No !!");
+
+                return false;
+            }
+
+            if ($("#ddlRoute").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase select Route !!");
+
+                return false;
+            }
+
+            if ($("#txtDriverTel").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Telephone number !!");
+
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btnAddMapping').html("Loading...");
+        });
+
+    </script>
+}

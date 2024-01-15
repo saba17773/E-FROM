@@ -1,0 +1,75 @@
+﻿@page
+@model Web.UI.Pages.ApproveManage.VenderApproveMapping.AddModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Add Mapping";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Approve Manage", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Mapping", Link = "/ApproveManage/VenderApproveMapping" },
+        new BreadcrumbModel { Text = "Add" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Add New Mapping</h1>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <form method="post">
+            <div class="form-group">
+                <label> Plant : </label>&nbsp;&nbsp;
+                <label for="dv">
+                    <input type="radio" asp-for="DataAreaID" id="dv" name="DataAreaID" value="dv" class="radio2">
+                    โรงงาน
+                </label> &nbsp;&nbsp;&nbsp;
+                <label for="dsc">
+                    <input type="radio" asp-for="DataAreaID" id="dsc" name="DataAreaID" value="dsc" class="radio2">
+                    DSC
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserCreate">Create By</label>
+                <select asp-for="UserCreate" asp-items="Model.UserCreateMaster" class="form-control">
+                    <option value="">--- SELECT ---</option>
+                </select>
+                <span asp-validation-for="UserCreate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ApproveMasterDesc">Approve Master</label>
+                <select asp-for="ApproveMasterDesc" asp-items="Model.ApproveMasterDescMaster" class="form-control">
+                    <option value="">--- SELECT ---</option>
+                </select>
+                <span asp-validation-for="ApproveMasterDesc" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="VenderGroupDesc">Group</label>
+                <select asp-for="VenderGroupDesc" asp-items="Model.VenderGroupDescMaster" class="form-control">
+                    <option value="">--- SELECT ---</option>
+                </select>
+                <span asp-validation-for="VenderGroupDesc" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="GroupDESC">Group Description</label>
+                <input type="text" asp-for="GroupDESC" class="form-control" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Step">Step</label>
+                <input type="text" asp-for="Step" class="form-control" autocomplete="off">
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check"></i>
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

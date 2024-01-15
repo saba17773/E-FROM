@@ -1,0 +1,929 @@
+@page "/Promotion/{id}/Render"
+@model Web.UI.Pages.Promotion.RenderTransModel
+
+@using Infrastructure.Models 
+@{
+    ViewData["Title"] = "Render";
+
+    @* ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Promotion Discount", Link = "/Promotion" },
+        new BreadcrumbModel { Text = "Render"}
+    }; *@
+}
+<style>
+    th, td {
+        padding: 15px;
+    }
+</style>
+<div class="card">
+    <div class="card-header">
+        <div class="float-right">
+            เลขที่คำขอ : @Model.Promotion_DOM.RequestNumber
+            <br>
+            DateRequest : @Model.ReqDateStr
+            @if(@Model.RefExp!=""){
+                <br>
+                <a>อ้างอิงเลขที่ : </a>@Model.RefExp
+            }
+        </div>
+    </div>
+    <table style="table-layout: fixed; width: 100%">
+        <tr>
+            <td width="15%">
+                <b>กลุ่มผลิตภัณฑ์</b>
+            </td>
+            @if(@Model.Promotion_DOM.RequestType == "DOM")
+            {
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 1)
+                {
+                    <td width="10%"><input type="checkbox" checked> BC</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> BC</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 2)
+                {
+                    <td width="10%"><input type="checkbox" checked> MC</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> MC</td>
+                }
+                
+                @if (@Model.Promotion_DOM.TypeOfProduct == 3)
+                {
+                    <td width="10%"><input type="checkbox" checked> BIAS ON</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> BIAS ON</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 4)
+                {
+                    <td width="10%"><input type="checkbox" checked> BIAS OFF</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> BIAS OFF</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 11)
+                {
+                    <td width="10%"><input type="checkbox" checked> RADIAL</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> RADIAL</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 5)
+                {
+                    <td width="10%"><input type="checkbox" checked> TBR</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> TBR</td>
+                }
+            
+            }else{
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 6)
+                {
+                    <td width="10%"><input type="checkbox" checked> BC</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> BC</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 7)
+                {
+                    <td width="10%"><input type="checkbox" checked> MC</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> MC</td>
+                }
+                
+                @if (@Model.Promotion_DOM.TypeOfProduct == 8)
+                {
+                    <td width="10%"><input type="checkbox" checked> BIAS </td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> BIAS </td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 9)
+                {
+                    <td width="10%"><input type="checkbox" checked> RADIAL</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> RADIAL</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 10)
+                {
+                    <td width="10%"><input type="checkbox" checked> TBR</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> TBR</td>
+                }
+
+            }
+
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <b></b>
+            </td>
+            @if(@Model.Promotion_DOM.RequestType == "DOM")
+            {
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 12)
+                {
+                    <td width="10%"><input type="checkbox" checked> 2W</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> 2W</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 13)
+                {
+                    <td width="10%" colspan="5"><input type="checkbox" checked> 4W</td>
+                }
+                else
+                {
+                    <td width="10%" colspan="5"><input type="checkbox"> 4W</td>
+                }
+            
+            }else{
+
+                 @if (@Model.Promotion_DOM.TypeOfProduct == 14)
+                {
+                    <td width="10%"><input type="checkbox" checked> 2W</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> 2W</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOfProduct == 15)
+                {
+                    <td width="10%" colspan="5"><input type="checkbox" checked> 4W</td>
+                }
+                else
+                {
+                    <td width="10%" colspan="5"><input type="checkbox"> 4W</td>
+                }
+
+            }
+
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>
+                <b>ชื่อเรื่อง</b>
+            </td>
+            <td colspan="5">
+                @Model.Promotion_DOM.Pattern
+            </td>
+        </tr>
+
+        @if(@Model.Promotion_DOM.RequestType == "DOM")
+        {
+            
+            <tr>
+                <td>
+                    <b>ประเภทโปรโมชั่น</b>
+                </td>
+                    @if (@Model.Promotion_DOM.TypeOf == 1)
+                    {
+                        <td width="10%"><input type="checkbox" checked> Net Price</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> Net Price</td>
+                    }
+
+                    @if (@Model.Promotion_DOM.TypeOf == 2)
+                    {
+                        <td width="10%"><input type="checkbox" checked> ลดหน้าบิล</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> ลดหน้าบิล</td>
+                    }
+                    
+                    @if (@Model.Promotion_DOM.TypeOf == 3)
+                    {
+                        <td width="10%"><input type="checkbox" checked> Rebate</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> Rebate</td>
+                    }
+
+                    @if (@Model.Promotion_DOM.TypeOf == 4)
+                    {
+                        <td width="10%"><input type="checkbox" checked> CN (%)</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> CN (%)</td>
+                    }
+
+                    @if (@Model.Promotion_DOM.TypeOf == 5)
+                    {
+                        <td width="10%"><input type="checkbox" checked> CN (Bath)</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> CN (Bath)</td>
+                    }
+            </tr>
+            <tr>
+                <td></td>
+                    @if (@Model.Promotion_DOM.TypeOf == 6)
+                    {
+                        <td width="10%"><input type="checkbox" checked> ยางแถมจบในบิล</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> ยางแถมจบในบิล</td>
+                    }
+
+                    @if (@Model.Promotion_DOM.TypeOf == 7)
+                    {
+                        <td width="10%"><input type="checkbox" checked> ยางแถมสะสม</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> ยางแถมสะสม</td>
+                    }
+
+                    @if (@Model.Promotion_DOM.TypeOf == 7)
+                    {
+                        <td width="10%"><input type="checkbox" checked> ยางแถมสะสม</td>
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> ยางแถมสะสม</td>
+                    }
+
+                    @if (@Model.Promotion_DOM.TypeOf == 8)
+                    {
+                        <td width="10%"><input type="checkbox" checked> อื่น ๆ
+                        <u> @Model.Promotion_DOM.TypeOfRemark </u>
+                        </td>
+                        
+                    }
+                    else
+                    {
+                        <td width="10%"><input type="checkbox"> อื่น ๆ</td>
+                    }
+            </tr>
+
+        }else{
+
+            <tr>
+                <td>
+                    <b>ประเภทโปรโมชั่น</b>
+                </td>
+                @if (@Model.Promotion_DOM.TypeOf == 9)
+                {
+                    <td width="10%"><input type="checkbox" checked> Trade Discount</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> Trade Discount</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOf == 10)
+                {
+                    <td width="10%"><input type="checkbox" checked> Rebate</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> Rebate</td>
+                }
+                
+                @if (@Model.Promotion_DOM.TypeOf == 11)
+                {
+                    <td width="10%"><input type="checkbox" checked> A&P</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> A&P</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeOf == 12)
+                {
+                    <td width="10%"><input type="checkbox" checked> อื่น ๆ
+                    <u>@Model.Promotion_DOM.TypeOfRemark</u>
+                    </td>
+                    
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> อื่น ๆ</td>
+                }
+            </tr>
+        }
+
+        <tr>
+            <td>
+                <b>กลุ่มลูกค้า</b>
+            </td>
+
+            @if(@Model.Promotion_DOM.RequestType == "DOM")
+            {
+                
+                @if (@Model.Promotion_DOM.CustomerGroup == 1)
+                {
+                    <td width="10%"><input type="checkbox" checked> ในประเทศ</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> ในประเทศ</td>
+                }
+
+                @if (@Model.Promotion_DOM.CustomerGroup == 2)
+                {
+                    <td width="10%"><input type="checkbox" checked> ชายแดน
+                    <u>@Model.Promotion_DOM.CustomerGroupRemark</u>
+                    </td>
+                    
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> ชายแดน</td>
+                }
+                
+            }else{
+                @if (@Model.Promotion_DOM.CustomerGroup == 3)
+                {
+                    <td width="10%"><input type="checkbox" checked> ต่างประเทศ
+                    <u>@Model.Promotion_DOM.CustomerGroupRemark</u>
+                    </td>
+                    
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> ต่างประเทศ</td>
+                }
+            }
+
+        </tr>
+
+        <tr>
+            <td>
+                <b>ลูกค้า/Area</b>
+            </td>
+            <td>
+                @Model.Promotion_DOM.CustomerName
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>เงื่อนไขการชำระเงิน</b>
+            </td>
+            <td>
+                @Model.Promotion_DOM.PaymentType
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>ระยะเวลา</b>
+            </td>
+            <td>
+                From
+                @Model.FromDateStr
+            </td>
+            <td>
+                To
+                @Model.ToDateStr
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>รูปแบบโปรโมชั่น</b>
+            </td>
+                @if (@Model.Promotion_DOM.TypeFrom == 1)
+                {
+                    <td width="10%"><input type="checkbox" checked> รายเดือน</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> รายเดือน</td>
+                }
+                
+                @if (@Model.Promotion_DOM.TypeFrom == 2)
+                {
+                    <td width="10%"><input type="checkbox" checked> รายไตรมาส</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> รายไตรมาส</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeFrom == 3)
+                {
+                    <td width="10%"><input type="checkbox" checked> รายครึ่งปี</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> รายครึ่งปี</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeFrom == 4)
+                {
+                    <td width="10%"><input type="checkbox" checked> รายปี</td>
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> รายปี</td>
+                }
+
+                @if (@Model.Promotion_DOM.TypeFrom == 5)
+                {
+                    <td width="10%"><input type="checkbox" checked> อื่นๆ</td>
+                    @Model.Promotion_DOM.TypeFromRemark
+                }
+                else
+                {
+                    <td width="10%"><input type="checkbox"> อื่นๆ</td>
+                }
+        </tr>
+
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <b>วัตถุประสงค์</b><br>
+                <textarea rows="4" class="form-control">@Model.Promotion_DOM.Objective</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <b>ประมาณการ</b><br>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">รายละเอียด</th>
+                            <th scope="col">ยอดขายปัจจุบัน</th>
+                            <th scope="col">ยอดขายประมาณการ</th>
+                            <th scope="col">เปลี่ยนแปลง (%)</th>
+                            <th scope="col">หมายเหตุ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">ยอดขาย(บาท)</th>
+                            <td>@String.Format("{0:n}",Model.Promotion_DOM.SalesPresentBath)</td>
+                            <td>@String.Format("{0:n}",Model.Promotion_DOM.SalesForecastBath)</td>
+                            <td>@Model.Promotion_DOM.SalesChangeBath</td>
+                            <td>@Model.Promotion_DOM.SalesRemarkBath</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ยอดขาย(เส้น)</th>
+                            <td>@Convert.ToDecimal(Model.Promotion_DOM.SalesPresentQty).ToString("#,###")</td>
+                            <td>@Convert.ToDecimal(Model.Promotion_DOM.SalesForecastQty).ToString("#,###")</td>
+                            <td>@Model.Promotion_DOM.SalesChangeQty</td>
+                            <td>@Model.Promotion_DOM.SalesRemarkQty</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">งบประมาณโปรโมชั่น</th>
+                            <td>@String.Format("{0:n}",Model.Promotion_DOM.BudgetPresent)</td>
+                            <td>@String.Format("{0:n}",Model.Promotion_DOM.BudgetForecast)</td>
+                            <td>@Model.Promotion_DOM.BudgetChange</td>
+                            <td>@Model.Promotion_DOM.BudgetRemark</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">งบประมาณต่อยอดขาย</th>
+                            <td>@Convert.ToDecimal(Model.Promotion_DOM.BudgetPresentBath).ToString("#,###")</td>
+                            <td>@Convert.ToDecimal(Model.Promotion_DOM.BudgetForecastBath).ToString("#,###")</td>
+                            <td>@Model.Promotion_DOM.BudgetChangeBath</td>
+                            <td>@Model.Promotion_DOM.BudgetRemarkBath</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <b>เงื่อนไขโปรโมชั่น</b>
+            </td>
+            <td colspan="2" valign="top">
+                สินค้าจากรายการส่งเสริมการขายนี้จะ
+            </td>
+                @if (@Model.Promotion_DOM.GetDiscount == 1)
+                {
+                    <td colspan="3">
+                        <input type="checkbox" checked> ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                        <br><br><input type="checkbox"> ไม่ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                    </td>
+                }
+                @if (@Model.Promotion_DOM.GetPoint == 1)
+                {
+                    <td colspan="2">
+                        <input type="checkbox" checked> ได้รับคะแนนสะสม
+                        <br><br><input type="checkbox"> ไม่ได้รับคะแนนสะสม
+                    </td>
+                }
+
+                @if (@Model.Promotion_DOM.GetDiscount == 0)
+                {
+                    <td colspan="3">
+                        <input type="checkbox"> ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                        <br><br><input type="checkbox" checked> ไม่ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                    </td>
+                }
+                @if (@Model.Promotion_DOM.GetPoint == 0)
+                {
+                    <td colspan="2">
+                        <input type="checkbox"> ได้รับคะแนนสะสม
+                        <br><br><input type="checkbox" checked> ไม่ได้รับคะแนนสะสม
+                    </td>
+                }
+
+        </tr>
+        <tr>
+            <td colspan="8">
+                <textarea rows="4" class="form-control">@Model.Promotion_DOM.PromotionConditions</textarea>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <b>เอกสารแนบ/อ้างอิง</b>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    <ul>
+                    @if(item.FileLevel==0)
+                    {   
+                        <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                    }
+                    </ul>
+                }
+            }
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName1)</b>
+            </td>
+            <td colspan="7" valign="top">
+                @if (Model.ApproveTrans.Count > 0)
+                {
+                    foreach (var item in Model.ApproveTrans)
+                    {
+                        @if (item.ApproveLevel==0 && !String.IsNullOrEmpty(@item.Remark))
+                        {
+                            @item.Remark
+                        }
+                        @if (item.ApproveLevel==0 && String.IsNullOrEmpty(@item.Remark))
+                        {
+                            <b>-</b>
+                        }
+                    }
+                }
+            </td>
+        </tr>
+
+        @* Level1 *@
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <b>เอกสารแนบ/อ้างอิง</b>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    <ul>
+                    @if(item.FileLevel==1)
+                    {   
+                        <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                    }
+                    </ul>
+                }
+            }
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName2)</b>
+            </td>
+            <td colspan="7" valign="top" style="word-wrap: break-word">
+                @if (Model.ApproveTrans.Count > 0)
+                {
+                    foreach (var item in Model.ApproveTrans)
+                    {
+                        @if (item.ApproveLevel==1 && !String.IsNullOrEmpty(@item.Remark))
+                        {
+                            @item.Remark
+                        }
+                        @if (item.ApproveLevel==1 && String.IsNullOrEmpty(@item.Remark))
+                        {
+                            <b>-</b>
+                        }
+                    }
+                }
+            </td>
+        </tr>
+        
+        @* Level2 *@
+        @if (Model.ApproveTrans.Count > 0)
+        {
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    @if(item.FileLevel==2)
+                    {   
+                        <tr>
+                            <td colspan="8">
+                                <hr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <b>เอกสารแนบ/อ้างอิง @Model.PositionName3</b>
+                            </td>
+                            <td colspan="7">
+                                <ul>
+                                    <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            foreach (var item in Model.ApproveTrans)
+            {
+                @if(item.ApproveLevel==2)
+                {  
+                    <tr>
+                        <td valign="top">
+                            <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName3)</b>
+                        </td>
+                        <td colspan="7">
+                            @if (!String.IsNullOrEmpty(@item.Remark))
+                            {
+                                @item.Remark
+                            }
+                            @if (String.IsNullOrEmpty(@item.Remark))
+                            {
+                                <b>-</b>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        }
+
+        @* Level3 *@
+        @if (Model.ApproveTrans.Count > 0)
+        {
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    @if(item.FileLevel==3)
+                    {   
+                        <tr>
+                            <td colspan="8">
+                                <hr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <b>เอกสารแนบ/อ้างอิง @Model.PositionName4</b>
+                            </td>
+                            <td colspan="7">
+                                <ul>
+                                    <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            foreach (var item in Model.ApproveTrans)
+            {
+                @if(item.ApproveLevel==3)
+                {  
+                    <tr>
+                        <td valign="top">
+                            <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName4)</b>
+                        </td>
+                        <td colspan="7">
+                            @if (!String.IsNullOrEmpty(@item.Remark))
+                            {
+                                @item.Remark
+                            }
+                            @if (String.IsNullOrEmpty(@item.Remark))
+                            {
+                                <b>-</b>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        }
+
+        @* Level4 *@
+        @if (Model.ApproveTrans.Count > 0)
+        {
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    @if(item.FileLevel==4)
+                    {   
+                        <tr>
+                            <td colspan="8">
+                                <hr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <b>เอกสารแนบ/อ้างอิง @Model.PositionName5</b>
+                            </td>
+                            <td colspan="7">
+                                <ul>
+                                    <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            foreach (var item in Model.ApproveTrans)
+            {
+                @if(item.ApproveLevel==4)
+                {  
+                    <tr>
+                        <td valign="top">
+                            <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName5)</b>
+                        </td>
+                        <td colspan="7">
+                            @if (!String.IsNullOrEmpty(@item.Remark))
+                            {
+                                @item.Remark
+                            }
+                            @if (String.IsNullOrEmpty(@item.Remark))
+                            {
+                                <b>-</b>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        }
+
+        @* Level5 *@
+        @if (Model.ApproveTrans.Count > 0)
+        {
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    @if(item.FileLevel==5)
+                    {   
+                        <tr>
+                            <td colspan="8">
+                                <hr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <b>เอกสารแนบ/อ้างอิง @Model.PositionName6</b>
+                            </td>
+                            <td colspan="7">
+                                <ul>
+                                    <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            foreach (var item in Model.ApproveTrans)
+            {
+                @if(item.ApproveLevel==5)
+                {  
+                    <tr>
+                        <td valign="top">
+                            <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName6)</b>
+                        </td>
+                        <td colspan="7">
+                            @if (!String.IsNullOrEmpty(@item.Remark))
+                            {
+                                @item.Remark
+                            }
+                            @if (String.IsNullOrEmpty(@item.Remark))
+                            {
+                                <b>-</b>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        }
+
+        @* Level6 *@
+        @if (Model.ApproveTrans.Count > 0)
+        {
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    @if(item.FileLevel==6)
+                    {   
+                        <tr>
+                            <td colspan="8">
+                                <hr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <b>เอกสารแนบ/อ้างอิง @Model.PositionName7</b>
+                            </td>
+                            <td colspan="7">
+                                <ul>
+                                    <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            foreach (var item in Model.ApproveTrans)
+            {
+                @if(item.ApproveLevel==6)
+                {  
+                    <tr>
+                        <td valign="top">
+                            <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName7)</b>
+                        </td>
+                        <td colspan="7">
+                            @if (!String.IsNullOrEmpty(@item.Remark))
+                            {
+                                @item.Remark
+                            }
+                            @if (String.IsNullOrEmpty(@item.Remark))
+                            {
+                                <b>-</b>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        }
+        
+    </table>
+</div>

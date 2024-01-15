@@ -1,0 +1,441 @@
+@page
+@model Web.UI.Pages.FixAssets.IndexModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    Layout = "_LayoutAssets";
+}
+@{
+    ViewData["Title"] = "FixAssets";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "FixAssets"},
+        new BreadcrumbModel { Text = "Transection", Link = "/FixAssets/" },
+        new BreadcrumbModel { Text = "Add Assets", Link = "/FixAssets/AddAssets/" }
+    };
+}
+
+<style>
+    th, td {
+      padding: 5px;
+    }
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Transactions
+        <input type="hidden" id="userid" value="@authService.GetClaim().UserId">
+    </div>
+
+    <div class="card-body overflow-auto">
+        <form method="post" enctype="multipart/form-data">
+            <table width="90%">
+                <tr>
+                    <td width="10%">
+                        <b>หมายเลขคำร้อง </b>
+                    </td>
+                    <td width="20%">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="S_AssetsNumber" autocomplete="off" />
+                        </div>
+                    </td>
+                    <td width="5%"></td>
+                    <td width="10%">
+                        <b>วันขอคำร้อง </b>
+                    </td>
+                    <td width="20%">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="S_AssetsDate" autocomplete="off" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-info" id="btn_S_AssetsDate" type="button">
+                                <span class="fa fa-calendar" aria-hidden="true"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </td>
+                    <td width="5%"></td>
+                    <td width="10%">
+                        <b>ระบุประเภท </b>
+                    </td>
+                    <td width="20%">
+                        <div class="input-group">
+                            <select id="S_AssetCategory" class="form-control">
+                                <option value="">--- เลือกรายการ ---</option>
+                                <option value="1"> ตัดทรัพย์สินถาวร </option>
+                                <option value="2"> โอนย้ายทรัพย์สิน </option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>ทรัพย์สินบริษัท </b>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <select id="S_AssetsCompany" asp-items="Model.CompanyMaster" class="form-control">
+                                <option value="">--- เลือกรายการ ---</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="Assets.Company"></span>
+                        </div>
+                    </td>
+                    <td></td>
+                    <td>
+                        <b>ชื่อผู้ร้องขอ </b>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="S_AssetsCreateBy" autocomplete="off" />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td>
+                        <b>สถานะ </b>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <select id="S_AssetsStatus" class="form-control">
+                                <option value="">--- เลือกรายการ ---</option>
+                                <option value="8"> Draft </option>
+                                <option value="1"> Open </option>
+                                <option value="2"> Cancel </option>
+                                <option value="3"> Waiting For Approve </option>
+                                <option value="4"> Reject </option>
+                                <option value="5"> Complete Approve </option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>เลขที่ทรัพย์สิน </b>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="S_AssetsKeyNumber" autocomplete="off" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align:right;vertical-align:top;">
+                        <button type="button" class="btn btn-info" id="btnSearch" name="btnSearch">
+                            <i class="fa fa-search"></i>
+                            Search
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <hr>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridAssets" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@* Model Number *@
+<div class="modal" id="modalNumber" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">แบบฟอร์มเลขที่</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="KeyNumber" autocomplete="off">
+                            <input type="hidden" id="idtrans">
+                            <br>
+                            <button type="button" class="btn btn-success" id="btnKeyNumber" name="btnKeyNumber">
+                                <i class="fa fa-file"></i>
+                                บันทึก
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            S_AssetsNumber = null;
+            S_AssetsDate = null;
+            S_AssetCategory = null;
+            S_AssetsCompany = null;
+            S_AssetsCreateBy = null;
+            S_AssetsStatus = null;
+            S_AssetsKeyNumber = null;
+
+            var gridAssets = "#gridAssets";
+
+            var dtPromotion = $(gridAssets).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                searching: false,
+                ajax: {
+                    url: "/FixAssets/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtPromotion.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "หมายเลขคำร้อง", data: "assetNumber" },
+                    { title: "วันขอคำร้อง", data: "assetDate" },
+                    { title: "ระบุประเภท", data: "assetCategory"},
+                    { title: "ชนิดรายการ", data: "assetType" },
+                    { title: "ทรัพย์สินบริษัท", data: "company"},
+                    { title: "ชื่อผู้ร้องขอ", data: "fullName" },
+                    { title: "สถานะ", data: "requestStatus" },
+                    //{ title: "แบบฟอร์มเลขที่", data: "keyNumber" },
+                    //{ title: "Approve Step", data: "currentApproveStep" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    @* {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            return row.currentApproveStep + "/" + row.totalApproveStep;
+                        }
+                    }, *@
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLinkBlank("/FixAssets/" + row.id + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                            
+                            if($("#userid").val() == row.createBy){
+                                if(row.requestStatus == "Draft" || row.requestStatus == "Reject"){
+                                    link += actionLink("/FixAssets/" + row.id + "/EditAssets", "fa fa-list", "Edit");
+                                }
+                            }
+                            
+                            if(row.requestStatus == "Open" || row.requestStatus == "Draft" || row.requestStatus == "Waiting For Approve" || row.requestStatus == "Reject"){
+                                link += "<a href='javascript:void();' onclick='return cancelTrans("+row.id+");'><span class='badge badge-light'><i class='fa fa-times'></i> Cancel</span></a>";
+                            }
+
+                            link += actionLinkBlank("/FixAssets/Export/Report/" + row.id + "?handler=PDF", "fa fa-eye", "View");
+
+                            if(row.requestStatus == "Complete Approve"){
+                                link += actionLinkBlank("/FixAssets/Export/Report/" + row.id + "?handler=PDF", "fa fa-print", "Print", true);
+
+                                if(row.depKeyNumber == "Cost"){
+                                    link += "<a href='javascript:void();' onclick='return keynumber(\"" + row.id + "\",\"" + row.keyNumber + "\");'><span class='badge badge-success'><i class='fa fa-pencil'></i> key number</span></a>";
+                                    if (row.updateAx != 1) {
+                                        link += "<a href='javascript:void();' onclick='return updatetoax(\"" + row.id + "\");'><span class='badge badge-info'><i class='fa fa-list'></i> update to ax</span></a>";
+                                    }
+                                }
+                                
+                            }
+
+                            if(row.idFile != 0){
+                                link += "<a href='/FixAssets/Index?handler=Download&id="+row.idFile+"' > <span class='badge badge-link'><i class='fa fa-file-image-o'></i> OpenFile </a>";
+
+                            }
+                            
+                            return link;
+                        }
+                    }
+                ]
+            });
+
+            $('#S_AssetsDate').datepicker({ dateFormat: 'dd-mm-yy' });
+            $('#btn_S_AssetsDate').click(function() {
+                $('#S_AssetsDate').datepicker('show');
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+            
+            $("#btnSearch").on("click", function () {
+                //alert("Search");
+                S_AssetsNumber = $("#S_AssetsNumber").val();
+                S_AssetsDate = $("#S_AssetsDate").val();
+                S_AssetCategory = $("#S_AssetCategory").val();
+                S_AssetsCompany = $("#S_AssetsCompany").val();
+                S_AssetsCreateBy = $("#S_AssetsCreateBy").val();
+                S_AssetsStatus = $("#S_AssetsStatus").val();
+                S_AssetsKeyNumber = $("#S_AssetsKeyNumber").val();
+
+                $(gridAssets).DataTable({
+                    serverSide: false,
+                    processing: false,
+                    destroy: true,
+                    responsive: false,
+                    searching: false,
+                    
+                    ajax: {
+                        url: "/FixAssets/Index?handler=Grid&S_AssetsNumber=" + S_AssetsNumber + "&S_AssetsDate=" + S_AssetsDate + "&S_AssetCategory=" + S_AssetCategory + "&S_AssetsCompany=" + S_AssetsCompany + "&S_AssetsCreateBy=" + encodeURIComponent(S_AssetsCreateBy) + "&S_AssetsStatus=" + S_AssetsStatus + "&S_AssetsKeyNumber=" + S_AssetsKeyNumber,
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtPromotion.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "หมายเลขคำร้อง", data: "assetNumber" },
+                        { title: "วันขอคำร้อง", data: "assetDate" },
+                        { title: "ระบุประเภท", data: "assetCategory"},
+                        { title: "ชนิดรายการ", data: "assetType" },
+                        { title: "ทรัพย์สินบริษัท", data: "company"},
+                        { title: "ชื่อผู้ร้องขอ", data: "fullName" },
+                        { title: "สถานะ", data: "requestStatus" },
+                        //{ title: "แบบฟอร์มเลขที่", data: "keyNumber" },
+                        //{ title: "Approve Step", data: "currentApproveStep" },
+                        { title: "Action", data: null }
+                    ],
+                    columnDefs: [
+                        @* {
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return row.currentApproveStep + "/" + row.totalApproveStep;
+                            }
+                        }, *@
+                        {
+                            targets: 7,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += actionLinkBlank("/FixAssets/" + row.id + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                
+                                if($("#userid").val() == row.createBy){
+                                    if(row.requestStatus == "Draft" || row.requestStatus == "Reject"){
+                                        link += actionLink("/FixAssets/" + row.id + "/EditAssets", "fa fa-list", "Edit");
+                                    }
+                                }
+                                
+                                if(row.requestStatus == "Open" || row.requestStatus == "Draft" || row.requestStatus == "Waiting For Approve" || row.requestStatus == "Reject"){
+                                    link += "<a href='javascript:void();' onclick='return cancelTrans("+row.id+");'><span class='badge badge-light'><i class='fa fa-times'></i> Cancel</span></a>";
+                                }
+
+                                link += actionLinkBlank("/FixAssets/Export/Report/" + row.id + "?handler=PDF", "fa fa-eye", "View");
+
+                                if(row.requestStatus == "Complete Approve"){
+                                    link += actionLinkBlank("/FixAssets/Export/Report/" + row.id + "?handler=PDF", "fa fa-print", "Print", true);
+
+                                    if(row.depKeyNumber == "Cost"){
+                                        link += "<a href='javascript:void();' onclick='return keynumber(\""+row.id+"\",\""+row.keyNumber+"\");'><span class='badge badge-success'><i class='fa fa-pencil'></i> key number</span></a>";
+                                        if (row.updateAx != 1) {
+                                            link += "<a href='javascript:void();' onclick='return updatetoax(\"" + row.id + "\");'><span class='badge badge-info'><i class='fa fa-list'></i> update to ax</span></a>";
+                                        }
+                                    }
+                                }
+
+                                if(row.idFile != 0){
+                                    link += "<a href='/FixAssets/Index?handler=Download&id="+row.idFile+"' > <span class='badge badge-link'><i class='fa fa-file-image-o'></i> OpenFile </a>";
+
+                                }
+                                return link;
+                            }
+                        }
+                    ]
+                });
+
+            });
+
+            $("#btnKeyNumber").on("click", function () {
+                if(confirm("Are you sure Key Number?")){
+                    $.ajax({
+                        url: "/FixAssets/Index?handler=KeyNumberTrans",
+                        type: "get",
+                        data : {
+                            number : $("#KeyNumber").val(),
+                            id : $("#idtrans").val()
+                        }
+                    }).done(function (data) {
+                        $("#modalNumber").modal("hide");
+                    });
+                }
+            });
+        });
+
+        function cancelTrans(id){
+            if(confirm("Are you sure Cancel?")){
+                $.ajax({
+                    url: "/FixAssets/Index?handler=CancelTrans",
+                    type: "get",
+                    data : {
+                        id : id
+                    }
+                }).done(function (data) {
+                    window.location.reload();
+                });
+            }
+        }
+
+        function keynumber(id,number){
+            $("#idtrans").val(id);
+            if(number == 'null'){
+                number = '';
+            }
+            $("#KeyNumber").val(number);
+            $("#modalNumber").modal({ backdrop: "static" });
+        }
+        
+        function updatetoax(id){
+            $("#idtrans").val(id);
+            if (confirm("Are you sure Update To Ax?")) {
+                $(".overlay").show();
+                $.ajax({
+                    url: "/FixAssets/Index?handler=UpdateToAx",
+                    type: "get",
+                    data : {
+                        id : id
+                    }
+                }).done(function (data) {
+                    //alert(data);
+                    window.location.reload();
+                });
+            }
+        }
+
+    </script>
+}

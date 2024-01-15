@@ -1,0 +1,219 @@
+@page "/Queing/Dashboard/Bay"
+@model Web.UI.Pages.Queing.Dashboard.BayModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueingDashboard";
+}
+@{
+    ViewData["Title"] = "Queing Dashboard";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "BAY DB02" }
+    };
+}
+
+<style>
+    .boxlinear {
+        background: rgb(208,208,208);
+        background: linear-gradient(0deg, rgba(208,208,208,1) 8%, rgba(208,208,208,1) 90%);
+    } 
+    .strokeheadgreen{
+        color: #145c05;
+        font-size: 50px;
+        -webkit-text-stroke: 1px 145c05;
+        text-shadow: 0px 2px 4px #145c05;
+    }
+    .strokeheadblue{
+        color: #272356;
+        font-size: 50px;
+        -webkit-text-stroke: 1px 145c05;
+        text-shadow: 0px 2px 4px #272356;
+    }
+    .strokeheadorange{
+        color: #f37022;
+        font-size: 50px;
+        -webkit-text-stroke: 1px 145c05;
+        text-shadow: 0px 2px 4px #272356;
+    }
+    .detail{
+        color: black;
+        font-size: 25px;
+        font-weight: bold;
+    }
+    .backgroundgreen{
+        background: rgb(41,213,121);
+        background: linear-gradient(0deg, rgba(41,213,121,1) 0%, rgba(213,255,235,1) 49%, rgba(41,213,121,1) 100%);
+        color: #f37022;
+        font-size: 50px;
+        -webkit-text-stroke: 1px 145c05;
+        text-shadow: 0px 2px 4px #272356;
+    }
+    .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+</style>
+
+<div class="ontainer-fluid row mb-2">
+    <div class="col-md-6 themed-grid-col">
+        <body>
+            <table width=100% class='boxlinear'>
+                <tr>
+                    <td><br></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td width="45%" class="strokeheadgreen">
+                        ทะเบียนรถ
+                        <div style="margin-left: -15px; width: 200%; border-bottom: 3px solid #f49a63; font-size: 10px;"></div>
+                    </td>
+                    <td width="2%"></td>
+                    <td width="45%" class="strokeheadblue"> 
+                        <p id="bay_truckid"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td width="45%" class="strokeheadgreen">
+                        Inv./W/O
+                        <div style="margin-left: -15px; width: 200%; border-bottom: 3px solid #f49a63; font-size: 10px;"></div>
+                    </td>
+                    <td width="2%"></td>
+                    <td width="45%" class="strokeheadblue"> 756/00012</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td width="45%" class="strokeheadgreen">
+                        Quantity
+                        <div style="margin-left: -15px; width: 200%; border-bottom: 3px solid #f49a63; font-size: 10px;"></div>
+                    </td>
+                    <td width="2%"></td>
+                    <td width="45%" class="strokeheadblue"> 1010<td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td width="45%" class="strokeheadgreen">
+                        Loaded
+                        <div style="margin-left: -15px; width: 200%; border-bottom: 3px solid #f49a63; font-size: 10px;"></div>
+                    </td>
+                    <td width="2%"></td>
+                    <td width="45%" class="strokeheadblue"> 500</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td width="45%" class="strokeheadgreen">
+                        Ratio
+                        <div style="margin-left: -15px; width: 200%; border-bottom: 3px solid #f49a63; font-size: 10px;"></div>
+                    </td>
+                    <td width="2%"></td>
+                    <td width="45%" class="strokeheadblue"> 49.50%</td>
+                </tr>
+                <tr>
+                    <td><br></td>
+                </tr>
+            </table>
+        </body>
+    </div>
+    <div class="col-md-6 themed-grid-col">
+        <body>
+            <table width=100% class='boxlinear' style="text-align:center;">
+                <tr>
+                    <td><br></td>
+                </tr>
+                <tr>
+                    <td class="strokeheadgreen" colspan="2">
+                        TIME
+                    </td>
+                </tr>
+                <tr>
+                    <td class="backgroundgreen" colspan="2">
+                        00:40:24
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail">
+                        42103924179
+                    </td>
+                    <td class="detail">
+                        42103947260
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail">
+                        42103875765
+                    </td>
+                    <td class="detail">
+                        42103875764
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail">
+                        42103875763
+                    </td>
+                    <td class="detail">
+                        42103875762
+                    </td>
+                </tr>
+                <tr>
+                    <td><br></td>
+                </tr>
+            </table>
+        </body>
+    </div>
+</div>
+
+<br>
+<div class="footer">
+    <button class="btn btn-light btn-sm" onclick="openFullscreen();">
+        <i class="fa fa-expand" aria-hidden="true"></i>
+    </button>
+    <button class="btn btn-light btn-sm" onclick="closeFullscreen();">
+        <i class="fa fa-compress" aria-hidden="true"></i>
+    </button>
+</div>
+
+@section Scripts {
+    <script>
+
+        var elem = document.documentElement;
+        function openFullscreen() {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function closeFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
+        }
+
+        var bay_ = getBayShow('svo');
+        bay_.done(function(data) {
+            $.each(data, function(index, val) {
+                console.log(val.truckid);
+                $("#bay_truckid").html(val.truckid);
+            });
+        });
+
+        function getBayShow(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/Bay?handler=BayShow",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+    </script>
+}

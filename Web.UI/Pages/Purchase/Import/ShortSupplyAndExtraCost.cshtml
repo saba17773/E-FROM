@@ -1,0 +1,25 @@
+﻿@page
+@model Web.UI.Pages.Purchase.Import.ShortSupplyAndExtraCostModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "KPI Short Supply And Extra Cost";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Import", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Supply And Extra Cost" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        KPI Supply And Extra Cost
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="TemplateUpload" />
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>

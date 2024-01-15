@@ -1,0 +1,92 @@
+﻿@page "/ApproveManage/ApproveFlow/{id}/View"
+@model Web.UI.Pages.ApproveManage.ApproveFlow.ViewModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "View Approve Flow";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Approve Master", Link = "/ApproveManage/ApproveMaster" },
+        new BreadcrumbModel { Text = "Approve Flow" }
+    };
+}
+<div class="card">
+    <div class="card-header">
+        Approve Flow
+    </div>
+    <div class="card-body overflow-auto">
+        <div class="mb-3">
+            <a href="/ApproveManage/ApproveFlow/@Model.ApproveMasterId/Add" class="btn btn-primary mr-2 mb-2">
+                <i class="fa fa-plus"></i> Add
+            </a>
+        </div>
+        <form method="post">
+            <table id="gridApproveFlow" width="100%" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridId = "#gridApproveFlow";
+
+            var dt = $(gridId).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                ajax: {
+                    url: "/ApproveManage/ApproveFlow/@Model.ApproveMasterId/View?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dt.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Level", data: "approveLevel" },
+                    { title: "Name", data: "name" },
+                    { title: "Email", data: "email" },
+                    { title: "BackupEmail", data: "backupEmail" },
+                    { title: "Is Active?", data: "isActive" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            if (data === 1) {
+                                return "<span class='badge badge-success'>Enable</span>";
+                            }
+
+                            if (data === 0) {
+                                return "<span class='badge badge-danger'>Disable</span>";
+                            }
+                        }
+                    },
+                    {
+                        targets: 5,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/ApproveManage/ApproveFlow/" + row.id + "/Edit?flowId=@Model.ApproveMasterId", "fa fa-edit", "Edit");
+                            link += actionLink("/ApproveManage/ApproveFlow/" + row.id + "/View?handler=Delete&mid=" + row.approveMasterId, "fa fa-remove", "Delete");
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+    </script>
+}

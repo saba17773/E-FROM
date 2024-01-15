@@ -1,0 +1,76 @@
+@page
+@model Web.UI.Pages.FixAssets.ApproveMapping.AddModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Approve Mapping";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "FixAssets", Link = "/FixAssets" },
+        new BreadcrumbModel { Text = "Approve Mapping", Link = "/FixAssets/ApproveMapping" },
+        new BreadcrumbModel { Text = "Add" }
+    };
+}
+
+
+<div class="card">
+    <div class="card-header">
+        Add Approve Mapping
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <form method="post">
+                    <div class="form-group">
+                        <label asp-for="ApproveMapping.CCType">Name</label>
+                        <input type="text" asp-for="ApproveMapping.CCType" class="form-control" />
+                        <span class="text-danger" asp-validation-for="ApproveMapping.CCType"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveMapping.ApproveMasterId">ApproveMaster</label>
+                        <select asp-for="ApproveMapping.ApproveMasterId" asp-items="Model.ApproveMappingApproveMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ApproveMapping.ApproveMasterId"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveMapping.CreateBy">User</label>
+                        <select asp-for="ApproveMapping.CreateBy" asp-items="Model.ApproveMappingUserMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ApproveMapping.CreateBy"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="ApproveMapping.TypeProduct">Type Category</label>
+                        <select asp-for="ApproveMapping.TypeProduct" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                            <option value="1">ตัดทรัพย์สินถาวร</option>
+                            <option value="2">โอนย้ายทรัพย์สิน/แจ้งเปลี่ยนผู้ถือครอง</option>
+                            <option value="3">โอนย้ายทรัพย์สิน/แจ้งเปลี่ยนผู้ถือครอง & เคลื่อนย้ายอุปกรณ์</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ApproveMapping.TypeProduct"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveMapping.CompanyId">Company <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="ApproveMapping.CompanyId" asp-items="Model.CompanyMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ApproveMapping.CompanyId"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa fa-check"></i>
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

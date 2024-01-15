@@ -1,0 +1,96 @@
+@page
+@model Web.UI.Pages.Planing.Import.TemplateSODModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Import Template SOD For AOT";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Import Template SOD For AOT" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 5%;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Import Template SOD For AOT
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id = "form_import">
+            
+            <div class="row table-active">
+
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateSOD.AllocateMonth">Allocate Month <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="TicketTamplateSOD.AllocateMonth" class="form-control" placeholder="AllocateMonth" autocomplete="off" data-date-format="dd/MM/yyyy"/>
+                        <span class="text-danger" asp-validation-for="TicketTamplateSOD.AllocateMonth"></span>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label>FileUpload </label>
+                        <input type="file" name="TemplateUpload" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <button type="submit" id="btn_submit" class="btn btn-success"> <i class="fa fa-upload"></i> Import</button>
+                        <button type="reset" class="btn btn-danger"> <i class="fa fa-times"></i> Clear</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#TicketTamplateSOD_AllocateMonth").datepicker(
+                {
+                    format: "mm-yyyy",
+                    viewMode: "months", 
+                    minViewMode: "months"
+                }
+            );
+            $("#form_import").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("Submit...");
+            });
+        });
+    </script>
+}

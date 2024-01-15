@@ -1,0 +1,203 @@
+﻿@page "/Queing/Master/UserMapping/{userid}/Edit"
+@model Web.UI.Pages.Queing.Master.UserMapping.EditModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Edit User Mapping";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "User Mapping", Link = "/Queing/Master/UserMapping" },
+        new BreadcrumbModel { Text = "Edit User Mapping" }
+    };
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <div class="card mb-3">
+        <div class="card-header">
+            <span>Edit User Mapping</span>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <form method="post" enctype="multipart/form-data" id="form_submit">
+                    <table width="98%">
+                        <tr>
+                            <td>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="txtEmployeeID">
+                                            Employee ID :
+                                        </label>
+                                        <input type="text" class="form-control" asp-for="EmployeeID" id="txtEmployeeID" readonly />
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="txtUserDomain">UserDomain</label>
+                                        <input type="text" class="form-control" asp-for="UserDomain" id="txtUserDomain" readonly />
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="txtUsername">Username</label>
+                                        <input type="text" class="form-control" asp-for="Username" id="txtUsername" readonly />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="txtFirstName">First Name :</label>
+                                        <input type="text" class="form-control" asp-for="FirstName" id="txtFirstName" readonly />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="txtLastName">Last Name :</label>
+                                        <input type="text" class="form-control" asp-for="LastName" id="txtLastName" readonly />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <label for="txtEmail">Email :</label>
+                                        <input type="text" class="form-control" asp-for="Email" id="txtEmail" readonly />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <table id="PlantTB" width="50%" class="table table-hover"></table>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" id="btnAddMapping" class="btn btn-success"
+                                            name="add" value="add">
+                                        Submit
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <input class="form-control" type="hidden" asp-for="UserID" id="UserID" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+
+        $("#form_submit").submit(function (e) {
+            $(".overlay").show();
+            $('#btnAddMapping').html("Loading...");
+        });
+
+        $(document).ready(function () {
+            var PlantTB = "#PlantTB";
+            $(PlantTB).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                paging:false,
+                ajax: {
+                    url: "/Queing/Master/UserMapping/@Model.UserID/Edit?handler=PlantGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "Id.", data: "id" },
+                    { title: "Company", data: "fullname" },
+                    { title: "Active", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        "className": "text-left",
+                        orderable: false,
+                        visible: false
+                    },
+                    {
+                        targets: 1,
+                        width: "80%",
+                        "className": "text-left"
+                    },
+                    {
+                        targets: 2,
+                        width: "20%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            if (row.ischeck == 1) {
+                                var link = "";
+                                link += "<input type='checkbox' name='plant" + row.id + "' id='plant" + row.id + "' onclick='isPlantClick(\"" + row.company + "\", " + row.id + ");' checked/>";
+                                link += "<input type='hidden' name='PlantResult' id='txtPlant" + row.id + "' value='"+ row.company + "' />";
+                                return link;
+                            }
+                            else {
+                                var link = "";
+                                link += "<input type='checkbox' name='plant" + row.id + "' id='plant" + row.id + "' onclick='isPlantClick(\"" + row.company + "\", " + row.id + ");' />";
+                                link += "<input type='hidden' name='PlantResult' id='txtPlant" + row.id + "' value='' />";
+                                return link;
+                            }
+                        }
+                    }
+                ],
+            });
+        });
+
+        function isPlantClick(company, rowid) {
+            var name = 'plant' + rowid;
+            var tool = "#txtPlant" + rowid;
+
+            if (document.getElementById(name).checked == true) {
+                $(tool).val(company);
+            }
+            else {
+                $(tool).val("");
+            }
+        }
+
+
+    </script>
+}

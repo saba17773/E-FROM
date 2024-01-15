@@ -1,0 +1,70 @@
+@page "/Planing/{year}/{version}/{type}/LineBP"
+@model Web.UI.Pages.Planing.LineBPModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Line Template BP";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Master BP", Link = "/Planing" },
+        new BreadcrumbModel { Text = "Line Template BP"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Line Template BP
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridLineBP" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridLineBP = "#gridLineBP";
+
+            var dtCreditControl = $(gridLineBP).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Planing/@Model.Year/@Model.VersionId/@Model.Type/LineBP?handler=Grid&year=@Model.Year&version=@Model.VersionId&type=@Model.Type",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtCreditControl.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Year", data: "year" },
+                    { title: "Month", data: "month" },
+                    { title: "Version", data: "version" },
+                    { title: "ItemId", data: "itemId" },
+                    { title: "ItemName", data: "itemName" },
+                    { title: "QTY", data: "qty" },
+                    { title: "Amount", data: "amount" },
+                    { title: "Remark", data: "remark" },
+                    { title: "Type", data: "setType"},
+                    { title: "CreateBy", data: "createName" },
+                    { title: "CreateDate", data: "createDate" }
+                ],
+                columnDefs: [
+                ]
+            });
+
+        });
+    </script>
+}

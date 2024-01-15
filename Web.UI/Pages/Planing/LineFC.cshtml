@@ -1,0 +1,69 @@
+@page "/Planing/{year}/{custgroup}/{version}/LineFC"
+@model Web.UI.Pages.Planing.LineFCModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Line Template FC";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Master FC", Link = "/Planing/IndexFC" },
+        new BreadcrumbModel { Text = "Line Template FC"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Line Template FC
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridLineFC" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridLineFC = "#gridLineFC";
+
+            var dtCreditControl = $(gridLineFC).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Planing/@Model.Year/@Model.CustGroup/@Model.VersionId/LineFC?handler=Grid&year=@Model.Year&custgroup=@Model.CustGroup&version=@Model.VersionId",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtCreditControl.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Year", data: "year" },
+                    { title: "CustGroup", data: "custGroup" },
+                    { title: "Month", data: "month" },
+                    { title: "Version", data: "version" },
+                    { title: "ItemId", data: "itemId" },
+                    { title: "Qty", data: "qty" },
+                    { title: "Amount", data: "amount" },
+                    { title: "Remark", data: "remark" },
+                    { title: "CreateBy", data: "createName" },
+                    { title: "CreateDate", data: "createDate" }
+                ],
+                columnDefs: [
+                ]
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,22 @@
+﻿@using Interfaces
+ 
+@inject IAuthService authService
+
+<ul class="navbar-nav ml-auto">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDD" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> @authService.GetClaim().Username</a>
+            <div class="dropdown-menu" aria-labelledby="userDD">
+                <a class="dropdown-item" href="/ChangePassword">Change Password</a>
+                <a class="dropdown-item" href="/Logout">Logout</a>
+            </div>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="/Login?u=0"><i class="fa fa-sign-in"></i> Login</a>
+        </li>
+    }
+</ul>

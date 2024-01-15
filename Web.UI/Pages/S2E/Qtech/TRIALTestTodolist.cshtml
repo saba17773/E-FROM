@@ -1,0 +1,76 @@
+﻿@page
+@model Web.UI.Pages.S2E.Qtech.TRIALTestTodolistModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "List Approve Trial Test";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "List Approve Trial Test" }
+    };
+}
+<div class="h3 my-3">List Approve Trial Test</div>
+
+<form method="post" enctype="multipart/form-data">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+            var dtList= $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Qtech/TRIALTestTodolist?handler=Grid&mail=@Model.EMAIL",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Code.", data: "requestcode" },
+                    { title: "Project REF. NO.", data: "projectrefno" },
+                    { title: "Supplier Name", data: "suppliername" },
+                    { title: "Chemical Name", data: "chemicalname" },
+                    { title: "Compounder", data: "requestby" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function (data, type, row)
+                        {
+                            return '<a href="/S2E/Qtech/TRIALTestApprove?TRIALID=' + row.trialid + '&TRIALLINEID=' + row.triallineid + '&TranID=' + row.approvetransid + '&nonce=' + row.noncekey + '&email=@Model.EMAIL">' + row.requestcode + '</a>';
+                        }
+                    }
+
+                ]
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

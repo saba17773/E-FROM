@@ -1,0 +1,167 @@
+﻿@page
+@model Web.UI.Pages.Queing.Master.All.IndexModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Main Master";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Main Master" }
+    };
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<form method="post" enctype="multipart/form-data" id="form_submit">
+    <div class="container2">
+        <br />
+        <div class="row row-cols-1 row-cols-md-2">
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/UserPermission" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-refresh"></i>
+                            CHANGE PERMISSION
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/AgentTractor" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-cog"></i>
+                            AGENT TRACTOR
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/Bay" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-cog"></i>
+                            BAY
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <br />
+        <div class="row row-cols-1 row-cols-md-2">
+
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/ContainerSize" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-cog"></i>
+                            CONTAINER SIZE
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/Route" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-cog"></i>
+                            ROUTE
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/TruckCategory" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-cog"></i>
+                            TRUCK CATEGORY
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <br />
+        <div class="row row-cols-1 row-cols-md-2">
+
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/Agent" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-cog"></i>
+                            AGENT
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3">
+                <div class="card text-center text-black bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All/TranspotCategory" class="card-body btn btn-info">
+                        <b class="card-title">
+                            <i class="fa fa-cog"></i>
+                            TRANSPOT CATEGORY
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3">
+                <div style="max-width: 18rem;">
+                </div>
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <a href="/Queing/Home" class="btn btn-light">
+                <i class="fa fa-reply"></i> Back
+            </a>
+        </div>
+
+    </div>
+</form>

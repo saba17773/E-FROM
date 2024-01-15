@@ -1,0 +1,85 @@
+﻿@page
+@model Web.UI.Pages.S2E.ApproveMapping.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Mapping";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Approve Mapping" }
+    };
+}
+<div class="card">
+    <div class="card-header">
+        Approve Mapping
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <a href="/S2E/ApproveMapping/Add" class="btn btn-primary mr-2 mb-2">
+                <i class="fa fa-plus"></i> Add
+            </a>
+        </div>
+        <form method="post">
+            <table id="gridApproveMapping" width="100%" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridApproveMapping = "#gridApproveMapping";
+
+            var dtRole = $(gridApproveMapping).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                "order": [[4, 'asc']],
+                ajax: {
+                    url: "/S2E/ApproveMapping?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtRole.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "S2E Type", data: "s2EType" },
+                    { title: "Approve Master", data: "approveMaster" },
+                    { title: "Create By", data: "createBy" },
+                    { title: "Actions", data: null },
+                    { title: "ID", data: "id" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 3,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/S2E/ApproveMapping/" + row.id + "/Edit", "fa fa-edit", "Edit");
+                            link += actionLink("/S2E/ApproveMapping?handler=Delete&id=" + row.id, "fa fa-remove", "Delete");
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 4,
+                        visible: false
+                    }
+                ],
+            });
+
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+    </script>
+}

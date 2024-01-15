@@ -1,0 +1,469 @@
+﻿@page "/S2E/Purchase/AddRawMaterial/{ADDRMID}/AddMore"
+@model Web.UI.Pages.S2E.Purchase.AddRawMaterial.AddMoreModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "สร้างใบร้องขอเพิ่มวัตถุดิบเข้าระบบ";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Purchase/AddRawMaterial/Main" },
+        new BreadcrumbModel { Text = "สร้างใบร้องขอเพิ่มวัตถุดิบเข้าระบบ" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>สร้างใบร้องขอเพิ่มวัตถุดิบเข้าระบบ</h3>
+</div>
+<div class="d-flex justify-contesnt-between align-items-center my-3">
+    <b>
+        <label>REQUEST DATE : @DateTime.Now.ToString("dd/MM/yyyy")</label>
+    </b>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <b>รายละเอียดผู้ขาย</b>
+            <table style="width:90%">
+                <tr>
+                    <td> Request Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"> รหัสผู้ขาย/ผู้ผลิต : </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="VendorID" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td> ตัวแทนจำหน่าย : </td>
+                    <td>
+                        <div class="input-group">
+                            <textarea asp-for="SupplierName" rows="2" style="white-space:normal;display:block;"
+                                      class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ที่อยู่ของตัวแทนจำหน่าย : </td>
+                    <td colspan="3">
+                        <div class="input-group">
+                            <textarea asp-for="DealerAddress" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%">
+                        Item :
+                    </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="15%">
+                        PONo. :
+                        <span class="text-danger font-weight-bold">*</span>
+                        <span id="selectPONo" class="badge badge-info"><i class="fa fa-search"></i>เลือก PO.</span>
+                    </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="PONo" id="PONo" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td> Item Name : </td>
+                    <td colspan="3">
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemName" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ราคา : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Price" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td>Currency Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="CurrencyCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        ซื้อวัตถุดิบเพิ่มหรือไม่? :
+                    </td>
+                    <td style="text-align:left;">
+                        <label>
+                            <input type="radio" asp-for="isPurchaseSample" id="isPurchaseSample1" value="1" class="radio2" disabled checked />
+                            ซื้อสินค้าเพื่อทดสอบ
+                        </label>
+                        &nbsp;&nbsp;
+                        <label style="color:red;">
+                            <input type="radio" asp-for="isPurchaseSample" id="isPurchaseSample2" value="0" class="radio2" disabled />
+                            ไม่ซื้อสินค้า
+                        </label>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td> จำนวน : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Qty" class="form-control" autocomplete="off"
+                                   onkeyup="this.value=addCommas(this.value);" asp-format="{0:#,##0.#0}" />
+                        </div>
+                    </td>
+                    <td>จำนวนจากใบ PO : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="QtyPO" class="form-control" autocomplete="off"
+                                   onkeyup="this.value=addCommas(this.value);" asp-format="{0:#,##0.#0}" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span asp-validation-for="Qty" class="text-danger"></span>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td> หน่วย : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Unit" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%" style="text-align:right;"> เริ่มทดสอบ : </td>
+                    <td width="25%" style="text-align:left;">
+                        <table width="100%">
+                            <tr>
+                                <td width="5%"></td>
+                                <td width="15%" style="text-align:left;">
+                                    <label for="isStartTestYes">
+                                        <input type="radio" asp-for="isStartTest" id="isStartTestYes" name="isStartTest" value="1" class="radio2" disabled />
+                                        Yes
+                                    </label>
+                                </td>
+                                <td width="15%" style="text-align:left;">
+                                    <label for="isStartTestNo">
+                                        <input type="radio" asp-for="isStartTest" id="isStartTestNo" name="isStartTest" value="2" class="radio2" disabled />
+                                        No
+                                    </label>
+                                </td>
+                                <td width="50%">
+                                    <input type="text" class="form-control" asp-for="isStartTestRemark" id="isStartTestRemark"
+                                           name="isStartTestRemark" autocomplete="off" readonly />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td colspan="2">
+                    </td>
+                </tr>
+                <tr style="text-align:left">
+                    <td width="15%" style="text-align:right">Plant เพิ่มวัตถุดิบ : </td>
+                    <td width="35%">
+                        <label for="Plant1">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant1" value="DSL" class="radio2" disabled />
+                            <b>DSL</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant2">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant2" value="DRB" class="radio2" disabled />
+                            <b>DRB</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant3">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant3" value="DSI" class="radio2" disabled />
+                            <b>DSI</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant4">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant4" value="DSR" class="radio2" disabled />
+                            <b>DSR</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant5">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant5" value="STR" class="radio2" disabled />
+                            <b>STR</b>
+                        </label>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <br />
+            <table width="60%" id="UploadTable" align="left">
+                <tr style="text-align: left;">
+                    <th>File Upload</th>
+                    <th>Delete</th>
+                </tr>
+                <tr style="text-align: left;" id="tablerow0">
+                    <td width="80%">
+                        <input type="file" id="f0" name="FileUpload" style="width:90%;" />
+                    </td>
+                    <td width="20%">
+                        <button type="button" class="btn btn-danger" id="b0" onclick="removeTr(0);"> ลบ </button>
+                    </td>
+                </tr>
+                <tr style="text-align: left;" id="tablerow1">
+                    <td width="80%">
+                        <input type="file" id="f1" name="FileUpload" style="width:90%;" />
+                    </td>
+                    <td width="20%">
+                        <button type="button" class="btn btn-danger" id="b1" onclick="removeTr(1);"> ลบ </button>
+                    </td>
+                </tr>
+            </table>
+            <table width="70%">
+                <tr>
+                    <td style="text-align:right;">
+                        <button type="button" class="btn btn-primary" id="add"><i class="fa fa-plus"> เพิ่มไฟล์ </i></button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                    <button type="reset" class="btn btn-danger">
+                        <i class="fa fa-times"></i>
+                        ยกเลิก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@* Model PO No. *@
+<div class="modal" id="modalPONo" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select PO No.</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:left">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridPONo" style="text-align:left;" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+
+        $("#form_submit").submit(function (e) {
+            $(".overlay").show();
+             $('#btn_submit').html("Submit...");
+        });
+
+        var counter = 2;
+        $("#add").click(function () {
+
+            $('<tr style="text-align: left;" id="tablerow' + counter + '">' +
+                '<td width="80%">' +
+                '<input type="file" id="f' + counter + '" name="FileUpload" style="width:90%;" />' +
+                '</td>' +
+                '<td>' +
+                '<button type="button" class="btn btn-danger" id="b' + counter + '" onclick="removeTr(' + counter + ');"> ลบ </button>' +
+                '</td>' +
+                '</tr>'
+            ).appendTo('#UploadTable');
+
+            counter++;
+
+            return false;
+        });
+
+        function removeTr(index) {
+            if (counter > 1) {
+                $('#tablerow' + index).remove();
+                counter--;
+            }
+            return false;
+        }
+
+        $(document).ready(function () {
+            $("#selectPONo").on("click", function () {
+
+                var gridPONo = "#gridPONo";
+
+                $("#modalPONo").modal({ backdrop: "static" });
+
+                var dtPONo = $(gridPONo).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    dom: 'lrtip',
+                    ajax: {
+                        url: "/S2E/Purchase/AddRawMaterial/@Model.AddRMID/AddMore?handler=PONoGrid&VendorID=@Model.VendorID&ItemID=@Model.ItemCode",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtPONo.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "PO No.", data: "pono" },
+                        { title: "Vendor ID", data: "vendorid" },
+                        { title: "Item Code", data: "itemid" },
+                        { title: "Item Description", data: "itemdescription" },
+                        { title: "Action", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 4,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<button type='button' class='btn btn-info' onclick='selectPONo(\"" + row.pono + "\", \"" + commaSeparateNumber(row.qty) + "\", \"" + commaSeparateNumber(row.unitprice) + "\")'><i class='fa fa-check'></i> เลือก</button>";
+                                return link;
+                            }
+                        }
+                    ],
+                });
+
+                $("body").on("keypress", function (e) {
+                    if (e.which === 13) e.preventDefault();
+                });
+
+            });
+
+            function commaSeparateNumber(val) {
+                while (/(\d+)(\d{3})/.test(val.toString())) {
+                    val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
+                }
+
+                return val;
+            }
+
+        });
+
+        function selectPONo(pono, qty, price) {
+
+            $("#PONo").val(pono);
+            $("#Qty").val(qty);
+            $("#Price").val(price);
+            $("#QtyPO").val(qty);
+            $("#modalPONo").modal("hide");
+        }
+
+        function addCommas(Num) {
+            if (event.key == "1" || event.key == "2" || event.key == "3" || event.key == "4" ||
+                event.key == "5" || event.key == "6" || event.key == "7" || event.key == "8" ||
+                event.key == "9" || event.key == "0" || event.key == "." ||
+                event.key == "Backspace" || event.key == "Tab" || event.key == "Delete" ||
+                event.key == "Del" || event.key == "ArrowUp" || event.key == "ArrowLeft" ||
+                event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "Up" ||
+                event.key == "Left" || event.key == "Down" || event.key == "Right") {
+                Num += '';
+                Num = Num.replace(/,/g, '');
+
+                x = Num.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1))
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                return x1 + x2;
+            }
+            else {
+                alert("ใส่ได้เฉพาะตัวเลข");
+                return "";
+            }
+        }
+
+    </script>
+}
+

@@ -1,0 +1,14 @@
+﻿@page
+@model Web.UI.Pages.S2E.Qtech.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Qtech Page";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech" }
+    };
+}
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <h1>S2E Project Qtech</h1>
+    </div>

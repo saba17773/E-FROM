@@ -1,0 +1,217 @@
+﻿@page "/S2E/Qtech/MaterialRequestSample/{RMReqSamLineID}/Cancel"
+@model Web.UI.Pages.S2E.Qtech.MaterialRequestSample.CancelModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "ยกเลิกข้อมูลใบเบิกวัตถุดิบ (LAB Sample)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech", Link = "/S2E/Qtech" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Qtech/MaterialRequest/Main" },
+        new BreadcrumbModel { Text = "รายละเอียดใบเบิกวัตถุดิบ (LAB Sample)", Link = $"/S2E/Qtech/MaterialRequestSample/{@Model.RMReqSamId}/RequestDetail" },
+        new BreadcrumbModel { Text = "ยกเลิกข้อมูลใบเบิกวัตถุดิบ (LAB Sample)" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3> ยกเลิกใบเบิกวัตถุดิบ (LAB Sample) </h3>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <b>เหตุผล : </b>
+                    <textarea rows="2" style="white-space:normal;display:block;"
+                              asp-for="CancelRemark" id="CancelRemark" class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger" id="btn_submit" onclick="return confirm('ต้องการยกเลิกใช่หรือไม่?')">
+                        <i class="fa fa-ban"></i>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="container2">
+            <table style="width:80%" align="center">
+                <tr>
+                    <td style="text-align:center" colspan="4">
+                        @if (@Model.Plant == "DSL")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DRB")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีรับเบอร์ จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DSI")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท ดีสโตน อินเตอร์เนชั่นแนล จำกัด </b> </span>
+                        }
+                        else if (@Model.Plant == "DSR")
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท สวิซซ์-วัน คอร์ปอเรชั่น จำกัด </b> </span>
+                        }
+                        else
+                        {
+                            <span> <b style="font-size:x-large;"> บริษัท สยามทรัค เรเดียล จำกัด </b> </span>
+                        }
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center" colspan="4">
+                        <span> <b style="font-size:x-large;"> ใบเบิกวัตถุดิบ </b> </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;" width="20%">
+                        <b>Request Code : </b> @Model.RequestCode
+                    </td>
+                    <td style="text-align:left;" width="50%">
+                    </td>
+                    <td style="text-align:right;" width="10%">
+                        <b>เลขที่ : </b>
+                    </td>
+                    <td style="text-align:left;" width="20%">
+                        <input type="text" class="form-control" asp-for="No" readonly autocomplete="off" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;" width="20%">
+                    </td>
+                    <td style="text-align:left;" width="50%">
+                    </td>
+                    <td style="text-align:right;" width="10%">
+                        <b>วันที่ : </b>
+                    </td>
+                    <td style="text-align:left;" width="20%">
+                        @Model.RequestDate
+                    </td>
+                </tr>
+
+            </table>
+            <br />
+            <table width="80%" align="center">
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> แผนก : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="Department" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> ฝ่าย : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="SupGroup" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> Item Name : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <textarea asp-for="ItemName" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> จำนวน : </td>
+                    <td width="50%" style="text-align:left;">
+                        <div class="input-group">
+                            <input type="text" asp-for="Qty" asp-format="{0:#,##0.#0}" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%" style="text-align:right;"> หน่วย : </td>
+                    <td width="50%" style="text-align:left;">
+                        @Model.Unit
+                    </td>
+                    <td width="20%"></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+@section scripts {
+    <script>
+
+        $("#form_submit").submit(function (e) {
+
+            if ($("#CancelRemark").val() == "") {
+
+                alert("กรุณาใส่เหตุผลที่ต้องการยกเลิก");
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btn_submit').html("Submit...");
+        });
+
+    </script>
+}

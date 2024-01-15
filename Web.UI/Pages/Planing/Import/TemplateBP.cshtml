@@ -1,0 +1,129 @@
+﻿@page
+@model Web.UI.Pages.Planing.Import.TemplateBPModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Import Template BP";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Import Template BP" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 5%;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Import Template BP
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id = "form_import">
+            
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateBP.Year">Year</label>
+                        <select asp-for="TicketTamplateBP.Year" asp-items="Model.YearMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateBP.Year"></span>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateBP.VersionId">Version</label>
+                        <select asp-for="TicketTamplateBP.VersionId" asp-items="Model.VersionMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateBP.VersionId"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateBP.Type">TypeSet</label>
+                        <select asp-for="TicketTamplateBP.Type" asp-items="Model.SetTypeMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateBP.Type"></span>
+                    </div>
+                </div>
+                @* <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateBP.Status">Status</label>
+                        <select asp-for="TicketTamplateBP.Status" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                            <option value="New">New</option>
+                            <option value="Update">Update</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="TicketTamplateBP.Status"></span>
+                    </div>
+                </div> *@
+            </div>
+
+            <div class="row table-active">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="TicketTamplateBP.Remark">Remark </label>
+                        <input type="text" asp-for="TicketTamplateBP.Remark" class="form-control" autocomplete="off"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label>FileUpload </label></label>
+                        <input type="file" name="TemplateUpload" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row table-active">
+                <div class="col-3">
+                    <div class="form-group">
+                        <button type="submit" id="btn_submit" class="btn btn-success"> <i class="fa fa-upload"></i> Import</button>
+                        <button type="reset" class="btn btn-danger"> <i class="fa fa-times"></i> Clear</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#form_import").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("Submit...");
+            });
+        });
+    </script>
+}

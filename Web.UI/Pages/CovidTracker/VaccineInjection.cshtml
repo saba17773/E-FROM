@@ -1,0 +1,254 @@
+﻿@page
+@model Web.UI.Pages.CovidTracker.VaccineInjectionModel
+@{
+    ViewBag.Title = "Vaccine Injection";
+    Layout = "_MainLayout";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="card-title font-weight-bold flex-grow-1">ข้อมูลการฉีดวัคซีน</span>
+                <div>
+                    <button type="button" class="btn btn-light" id="btn_add_vaccine">
+                        <i class="fas fa-plus"></i>
+                        เพิ่มรายการ
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table width="100%" id="vaccine_injection_grid" class="table table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="form_vaccine_modal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">เพิ่ม/แก้ไข</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_vaccine" method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="Covid_VaccineInjection.Id" />
+                    <input type="hidden" asp-for="Covid_VaccineInjection.IsLatest" />
+
+                    <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column justify-content-between">
+
+                        <div class="form-group w-100 mr-3">
+                            <label>พนักงาน <span class="text-danger">*</span></label>
+                            <input type="text" asp-for="Covid_VaccineInjection.EmployeeId" placeholder="คลิกที่นี่เพื่อเลือกข้อมูล" class="form-control" autocomplete="off" required />
+                        </div>
+
+                        <div class="form-group w-100 mr-3">
+                            <label>วัคซีน</label>
+                            <select class="form-control" asp-items="Model.VaccineSelectListItem" asp-for="Covid_VaccineInjection.VaccineId">
+                            </select>
+                        </div>
+
+                        <div class="form-group w-100 mr-3">
+                            <label>สถานะ</label>
+                            <select asp-items="Model.VaccineStatusesSelectListItem" asp-for="Covid_VaccineInjection.VaccineStatusId" class="form-control" required></select>
+                        </div>
+
+                        <div class="form-group w-100">
+                            <label>วันที่</label>
+                            <input type="text" asp-for="Covid_VaccineInjection.VaccineDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end align-content-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="employee_modal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">พนักงาน</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table width="100%" id="employee_grid" class="table table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var _employeeGrid;
+            var _vaccineInjectionGrid = vaccineInjectionGrid();
+
+            $("#Covid_VaccineInjection_VaccineId").val(6);
+
+            $("#Covid_VaccineInjection_VaccineDate").datepicker({
+                format: "yyyy-mm-dd"
+            });
+
+            $("#Covid_VaccineInjection_EmployeeId").on("click", function () {
+                $("#employee_modal").modal({ backdrop: "static" });
+                _employeeGrid = employeeGrid();
+            });
+
+            $("#employee_grid").on('click', 'tbody tr', function () {
+                var employeeRowData = _employeeGrid.row(this).data();
+                $("#Covid_VaccineInjection_EmployeeId").val(employeeRowData.employeeId);
+                $("#employee_modal").modal("hide");
+            });
+
+            $("#form_vaccine").on("submit", function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: "?handler=SaveVaccineData",
+                    type: "post",
+                    dataType: "json",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    data: $("#form_vaccine").serialize(),
+                    success: function (result) {
+                        _vaccineInjectionGrid.ajax.reload();
+                        $("#Covid_VaccineInjection_EmployeeId").val("");
+
+                        $("#form_vaccine_modal").modal("hide");
+                    }
+                });
+            });
+
+            $("#vaccine_injection_grid").on("click", "tbody tr .--edit", function () {
+
+                var rowdata = _vaccineInjectionGrid.row($(this).parents("tr")).data();
+
+                $("#form_vaccine_modal").modal({ backdrop: "static" });
+
+                $("#Covid_VaccineInjection_Id").val(rowdata.id);
+                $("#Covid_VaccineInjection_VaccineId").val(rowdata.vaccine.id);
+                $("#Covid_VaccineInjection_VaccineDate").val(dayjs(rowdata.vaccineDate).format("YYYY-MM-DD"));
+                $("#Covid_VaccineInjection_VaccineStatusId").val(rowdata.status.id);
+                $("#Covid_VaccineInjection_EmployeeId").val(rowdata.employeeId);
+                $("#Covid_VaccineInjection_IsLatest").val(rowdata.isLatest);
+            });
+
+            $("#vaccine_injection_grid").on("click", "tbody tr .--remove", function () {
+                var rowdata = _vaccineInjectionGrid.row($(this).parents("tr")).data();
+                if (confirm("คุณต้องการลบรายการนี้ใช่หรือไม่?")) {
+                    $.ajax({
+                        url: "?handler=Delete",
+                        type: "post",
+                        dataType: "json",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        data: {
+                            rowId: rowdata.id
+                        },
+                        success: function (result) {
+                            _vaccineInjectionGrid.ajax.reload();
+                        }
+                    });
+                }
+            });
+
+            $("#btn_add_vaccine").on("click", function () {
+                $("#form_vaccine_modal").modal({ backdrop: "static" });
+                $("#form_vaccine").trigger("reset");
+
+                $("#Covid_VaccineInjection_Id").val(0);
+                $("#Covid_VaccineInjection_VaccineDate").val(dayjs().format("YYYY-MM-DD"));
+                $("#Covid_VaccineInjection_IsLatest").val(1);
+                $("#Covid_VaccineInjection_VaccineId").val(6);
+            });
+        });
+
+        function vaccineInjectionGrid() {
+            return $("#vaccine_injection_grid").DataTable({
+                destroy: true,
+                responsive: true,
+                serverSide: true,
+                processing: true,
+                searchDelay: 1500,
+                order: [],
+                ajax: {
+                    url: "?handler=VaccineInjectionGrid",
+                    method: "post",
+                    dataType: "json",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "รหัสพนักงาน", data: "employeeId" },
+                    { title: "ชื่อ", data: "employee.name" },
+                    { title: "นามสกุล", data: "employee.lastName" },
+                    { title: "แผนก", data: "employee.departmentName" },
+                    { title: "ฝ่าย", data: "employee.divisionName" },
+                    { title: "บริษัท", data: "employee.company" },
+                    { title: "วัคซีน", data: "vaccine.name" },
+                    { title: "สถานะ", data: "status.name" },
+                    { title: "วันที่", data: "vaccineDate" },
+                    { title: "", data: null, defaultContent: "" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 8,
+                        render: function (data, type, row) {
+                            return dayjs(data).format("YYYY-MM-DD");
+                        }
+                    },
+                    {
+                        targets: 9,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            var html = "";
+                            html += "<button type='button' class='btn btn-sm btn-light mr-2 --edit'><i class='fas fa-edit'></i></button>";
+                            html += "<button type='button' class='btn btn-sm btn-light mr-2 --remove'><i class='fas fa-trash'></i></button>";
+                            return html;
+                        }
+                    }
+                ]
+            });
+        }
+
+        function employeeGrid() {
+            return $("#employee_grid").DataTable({
+                destroy: true,
+                responsive: true,
+                serverSide: true,
+                processing: true,
+                searchDelay: 1500,
+                order: [],
+                ajax: "?handler=EmployeeGrid",
+                columns: [
+                    { title: "EmployeeId", data: "employeeId" },
+                    { title: "Name", data: "name" },
+                    { title: "Last Name", data: "lastName" },
+                    { title: "Department", data: "departmentName" },
+                    { title: "Division", data: "divisionName" }
+                ],
+            });
+        }
+    </script>
+}

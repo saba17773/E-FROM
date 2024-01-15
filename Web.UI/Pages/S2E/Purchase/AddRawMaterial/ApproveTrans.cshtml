@@ -1,0 +1,131 @@
+﻿@page "/S2E/Purchase/AddRawMaterial/{ADDRMID}/{approvegroupid}/{approvestatus}/{ADDRMLINEID}/ApproveTrans"
+@model Web.UI.Pages.S2E.Purchase.AddRawMaterial.ApproveTransModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Transaction (Add Raw Material)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "Main", Link = $"/S2E/Purchase/AddRawMaterial/{@Model.PageBack}" },
+        new BreadcrumbModel { Text = "Approve Transaction (Add Raw Material)" }
+    };
+}
+<div class="card">
+    <div class="card-header">
+        Approve Transaction (Add Raw Material)
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridApproveTrans" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        var gridApproveTrans = "#gridApproveTrans";
+
+        var dtApproveTrans = $(gridApproveTrans).DataTable({
+            serverSide: false,
+            processing: false,
+            destroy: true,
+            responsive: false,
+            "order": [[10, 'asc']],
+            ajax: {
+                url: "/S2E/Purchase/AddRawMaterial/@Model.AddRMID/@Model.ApproveGroupID/@Model.ApproveStatus/@Model.AddRMLINEID/ApproveTrans?handler=Grid&ADDRMID=@Model.AddRMID&approvegroupid=@Model.ApproveGroupID",
+                type: "post",
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                }
+            },
+            initComplete: function () {
+                $('.dataTables_filter input').unbind();
+                $('.dataTables_filter input').on("keyup", function (e) {
+                    if (e.keyCode == 13) {
+                        dtApproveTrans.search($(this).val()).draw();
+                    }
+                });
+            },
+            columns: [
+                { title: "Group", data: "groupdescription" },
+                { title: "Level", data: "approvelevel" },
+                { title: "Email", data: "email" },
+                { title: "Status", data: "isdone" },
+                { title: "Send Email Date", data: "sendemaildate" },
+                { title: "Approve Date", data: "approvedate" },
+                { title: "Reject Date", data: "rejectdate" },
+                { title: "Resend Email", data: null },
+                { title: "Remark", data: "remark" },
+                { title: "APPROVEMASTERID", data: "approvemasterid" },
+                { title: "id", data: "id" }
+
+            ],
+            columnDefs: [
+                {
+                    targets: 0,
+                    visible: false
+                },
+                {
+                    targets: 9,
+                    visible: false
+                },
+                {
+                    targets: 10,
+                    visible: false
+                },
+                {
+                    targets: 3,
+                    render: function (data, type, row) {
+                        if (data === 0 &&
+                            row.sendemaildate === null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-danger'>ยังไม่ได้ดำเนินการ</span>";
+                        } else if (data === 1 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate !== null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-success'>ดำเนินการแล้ว</span>";
+                        } else if (data === 1 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate === null &&
+                            row.rejectdate !== null) {
+                            return "<span class='badge badge-danger'>ดำเนินการแล้ว (Reject)</span>";
+                        } else if (data === 0 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-warning'>รอดำเนินการ</span>";
+                        } else if (data === 1 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-success'>ดำเนินการโดย Level เดียวกัน</span>";
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 7,
+                    render: function (data, type, row) {
+
+                        var link = "";
+                        if (row.isdone === 0 && row.sendemaildate !== null &&
+                            row.approvedate === null && row.rejectdate === null)
+                         {
+
+                            link += actionResend("/S2E/Purchase/AddRawMaterial/@Model.AddRMID/@Model.ApproveGroupID/@Model.ApproveStatus/@Model.AddRMLINEID/ApproveTrans?handler=ResendEmail&TranID=" + row.id + "&approvegroupid=@Model.ApproveGroupID&approvestatus=@Model.ApproveStatus", "fa fa-retweet", "<span> Resend Email </span>" );
+
+                         }
+                        return link ;
+
+                    }
+                }
+            ]
+        });
+    });
+
+    </script>
+}

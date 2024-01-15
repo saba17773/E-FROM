@@ -1,0 +1,497 @@
+﻿@page "/S2E/Purchase/PurchaseSample/{LABID}/Create"
+@model Web.UI.Pages.S2E.Purchase.PurchaseSample.CreateModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "Purchase Sample";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Purchase/PurchaseSample/Main" },
+        new BreadcrumbModel { Text = "Purchase Sample" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Purchase Sample</h1>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <table style="width:70%" align="center">
+                <tr>
+                    <td> Request Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                @*<tr>
+            <td> Request No : </td>
+            <td>
+                <div class="input-group">
+                    <input type="text" asp-for="RequestNo" class="form-control" autocomplete="off" readonly>
+                </div>
+            </td>
+        </tr>*@
+                <tr>
+                    <td width="30%">
+                        รหัสผู้ขาย
+                        &nbsp;
+                        @if (Model.isVendor == 0)
+                        {
+                            <span id="selectVendorAX" class="badge badge-info"><i class="fa fa-search"></i>ค้นหา</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="VendorID" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ตัวแทนจำหน่าย : </td>
+                    <td>
+                        <div class="input-group">
+                            @if (Model.isVendor == 0)
+                            {
+                                <textarea asp-for="SupplierName" rows="2" style="white-space:normal;display:block;"
+                                          autocomplete="off" class="form-control"></textarea>
+                            }
+                            else
+                            {
+                                <textarea asp-for="SupplierName" rows="2" style="white-space:normal;display:block;"
+                                          autocomplete="off" class="form-control" readonly></textarea>
+                            }
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="30%">
+                        Item Code : <span class="text-danger font-weight-bold">*</span>
+                        &nbsp;
+                        <span id="selectItem" class="badge badge-info"><i class="fa fa-search"></i>ค้นหา</span>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemCode" name="ItemCode" id="ItemCode" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Item Name : <span class="text-danger font-weight-bold">*</span></td>
+                    <td>
+                        <div class="input-group">
+                            <textarea asp-for="ItemName" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        ต้องการซื้อวัตถุดิบเพิ่มเพื่อทดสอบหรือไม่? : <span class="text-danger font-weight-bold">*</span>
+                    </td>
+                    <td style="text-align:left;">
+                        <label>
+                            <input type="radio" asp-for="isPurchaseSample" id="isPurchaseSample1" value="1" class="radio2" disabled />
+                            ซื้อสินค้าเพื่อทดสอบ
+                        </label>
+                        &nbsp;&nbsp;
+                        <label style="color:red;">
+                            <input type="radio" asp-for="isPurchaseSample" id="isPurchaseSample2" value="2" class="radio2" disabled />
+                            ไม่ซื้อสินค้า
+                        </label>
+                        &nbsp;&nbsp;
+                        @if (Model.isPurchaseSample == 2)
+                        {
+                            <label style="color:black;">
+                                จำนวนคงเหลือ : @String.Format("{0:#,##0.#0}", Model.QtyTotal) 
+                            </label>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        จำนวนที่ต้องการซื้อเพิ่ม :
+                    </td>
+                    <td style="text-align:left;">
+                        @String.Format("{0:#,##0.#0}", Model.Qty)  @Model.Unit
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        Plant : <span class="text-danger font-weight-bold">*</span>
+                    </td>
+                    <td style="text-align:left;">
+                        <label for="Plant1">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant1" value="DSL" class="radio2" />
+                            <b>DSL</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant2">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant2" value="DRB" class="radio2" />
+                            <b>DRB</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant3">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant3" value="DSI" class="radio2" />
+                            <b>DSI</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant4">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant4" value="DSR" class="radio2" />
+                            <b>DSR</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant5">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant5" value="STR" class="radio2" />
+                            <b>STR</b>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="hidden" asp-for="isVendor" id="isVendor" class="form-control" autocomplete="off" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        File Upload :
+                    </td>
+                    <td>
+                        <table width="90%" id="UploadTable" align="left">
+                            <tr style="text-align: left;" id="tablerow0">
+                                <td width="80%">
+                                    <input type="file" id="f0" name="FileUpload" style="width:90%;" />
+                                </td>
+                                <td width="20%">
+                                    <button type="button" class="btn btn-danger" id="b0" onclick="removeTr(0);"> <i class="fa fa-remove"> </i> </button>
+                                </td>
+                            </tr>
+                            <tr style="text-align: left;" id="tablerow1">
+                                <td width="80%">
+                                    <input type="file" id="f1" name="FileUpload" style="width:90%;" />
+                                </td>
+                                <td width="20%">
+                                    <button type="button" class="btn btn-danger" id="b1" onclick="removeTr(1);"> <i class="fa fa-remove"> </i> </button>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="100%">
+                            <tr>
+                                <td style="text-align:right;">
+                                    <button type="button" class="btn btn-primary" id="add"><i class="fa fa-plus"> </i></button>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <br />
+            <table style="width:70%" align="center">
+                <tr>
+                    <td>
+                        <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                            <i class="fa fa-check"></i>
+                            ยืนยัน
+                        </button>
+                        <button type="reset" class="btn btn-danger">
+                            <i class="fa fa-times"></i>
+                            ยกเลิก
+                        </button>
+                    </td>
+                </tr>
+            </table>
+            <br />
+        </div>
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@* Model Vendor *@
+<div class="modal" id="modalVendorAX" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Search Vendor Sample</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:left">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridVendorAX" style="text-align:left;" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Model Item *@
+<div class="modal" id="modalItem" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Search Item Sample</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:left">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridItem" style="text-align:left;" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        $("#form_submit").submit(function (e) {
+            var itemCode = $("#ItemCode").val();
+            itemCode = itemCode.substring(0, 1);
+
+            var file = $("input[type=file]").val();
+            //console.log(file);
+
+            if (itemCode != "S") {
+
+                alert("กรุณาเลือก Item เป็น Item Sample");
+
+                return false;
+            }
+
+            if ($("#VendorID").val() == "" && $("#SupplierName").val() == "") {
+
+                alert("กรุณาใส่ข้อมูล Vendor ก่อน");
+
+                return false;
+            }
+
+            if (file == "" || file == null) {
+
+                alert("กรุณา Upload File ก่อน");
+
+                return false;
+            }
+
+            if ($("#Plant").val() == "" ) {
+                alert("กรุณาเลือก Plant ก่อน");
+
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btn_submit').html("Submit...");
+        });
+
+        $(document).ready(function () {
+            $("#selectVendorAX").on("click", function () {
+
+                var gridVendorAX = "#gridVendorAX";
+                $("#modalVendorAX").modal({ backdrop: "static" });
+
+                var dtVendorAX = $(gridVendorAX).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    ajax: {
+                        url: "/S2E/Purchase/PurchaseSample/@Model.LabID/Create?handler=VendorAXGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtVendorAX.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Vendor Group", data: "vendgroup" },
+                        { title: "Vendor ID", data: "accountnum" },
+                        { title: "Vendor Name", data: "name" },
+                        { title: "Action", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 3,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<button type='button' class='btn btn-info' onclick='selectVendorAX(\"" + row.accountnum + "\", \"" + row.name + "\")'><i class='fa fa-check'></i></button>";
+                                return link;
+                            }
+                        }
+                    ],
+                });
+
+                $("body").on("keypress", function (e) {
+                    if (e.which === 13) e.preventDefault();
+                });
+
+            });
+
+        });
+
+        $(document).ready(function () {
+            $("#selectItem").on("click", function () {
+
+                var gridItem = "#gridItem";
+                $("#modalItem").modal({ backdrop: "static" });
+
+                var dtItem = $(gridItem).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    ajax: {
+                        url: "/S2E/Purchase/PurchaseSample/@Model.LabID/Create?handler=ItemGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtItem.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Item Code", data: "itemid" },
+                        { title: "Item Name", data: "itemname" },
+                        { title: "Action", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 2,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<button type='button' class='btn btn-info' onclick='selectItem(\"" + row.itemid + "\", \"" + row.itemname + "\")'><i class='fa fa-check'></i></button>";
+                                return link;
+                            }
+                        }
+                    ],
+                });
+
+                $("body").on("keypress", function (e) {
+                    if (e.which === 13) e.preventDefault();
+                });
+
+            });
+
+        });
+
+        function selectVendorAX(accountnum, name) {
+
+            $("#VendorID").val(accountnum);
+            $("#SupplierName").val(name);
+            $("#isVendor").val(1);
+
+            $("#modalVendorAX").modal("hide");
+        }
+
+        function selectItem(itemid, itemname) {
+
+            $("#ItemCode").val(itemid);
+            $("#ItemName").val(itemname);
+
+            $("#modalItem").modal("hide");
+        }
+
+        var counter = 2;
+        $("#add").click(function () {
+
+            $('<tr style="text-align: left;" id="tablerow' + counter + '">' +
+                '<td width="80%">' +
+                '<input type="file" id="f' + counter + '" name="FileUpload" style="width:90%;" />' +
+                '</td>' +
+                '<td>' +
+                '<button type="button" class="btn btn-danger" id="b' + counter + '" onclick="removeTr(' + counter + ');"> <i class="fa fa-remove"> </i> </button>' +
+                '</td>' +
+                '</tr>').appendTo('#UploadTable');
+
+            counter++;
+
+            return false;
+        });
+
+        function removeTr(index) {
+            if (counter > 1) {
+                $('#tablerow' + index).remove();
+                counter--;
+            }
+            return false;
+        }
+
+    </script>
+}
+

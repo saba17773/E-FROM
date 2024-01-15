@@ -1,0 +1,233 @@
+﻿@page "/S2E/Purchase/PurchaseSample/{PCSampleID}/ViewInfo"
+@model Web.UI.Pages.S2E.Purchase.PurchaseSample.ViewInfoModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "Purchase Sample View Info";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Purchase/PurchaseSample/Main" },
+        new BreadcrumbModel { Text = "Purchase Sample View Info" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Purchase Sample View Info</h1>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <table style="width:70%" align="center">
+                <tr>
+                    <td> Request Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Request No : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestNo" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="30%">
+                        รหัสผู้ขาย
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="VendorID" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ตัวแทนจำหน่าย : </td>
+                    <td>
+                        <div class="input-group">
+                            <textarea asp-for="SupplierName" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="30%">
+                        Item Code :
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemCode" name="ItemCode" id="ItemCode" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Item Name : </td>
+                    <td>
+                        <div class="input-group">
+                            <textarea asp-for="ItemName" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        ต้องการซื้อวัตถุดิบเพิ่มเพื่อทดสอบหรือไม่? :
+                    </td>
+                    <td style="text-align:left;">
+                        <label>
+                            <input type="radio" asp-for="isPurchaseSample" id="isPurchaseSample1" value="1" class="radio2" disabled />
+                            ซื้อสินค้าเพื่อทดสอบ
+                        </label>
+                        &nbsp;&nbsp;
+                        <label style="color:red;">
+                            <input type="radio" asp-for="isPurchaseSample" id="isPurchaseSample2" value="2" class="radio2" disabled />
+                            ไม่ซื้อสินค้า
+                        </label>
+                        &nbsp;&nbsp;
+                        @if (Model.isPurchaseSample == 2)
+                        {
+                            <label style="color:black;">
+                                จำนวนคงเหลือ : @String.Format("{0:#,##0.#0}", Model.QtyTotal)
+                            </label>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        จำนวนที่ต้องการซื้อเพิ่ม :
+                    </td>
+                    <td style="text-align:left;">
+                        @String.Format("{0:#,##0.##}", Model.Qty)  @Model.Unit
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        Plant : 
+                    </td>
+                    <td style="text-align:left;">
+                        <label for="Plant1">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant1" value="DSL" class="radio2" disabled />
+                            <b>DSL</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant2">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant2" value="DRB" class="radio2" disabled />
+                            <b>DRB</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant3">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant3" value="DSI" class="radio2" disabled />
+                            <b>DSI</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant4">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant4" value="DSR" class="radio2" disabled />
+                            <b>DSR</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant5">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant5" value="STR" class="radio2" disabled />
+                            <b>STR</b>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        File Upload :
+                    </td>
+                    <td>
+                        <table id="gridViewFileUpload" style="text-align:left;" width="90%" class="table table-hover"></table>
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridViewFileUpload = "#gridViewFileUpload";
+
+            var dtViewFileUpload = $(gridViewFileUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Purchase/PurchaseSample/@Model.PCSampleID/ViewInfo?handler=GridViewFileUpload&PCSampleID=@Model.PCSampleID",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/Purchase/PurchaseSample/@Model.PCSampleID/ViewInfo?handler=DownloadFileUpload&PCSampleID=@Model.PCSampleID&Fileid=" + row.id, "fa fa-download", "<span> Download </span>");
+                         }
+                    }
+                ]
+            });
+        });
+
+    </script>
+}

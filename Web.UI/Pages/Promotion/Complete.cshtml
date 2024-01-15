@@ -1,0 +1,122 @@
+@page
+@model Web.UI.Pages.Promotion.CompleteModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Promotion E-Form";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Promotion Discount (Complete)"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Promotion Discount (Complete)
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridPromotion" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridPromotion = "#gridPromotion";
+
+            var dtPromotion = $(gridPromotion).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                "order": [[7, 'desc']],
+                ajax: {
+                    url: "/Promotion/Complete?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtPromotion.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Number", data: "requestNumber" },
+                    { title: "ชื่อเรื่อง", data: "pattern" },
+                    { title: "Customer Name", data: "customerName" },
+                    { title: "Type", data: "requestType"},
+                    { title: "Status", data: "requestStatus" },
+                    { title: "Approve Step", data: "currentApproveStep" },
+                    { title: "Actions", data: null },
+                    { title: "Approve Date", data: "approveDate" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            if (row.requestStatus === "Complete Approve") {
+                                return "<span class='badge badge-success'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Cancel") {
+                                return "<span class='badge badge-warning'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Reject") {
+                                return "<span class='badge badge-danger'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Waiting For Approve") {
+                                return "<span class='badge badge-info'>" + data + "</span>";
+                            }
+                            
+                            return "<span class='badge badge-secondary'>" + data + "</span>";
+                        }
+                    },
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            if (row.requestStatus === 5) {
+                                rettu
+                            }
+                            return row.currentApproveStep + "/" + row.totalApproveStep;
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Promotion/" + row.id + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                            
+                            if (row.requestType === "DOM") {
+                                link += actionLinkBlank("/Promotion/Export/DOM/" + row.id + "?handler=PDF", "fa fa-print", "Print", true);
+                            } else {
+                                link += actionLinkBlank("/Promotion/Export/OVS/" + row.id + "?handler=PDF", "fa fa-print", "Print", true);
+                            }
+
+                            return link;
+                        }
+                    },
+                     {
+                        targets: 7,
+                        visible:false
+                    }
+                ]
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+    </script>
+}

@@ -1,0 +1,98 @@
+﻿@page "/Queing/Report/{Plant}/Index"
+@model Web.UI.Pages.Queing.Report.IndexModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Queing Report";
+    ViewData["Plant"] = Model.PlantView;
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Report" }
+    };
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <div class="row">
+        <b> Queing Report </b>
+    </div>
+    <br />
+    <div class="row row-cols-1 row-cols-md-2">
+        <table width="100%">
+            <tr>
+                <td width="20%">
+                    <div class="card text-center text-light bg-primary mb-3" style="max-width: 18rem;">
+                        <a href="/Queing/Report/@Model.Plant/Loading" class="card-body btn btn-primary">
+                            <b class="card-text">
+                                <i class="fa fa-file"></i>
+                                &nbsp;
+                                Loading Report
+                            </b>
+                        </a>
+                    </div>
+                </td>
+                <td width="10%"></td>
+                <td width="20%">
+                    <div class="card text-center text-light bg-primary mb-3" style="max-width: 18rem;">
+                        <a href="/Queing/Report/@Model.Plant/AllStatus" class="card-body btn btn-primary">
+                            <b class="card-text">
+                                <i class="fa fa-file"></i>
+                                &nbsp;
+                                ALL Status Report
+                            </b>
+                        </a>
+                    </div>
+                </td>
+                <td width="20%"></td>
+                <td width="10%"></td>
+                <td width="20%"></td>
+            </tr>
+        </table>
+        
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+    </script>
+}

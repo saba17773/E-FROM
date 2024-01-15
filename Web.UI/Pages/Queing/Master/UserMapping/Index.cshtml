@@ -1,0 +1,157 @@
+﻿@page
+@model Web.UI.Pages.Queing.Master.UserMapping.IndexModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "User Mapping";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "User Mapping" }
+    };
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .table_modal {
+        padding: 5px;
+        width: 100%;
+        text-align: right;
+    }
+
+        .table_modal tr {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <div class="card mb-3">
+        <div class="card-header">
+            <span>User Mapping</span>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <a class="btn btn-outline-primary" href="/Queing/Master/UserMapping/Add">
+                    <i class="fa fa-user-plus"></i>
+                    New User Mapping
+                </a>
+            </div>
+            <form method="post">
+                <table id="gridUserMapping" width="100%" class="table table-hover"></table>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridUserMapping = "#gridUserMapping";
+
+            var dtUser = $(gridUserMapping).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/Queing/Master/UserMapping/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtUser.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "EmployeeId", data: "employeeid" },
+                    { title: "Name", data: "fullname" },
+                    { title: "Username", data: "username" },
+                    { title: "Email", data: "email" },
+                    { title: "User Active?", data: "isactive" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        visible: true,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("", "success", "fa fa-check") : showBadge("", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 5,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Queing/Master/UserMapping/" + row.userid + "/Edit", "fa fa-edit", "Edit");
+                            if (row.isactive == 1) {
+                                link += actionLink("/Queing/Master/UserMapping?handler=ActiveUserMapping&userid=" + row.userid + "&isactive=0", "fa fa-toggle-off", "Disable");
+                            }
+                            if (row.isactive == 0) {
+                                link += actionLink("/Queing/Master/UserMapping?handler=ActiveUserMapping&userid=" + row.userid + "&isactive=1", "fa fa-toggle-on", "Enable");
+                            }
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridUserMapping + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridUserMapping + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridUserMapping + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,394 @@
+﻿@page "/Queing/Process/OVS/{Plant}/AssignBay"
+@model Web.UI.Pages.Queing.Process.OVS.AssignBayModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "ASSIGN BAY OVS";
+    ViewData["Plant"] = Model.PlantView;
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Process", Link = $"/Queing/Process/{Model.Plant}/Process" },
+        new BreadcrumbModel { Text = "Oversea (OVS)", Link = $"/Queing/Process/OVS/{Model.Plant}/Index" } ,
+        new BreadcrumbModel { Text = "Assign Bay" }
+    };
+
+    ViewData["status"] = "2";
+
+    ViewData["status1"] = "CHECK IN";
+    ViewData["status2"] = "ASSIGN BAY";
+    ViewData["status3"] = "CHECK OUT";
+
+    ViewData["status1href"] = $"/Queing/Process/OVS/{Model.Plant}/CheckinList";
+    ViewData["status2href"] = $"/Queing/Process/OVS/{Model.Plant}/AssignBay";
+    ViewData["status3href"] = $"/Queing/Process/OVS/{Model.Plant}/CheckOut";
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <h5>ASSIGN BAY LIST</h5>
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="post">
+                <table id="gridAssignBay" width="100%" class="table table-hover"></table>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <a href="/Queing/Process/OVS/@Model.Plant/Index" class="btn btn-light">
+            <i class="fa fa-reply"></i> Back
+        </a>
+    </div>
+</div>
+
+<!-- Modal Assign Bay -->
+<div class="modal" id="modalAssignBay" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> <i class="fa fa-truck"></i> &nbsp; ASSIGN BAY</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-target="#modalAssignBay">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalAssignBay_Body">
+                <div class="table-responsive">
+                    <form method="post" enctype="multipart/form-data" id="form_submit">
+                        <table width="90%">
+                            <tr>
+                                <td>
+                                    <div class="form-group row">
+                                        <label for="selectBAY" class="col-sm-4 col-form-label"> BAY : </label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control" id="selectBAY" asp-for="Bay" asp-items="Model.BayMaster">
+                                                <option value=""> กรุณาเลือก Bay </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">
+                                            Truck ID :
+                                            &nbsp;
+                                            <span id="selectTruck" class="badge badge-light" style="cursor: pointer;">
+                                                <i class="fa fa-search"></i>
+                                                เลือกข้อมูล
+                                            </span>
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <input type="text" asp-for="TruckID" id="txtTruckID" class="form-control" readonly />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">
+                                            Container No :
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <input type="text" asp-for="ContainerNo" id="txtContainerNo" class="form-control" readonly />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">
+                                            Weight IN :
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <input type="text" id="txtWeightIN" asp-for="WeightIN" class="form-control" readonly />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">
+                                            Weight IN Date :
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <input type="text" id="txtWeightINDate" asp-for="WeightINDate" class="form-control" readonly />
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" asp-for="Id" class="form-control" id="txtID">
+                                    <input type="hidden" asp-for="WeighId" class="form-control" id="txtWeighId">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right;">
+                                    <button type="submit" id="btnSubmit" class="btn btn-warning">
+                                        <i class="fa fa-truck"></i> ASSIGN BAY
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Truck -->
+<div class="modal" id="modalTruck" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Select Truck</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-target="#modalTruck">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalTruck_Body">
+
+                <div class="table-responsive">
+                    <table id="gridTruck" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Alert -->
+<div class="modal" id="modalAlert" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="color:red;"> Warning &nbsp; <i class="fa fa-exclamation-triangle"></i> </h5>
+            </div>
+            <div class="modal-body" id="modalAlert_Body">
+                <div class="table-responsive">
+                    <h4>
+                        <label id="txtAlert"></label>
+                    </h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-times"></i> &nbsp; Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridAssignBay = "#gridAssignBay";
+
+            var dtAssignBay = $(gridAssignBay).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/Queing/Process/OVS/@Model.Plant/AssignBay?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtAssignBay.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "No", data: "no" },
+                    { title: "Truck ID", data: "truckid" },
+                    { title: "Agent", data: "agentcode" },
+                    { title: "ประเภทรถ", data: "truckcatedesc" },
+                    { title: "Work Order No", data: "workorderno" },
+                    { title: "Status", data: "statusdetail" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row)
+                        {
+                            return "<span class='badge badge-info'> " + row.statusdetail + " </span>";
+                        }
+                    },
+                    {
+                        targets: 6,
+                        sortable: false,
+                        render: function (data, type, row) {
+                              var link = "";
+                            link += "<button type='button' class='btn btn-warning btn-sm' onclick='btnAssignBayRow(" + row.id + ",\"" + row.truckid + "\",\"" + row.containerno+"\")'>"
+                                 + "<i class='fa fa-truck'></i> Assign Bay";
+                                 +  "</button>";
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridAssignBay + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridAssignBay + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridAssignBay + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        function btnAssignBayRow(id,truckid,container)
+        {
+            $("#form_submit").trigger("reset");
+
+            $("#txtID").val(id);
+            $("#txtTruckID").val(truckid);
+            $("#txtContainerNo").val(container);
+            @*$.ajax({
+                url: "/Queing/Process/OVS/@Model.Plant/AssignBay?handler=QingOVS&id=" + id,
+                type: "get"
+            }).done(function (data) {
+                if (data != false) {
+                    $("#txtTruckID").val(data["truckid"]);
+                    $("#txtContainerNo").val(data["containerno"]);
+                }
+            });*@
+
+            $("#modalAssignBay").modal({ backdrop: "static" });
+            $("#modalAssignBay").show();
+        }
+
+         $("#selectTruck").on("click", function () {
+
+             $("#modalTruck").modal({ backdrop: "static" });
+             $("#modalTruck").show();
+
+             var id = $("#txtID").val();
+             var truckid = $("#txtTruckID").val();
+             var containerno = $("#txtContainerNo").val();
+
+             gridTruck = "#gridTruck";
+             $(gridTruck).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/Queing/Process/OVS/@Model.Plant/AssignBay?handler=TruckGrid&truckid=" + truckid + "&containerno=" + containerno + "&plant=@Model.Plant",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "ทะเบียนรถ", data: "truckid" },
+                    { title: "Date IN", data: "datein" },
+                    { title: "Weight IN", data: "weightin" },
+                    { title: "Date Out", data: "dateout" },
+                    { title: "Weight Out", data: "weightout" },
+                    { title: "Action", data: null }
+                ],
+                 columnDefs: [
+                     {
+                         targets: 3,
+                         visible: false
+                     },
+                     {
+                         targets: 4,
+                         visible: false
+                     },
+                     {
+                         targets: 5,
+                         render: function (data, type, row) {
+                             return "<button type='button' class='btn btn-info btn-sm' " +
+                                 "onclick='selectTruckdata(\"" + row.weightin + "\",\"" + row.datein + "\"," + row.weighid + ")'> " +
+                                 "<i class='fa fa-check'></i>" +
+                                 "</button>";
+                         }
+                     }
+                 ],
+            });
+
+         });
+
+        function selectTruckdata(weightin, datein, weighid)
+        {
+            $("#txtWeightIN").val(weightin);
+            $("#txtWeightINDate").val(datein);
+            $("#txtWeighId").val(weighid);
+
+            $('#modalTruck').modal('hide');
+        }
+
+        $("#form_submit").submit(function (e)
+        {
+            if ($("#selectBAY").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase Select Bay  !!");
+
+                return false;
+            }
+
+            if ($("#txtWeightIN").val() == "" || $("#txtWeightIN").val() == "0") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase Select Weight IN  !!");
+
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btnSubmit').html("Loading...");
+            document.getElementById("btnSubmit").disabled = true;
+
+
+        });
+
+    </script>
+}

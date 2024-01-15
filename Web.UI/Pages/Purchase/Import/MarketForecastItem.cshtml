@@ -1,0 +1,26 @@
+﻿@page
+@model Web.UI.Pages.Purchase.Import.MarketForecastItemModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Market Forecast Item";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Import", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Import Market Forecast Item" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Market Forecast Item
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="TemplateUpload" />
+
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>

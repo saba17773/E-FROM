@@ -1,0 +1,281 @@
+﻿@page
+@model Web.UI.Pages.Queing.Master.All.UserPermissionModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "User Permission";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Queing", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Master ALL", Link = "/Queing/Master/All" },
+        new BreadcrumbModel { Text = "User Permission" }
+    };
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .table_modal {
+        padding: 5px;
+        width: 100%;
+        text-align: right;
+    }
+
+        .table_modal tr {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <div class="card mb-3">
+        <div class="card-header">
+            <span>Change User Permission</span>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <table id="gridView" width="100%" class="table table-hover"></table>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Modal Change Permission*@
+<div class="modal" tabindex="-1" id="modalChange">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Permission</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="form_submit">
+                    <div class="form-group row">
+                        <label for="txtBay_Add" class="col-sm-3 col-form-label">
+                            Role
+                            <span id="btnRole" class="badge badge-info" style="cursor: pointer;">
+                                <i class="fa fa-search"></i>
+                                search
+                            </span>
+                            :
+                        </label>
+                        <div class="col-sm-7">
+                            <input type="text" asp-for="RoleName" class="form-control" id="txtRoleName" readonly autocomplete="off">
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="RoleId" class="form-control" id="txtRoleId" autocomplete="off">
+                    <input type="hidden" asp-for="UserId" class="form-control" id="txtUserId" autocomplete="off">
+                    <div class="form-group row">
+                        <div class="col-sm-10 text-right">
+                            <button type="submit" class="btn btn-success" id="btnSubmit" >
+                                <i class="fa fa-check-circle"></i>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Role -->
+<div class="modal" id="modalRole" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Role</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalRole_Body">
+                <div class="table-responsive">
+                    <table id="gridRole" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+
+        function btnPermission(roleid, userid, roledesc) {
+
+            $("#txtRoleName").val(roledesc);
+            $("#txtRoleId").val(roleid);
+            $("#txtUserId").val(userid);
+
+            $("#modalChange").modal({ backdrop: "static" });
+            $("#modalChange").show();
+
+        }
+
+        $("#btnRole").on("click", function () {
+
+            $("#modalRole").modal({ backdrop: "static" });
+            $("#modalRole").show();
+
+            gridRole = "#gridRole";
+            var dtRole = $(gridRole).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Queing/Master/All/UserPermission?handler=RoleGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtRole.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Role", data: "description" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 1,
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='selectRole(" + row.id + ",\"" + row.description + "\")'> " +
+                                "<i class='fa fa-check'></i>" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function selectRole(id, description) {
+
+            $("#txtRoleName").val(description);
+            $("#txtRoleId").val(id);
+          
+            $('#modalRole').modal('hide');
+        }
+
+        $(document).ready(function () {
+
+            var gridView = "#gridView";
+
+            var dtGrid = $(gridView).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/Queing/Master/All/UserPermission?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtGrid.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Employee ID", data: "empid" },
+                    { title: "Username", data: "username" },
+                    { title: "Name", data: "fullname" },
+                    { title: "Role Description", data: "roledesc" },
+                    { title: "Edit", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += "<button type='button' class='btn btn-outline-secondary btn-sm' onclick='btnPermission(" + row.roleid + "," + row.userid + ",\"" + row.roledesc + "\")'>"
+                                + "<i class='fa fa-cog'></i> Permission";
+                            +  "</button>";
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridView + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridView + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridView + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        $("#form_submit").submit(function (e) {
+            $(".overlay").show();
+            $('#btnSubmit').html("Loading...");
+            document.getElementById("btnSubmit").disabled = true;
+        });
+
+    </script>
+}

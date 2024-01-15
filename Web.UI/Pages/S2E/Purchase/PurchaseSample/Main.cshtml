@@ -1,0 +1,105 @@
+﻿@page
+@model Web.UI.Pages.S2E.Purchase.PurchaseSample.MainModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Purchase Sample Main";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "Purchase Sample Main" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Purchase Sample Main</h1>
+</div>
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Purchase/PurchaseSample/Main?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST NO", data: "requestno" },
+                    { title: "VENDOR ID", data: "vendorid" },
+                    { title: "SUPPLIER NAME", data: "suppliername" },
+                    { title: "Request By", data: "requestby" },
+                    { title: "Status", data: "labstatus" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            if (row.labstatus === 5 && row.pcsamplestatus === 0) {
+                                return "<span class='badge badge-warning'>Waiting Purchase Sample</span>";
+                            }
+                            if (row.labstatus === 7 && row.pcsamplestatus === 5) {
+                                return "<span class='badge badge-info'>Add ingredient in System<span>";
+                            }
+                            if (row.labstatus === 7 && row.pcsamplestatus === 7) {
+                                return "<span class='badge badge-success'>Successfully<span>";
+                            }
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/S2E/Qtech/LABTest/" + row.labid + "/" + row.lablineid + "/ViewInfo", "fa fa-eye", "LAB Test Request Detail");
+
+                            if (row.labstatus === 5 && row.pcsamplestatus === 0 && row.addrmid === 0) {
+                                link += actionLink("/S2E/Purchase/PurchaseSample/" + row.labid + "/Create", "fa fa-file", "Open PR Online");
+                            }
+                            if (row.labstatus === 7 && row.pcsampleid !== null) {
+                                link += actionLink("/S2E/Purchase/PurchaseSample/" + row.pcsampleid + "/ViewInfo", "fa fa-eye", "View Detail");
+                            }
+                            if (row.labstatus === 7 && row.pcsamplestatus === 5 && row.addrmid === 0 & row.ispurchasesample === 1) {
+                                link += actionResend("/S2E/Purchase/PurchaseSample/Main?handler=ResendEmail&PCSamID=" + row.pcsampleid, "fa fa-retweet", "<span> Resend Email </span>" );
+                            }
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

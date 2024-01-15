@@ -1,0 +1,839 @@
+@page "/FixAssets/Export/Report/{id}"
+@model Web.UI.Pages.FixAssets.Export.ReportModel
+@{
+    Layout = "_LayoutReport";
+}
+<style>
+    .tablemain {
+        border-collapse: collapse;
+        border: 1px solid black;
+    }
+    .tablesign {
+        border-collapse: collapse;
+        border: 1px solid black;
+        text-align: center;
+        font-size: 11px;
+    }
+    td, tr, th {
+        font-size: 13px;
+    }
+    hr {
+        margin-top: 0.1em;
+        margin-bottom: 0.1em;
+        border: 0;
+        height: 0;
+        border-bottom: 1px solid black;
+    } 
+</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report FixAssets</title>
+</head>
+<body>
+    <table width="100%" cellpadding="5">
+        <tr>
+            <td width="10%"></td>
+            <td width="10%"></td>
+            <td width="20%"></td>
+            <td width="20%"></td>
+            <td width="10%"></td>
+            <td width="30%"></td>
+        </tr>
+        <tr>
+            <td colspan="2" valign="top">
+                <h5>DEESTONE GROUP</h5>
+            </td>
+            <td colspan="4" style="font-size: 16px;" valign="top">
+                แบบฟอร์มร้องขอการตัดจำหน่ายทรัพย์สินถาวรและโอนย้ายทรัพย์สินถาวรเฉพาะที่อยู่ในทะเบียนทรัพย์สินของบริษัท
+                <br>
+                (DISPOSITION / TRANSFER OF FIXED ASSETS FORM)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <table width="100%" class="tablemain" cellpadding="5">
+                    <tr>
+                        <td width="20%">FOR : </td>
+                        <td width="20%">
+                            @if (@Model.Assets.Company == "DSL")
+                            {
+                            <input type="checkbox" checked>  <span>DSL</span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">  <span>DSL</span>
+                            }
+                        </td>
+                        <td width="20%">
+                            @if (@Model.Assets.Company == "DSI")
+                            {
+                            <input type="checkbox" checked>  <span>DSI</span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">  <span>DSI</span>
+                            }
+                        </td>
+                        <td width="20%">
+                            @if (@Model.Assets.Company == "STR")
+                            {
+                            <input type="checkbox" checked>  <span>STR</span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">  <span>STR</span>
+                            }
+                        </td>
+                        <td width="20%">
+                            @if (@Model.Assets.Company == "DSC")
+                            {
+                            <input type="checkbox" checked>  <span>DSC</span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">  <span>DSC</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            @if (@Model.Assets.Company == "DRB")
+                            {
+                            <input type="checkbox" checked>  <span>DRB</span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">  <span>DRB</span>
+                            }
+                        </td>
+                        <td>
+                            @if (@Model.Assets.Company == "DSR")
+                            {
+                            <input type="checkbox" checked>  <span>SVO</span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">  <span>SVO</span>
+                            }
+                        </td>
+                        <td>
+                            @if (@Model.Assets.Company == "S-ONE")
+                            {
+                            <input type="checkbox" checked>  <span>S-One</span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">  <span>S-One</span>
+                            }
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+            <td valign="top">
+                <table width="100%">
+                    <tr>
+                        <td width="50%" valign="top" align="right">
+                            แบบฟอร์ม เลขที่ :
+                        </td>
+                        <td width="50%" valign="top" style="border-bottom: 1px solid #333333;">
+                            @Model.Assets.KeyNumber
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" align="right">
+                            (Form Number)
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <table width="100%">
+                    <tr>
+                        <td valign="top" width="10%">
+                            ต้องการ :
+                        </td>
+                        <td width="35%">
+                            @if (@Model.Assets.AssetCategory == 1)
+                            {
+                            <input type="checkbox" checked>
+                            <span>
+                                การตัดจำหน่ายทรัพย์สินถาวร
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                (Disposition)
+                            </span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            <span>
+                                การตัดจำหน่ายทรัพย์สินถาวร
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                (Disposition)
+                            </span>
+                            }
+                        </td>
+                        <td width="55%">
+                            @if (@Model.Assets.AssetCategory == 2)
+                            {
+                            <input type="checkbox" checked>
+                            <span>
+                                การโอนย้ายทรัพย์สินไปยังแผนก
+                                <span style="border-bottom: 1px solid #333333;">
+                                    @*@Model.txtRemarkLv1*@
+
+                                    @foreach (var x in Model.AssetsLocationToList)
+                                        {
+                                    @x.Location
+                                    <span>/</span>
+                                    @x.Floor
+                                    <span>/</span>
+                                    @x.Room
+                                        }
+                                </span>
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                (Transfer To Dept)
+                            </span>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            <span>
+                                การโอนย้ายทรัพย์สินไปยังแผนก
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                (Transfer To Dept)
+                            </span>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+            <td valign="top">
+                <table width="100%">
+                    <tr>
+                        <td width="50%" valign="top" align="right">
+                            หมายเลขคำร้อง :
+                        </td>
+                        <td width="50%" valign="top" style="border-bottom: 1px solid #333333;">
+                            @Model.Assets.AssetNumber
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" align="right">
+                            (Assets No.)
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5"></td>
+            <td valign="top">
+                <table width="100%">
+                    <tr>
+                        <td width="50%" valign="top" align="right">
+                            ผู้ขอโอน/ขอตัดจำหน่าย :
+                        </td>
+                        <td width="50%" valign="top" style="border-bottom: 1px solid #333333;">
+                            @Model.AssetsNameThaiStr
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" align="right">
+                            (Requestor)
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5"></td>
+            <td valign="top">
+                <table width="100%">
+                    <tr>
+                        <td width="50%" valign="top" align="right">
+                            เบอร์ติดต่อ (Tel) :
+                        </td>
+                        <td width="50%" valign="top" style="border-bottom: 1px solid #333333;">
+                            @Model.Assets.Phone
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5"></td>
+            <td valign="top">
+                <table width="100%">
+                    <tr>
+                        <td width="50%" valign="top" align="right">
+                            แผนกผู้ขอโอน/ขอตัดจำหน่าย :
+                        </td>
+                        <td valign="top" width="50%" style="border-bottom: 1px solid #333333;">
+                            @Model.AssetsDepartmentStr
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" align="right">
+                            (From Department)
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <table width="100%" class="tablemain" cellpadding="5">
+                    <tr class="tablemain">
+                        <td class="tablemain" width="25%" align="center">เลขที่ทรัพย์สินถาวร<br>(Asset Number)</td>
+                        <td class="tablemain" width="15%" align="center">จำนวน<br>(Quantity)</td>
+                        <td class="tablemain" width="60%" align="center">รายละเอียด<br>(Description)</td>
+                    </tr>
+                    @if (Model.AssetsLine.Count > 0)
+                    {
+                        foreach (var item in Model.AssetsLine)
+                        {
+                    <tr class="tablemain">
+                        <td class="tablemain">
+                            @item.AssetsNumber
+                        </td>
+                        <td class="tablemain" align="center">
+                            @item.Qty
+                        </td>
+                        <td class="tablemain">
+                            @Html.Raw(@item.Description)
+                        </td>
+                    </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="4">
+                <table width="100%">
+                    <tr>
+                        <td valign="top">
+                            Requestor By : <span style="border-bottom: 1px solid #333333;">@Model.AssetsNameThaiStr</span>
+                            <br>
+                            <span>(ผู้ขอโอน/ขอตัดจำหน่าย)</span>
+                        </td>
+                        <td valign="top">
+                            @if (Model.Assets.AssetType == 3)
+                            {
+                            <span>Receive By : </span>
+                            <span style="border-bottom: 1px solid #333333;">
+                                @Model.txtApproveLv6
+                            </span>
+                            <br>
+                            <span>ผู้รับโอน(Transfer)</span>
+                            }else{
+                            <span>Receive By : </span>
+                            <span style="border-bottom: 1px solid #333333;">
+                                @Model.txtApproveLv4
+                            </span>
+                            <br>
+                            <span>ผู้รับโอน(Transfer)</span>
+                            }
+                        </td>
+                        <td valign="top">
+                            @if (Model.Assets.AssetType == 3)
+                            {
+                            <span>Receive By : </span>
+                            <span style="border-bottom: 1px solid #333333;">
+                                @Model.txtApproveLv7
+                            </span>
+                            <br>
+                            <span>ผู้รับโอน(Transfer)</span>
+                            }else{
+                            <span>Receive By : </span>
+                            <span style="border-bottom: 1px solid #333333;">
+                                @Model.txtApproveLv5
+                            </span>
+                            <br>
+                            <span>ผู้รับโอน(Transfer)</span>
+                            }
+                        </td>
+                        <td valign="top">
+                            @if (Model.Assets.AssetType == 3)
+                            {
+                            <span>Reviewed By : </span>
+                            <span style="border-bottom: 1px solid #333333;">
+                                @Model.txtApproveLv5
+                            </span>
+                            <br>
+                            <span>(Accountant)</span>
+                            }else{
+                            <span>Reviewed By : </span>
+                            <span style="border-bottom: 1px solid #333333;">
+                                @Model.txtApproveLv3
+                            </span>
+                            <br>
+                            <span>(Accountant)</span>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <table width="100%" class="tablemain" cellpadding="5">
+                    <tr>
+                        <td>
+                            <span style="border-bottom: 1px solid #333333;">สภาพทรัพย์สินและประมาณการค่าใช้จ่ายในการซ่อมแซ่มให้ใช้งานได้ (CONDITION AND COST TO MAKE USABLE)</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.Raw(@Model.txtAssetCondition)
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <table width="100%" class="tablemain" cellpadding="5">
+                    <tr>
+                        <td>
+                            <span style="border-bottom: 1px solid #333333;">
+                                ชี้แจงสาเหตุในการตัดสินใจที่จะทำการจัดการ/โอนย้ายทรัพย์สินถาวรตามรายการที่เลือก (ENGINEERING & PRODUCTION OR ASSET OWNER COMMENTS)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.Raw(@Model.txtAssetCause)
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <table width="100%" class="tablesign" cellpadding="5">
+                    <tr class="tablesign" style="background-color: #acacac;">
+                        <td class="tablesign" colspan="2" valign="top"></td>
+                        <td class="tablesign" valign="top">ผู้อนุมัติ<br>(Approver)</td>
+                        <td class="tablesign" colspan="3" valign="top">การจัดการทรัพย์สิน (Disposition)/<br>ต้องอนุมัติตามอำนาจดำเนินการ</td>
+                        <td class="tablesign" valign="top">โอนย้าย<br>(Transfer)</td>
+                        <td class="tablesign" valign="top">สู่สถานที่<br>(To Location)</td>
+                    </tr>
+                    @* LV1 *@
+                    <tr class="tablesign">
+                        <td class="tablesign" width="5%" valign="top">เสนอ</td>
+                        <td class="tablesign" width="15%" valign="top">
+                            @* @Html.Raw(@Model.txtPositonLv1) *@
+                            ผู้จัดการแผนกที่ขอ<br>(Manager Dept.)
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @* เอกสิทธิ์ แซ่เอี๊ยว<br>10/6/2021 *@
+                            @Model.txtApproveLv2
+                        </td>
+                        <td width="14%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv2 == 1)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ทำลาย,เศษซาก
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Scrap)
+                        </td>
+                        <td width="9%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv2 == 2)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            เก็บไว้
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Hold)
+                        </td>
+                        <td width="7%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv2 == 3)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ขาย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Sell)
+                        </td>
+                        <td class="tablesign" width="10%" valign="top" style="text-align: left;">
+                            @if (Model.Assets.AssetCategory == 2 && Model.txtApproveLv2 != null)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            โอนย้าย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Transfer)
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @Model.txtRemarkLv2
+                        </td>
+                    </tr>
+                    @* LV2 *@
+                    <tr class="tablesign">
+                        <td class="tablesign" width="5%" valign="top">เสนอ</td>
+                        <td class="tablesign" width="15%" valign="top">
+                            @* @Html.Raw(@Model.txtPositonLv2) *@
+                            ผจก.โรงงาน/ผบ.บช.สูงสุดในสายงาน<br>(Plant Mgr./Highest Commander)
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @if (Model.Assets.AssetType == 3)
+                            {
+                                @Model.txtApproveLv4
+                            }else{
+                            
+                                @Model.AssetsNameDirecStr
+                            }
+
+                        </td>
+                        <td width="14%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv2 == 1)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ทำลาย,เศษซาก
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Scrap)
+                        </td>
+                        <td width="9%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv2 == 2)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            เก็บไว้
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Hold)
+                        </td>
+                        <td width="7%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv2 == 3)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ขาย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Sell)
+                        </td>
+                        <td class="tablesign" width="10%" valign="top" style="text-align: left;">
+                            @if (Model.Assets.AssetCategory == 2 && Model.txtApproveLv3 != null)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            โอนย้าย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Transfer)
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @Model.txtRemarkLv4
+                        </td>
+                    </tr>
+                    <tr class="tablesign">
+                        <td class="tablesign" colspan="8" style="text-align: left;">
+                            ในกรณีที่ นำสินค้าที่ชำรุดเสียหาย นี้ เก็บไว้ที่แผนก วิศวกรรม หรือ แผนกบุคคล
+                        </td>
+                    </tr>
+
+
+                    @* LV4 *@
+                    <tr class="tablesign">
+                        <td class="tablesign" width="5%" valign="top">เสนอ</td>
+                        <td class="tablesign" width="15%" valign="top">
+                            @* @if (Model.Assets.AssetCategory == 1){
+                                @Html.Raw(@Model.txtPositonLv4)
+                            }else{ *@
+                            ผู้จัดการฝ่าย<br>(HR / Engineer Dept)
+                            @* } *@
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @if (Model.Assets.AssetCategory == 1)
+                            {
+                            @Model.txtApproveLv4
+                            }
+                        </td>
+                        <td width="14%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv4 == 1)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ทำลาย,เศษซาก
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Scrap)
+                        </td>
+                        <td width="9%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv4 == 2)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            เก็บไว้
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Hold)
+                        </td>
+                        <td width="7%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv4 == 3)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ขาย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Sell)
+                        </td>
+                        <td class="tablesign" width="10%" valign="top" style="text-align: left;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.txtApproveLv4 != null)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            โอนย้าย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Transfer)
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @if (Model.Assets.AssetCategory == 1)
+                            {
+                            @Model.txtRemarkLv4
+                            }
+                        </td>
+                    </tr>
+                    @* LV5 *@
+                    <tr class="tablesign">
+                        <td class="tablesign" width="5%" valign="top">เห็นชอบ</td>
+                        <td class="tablesign" width="15%" valign="top">
+                            @* @if (Model.Assets.AssetCategory == 1){
+                                @Html.Raw(@Model.txtPositonLv5)
+                            }else{ *@
+                            ผู้จัดการแผนกบัญชี/ผู้อำนวยการ<br>(Costing Manager/Director)
+                            @* } *@
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @if (Model.Assets.AssetCategory == 1)
+                            {
+                            @Model.txtApproveLv5
+                            <br>
+                            @Model.txtApproveLv6
+                            }
+                        </td>
+                        <td width="14%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv5 == 1)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ทำลาย,เศษซาก
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Scrap)
+                        </td>
+                        <td width="9%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv5 == 2)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            เก็บไว้
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Hold)
+                        </td>
+                        <td width="7%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv5 == 3)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            ขาย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Sell)
+                        </td>
+                        <td class="tablesign" width="10%" valign="top" style="text-align: left;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.txtApproveLv5 != null)
+                            {
+                            <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                            <input type="checkbox">
+                            }
+                            โอนย้าย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Transfer)
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @if (Model.Assets.AssetCategory == 1)
+                            {
+                            @Model.txtRemarkLv5
+                            }
+                        </td>
+                    </tr>
+                    @* LV6 *@
+                    @*<tr class="tablesign">
+                        <td class="tablesign" width="5%" valign="top">เห็นชอบ<br>อนุมัติ</td>
+                        <td class="tablesign" width="15%" valign="top">
+
+                            ประธานเจ้าหน้าที่การเงิน<br>(Chief Financial Officer)
+
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @Model.txtApproveLv7
+                        </td>
+                        <td width="14%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv7 == 1)
+                            {
+                                <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox">
+                            }
+                            ทำลาย,เศษซาก
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Scrap)
+                        </td>
+                        <td width="9%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv7 == 2)
+                            {
+                                <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox">
+                            }
+                            เก็บไว้
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Hold)
+                        </td>
+                        <td width="7%" valign="top" style="text-align: left; font-size: 11px;">
+                            @if (Model.Assets.AssetCategory == 1 && Model.DispositionLv7 == 3)
+                            {
+                                <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox">
+                            }
+                            ขาย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Sell)
+                        </td>
+                        <td class="tablesign" width="10%" valign="top" style="text-align: left;">
+                            @if (Model.Assets.AssetCategory == 2 && Model.txtApproveLv7 != null)
+                            {
+                                <input type="checkbox" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox">
+                            }
+                            โอนย้าย
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;(Transfer)
+                        </td>
+                        <td class="tablesign" width="20%" valign="top">
+                            @Model.txtRemarkLv7
+                        </td>
+                    </tr>*@
+
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <br><br>
+
+    <table width="100%" cellpadding="5">
+        <tr>
+            <td width="15%" valign="top">
+                ทำลาย, เศษซาก
+            </td>
+            <td width="85%" valign="top">
+                : ใช้ในกรณีที่ทรัพย์สินไม่สามารถใช้งานได้แล้วและต้องการทำลาย, ทิ้ง หรือเพื่อนำไปขายในสภาพเศษซาก เช่น เครื่องจักรเสื่อมสภาพไม่สามารถใช้งานได้ต้องการทำลายหรือขายเป็นเศษซาก
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                เก็บไว้
+            </td>
+            <td valign="top">
+                : ใช้ในกรณีที่ต้องการเก็บทรัพย์สินไว้ก่อนแต่จะไม่มีการใช้งาน รอเพื่อการตัดสินใจขั้นต่อไป และถ้ามีการย้ายสถานที่จัดเก็บให้ระบุในช่อง Remark/Location เช่น ย้ายเครื่องจักรไปไว้ที่เต้นท์
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                ขาย
+            </td>
+            <td valign="top">
+                : ใช้ในกรณีที่ต้องการขายทรัพย์สิน เช่น ขายเครื่องจักรเก่า , ขาย mold
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                โอนย้าย
+            </td>
+            <td valign="top">
+                : ใช้ในกรณีที่ยังมีกรใช้ทรัพย์สินอยู่แต่ต้องการโอนย้ายทรัพย์สินระหว่างแผนกภายในโรงงาน โดยให้ระบุแผนกที่จะย้ายไป เช่น การย้ายโต๊ะทำงานของแผนกจัดซื้อ ไปยังแผนกบัญชี
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <u>หมายเหตุ</u>
+            </td>
+            <td valign="top">
+                : <u> 1.ถ้าเป็นการย้ายออกนอกบริษัทจะใช้ฟอร์มอื่น</u> / ในกรณีที่เป็นชิ้นส่วนของเครื่องจักรให้ระบุหมายเลขเครื่องจักรหลักด้วยและประมาณราคาของชิ้นส่วนนั้นด้วย
+                <br>
+                ในกรณีรายการที่จะทำการ <u>การจัดการทรัพย์สิน</u> มีมากกว่าจำนวนบรรทัดในแบบฟอร์มกรุณาทำเป็นเอกสารแนบ และควรที่จะมีรูปภาพประกอบด้วยทำเป็นเอกสารแนบ
+                <br>
+                : <u> 2.อ้างอิงตามระเบียบอำนาจการดำเนินงานและการอนุมัติ (LOA)</u>
+                <br>
+                กรณีเป็นรายการโอนย้ายทรัพย์สิน ระดับประธานเจ้าหน้าที่การเงิน (CFO) ไม่ต้องเห็นชอบ/อนุมัติ แต่ถ้าเป็นรายการตัดจำหน่ายทรัพย์สิน ต้องเห็นชอบ/อนุมัติ ถึงระดับประธานเจ้าหน้าที่การเงิน CFO
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
+@section Scripts {
+    <script>
+    
+    </script>
+}

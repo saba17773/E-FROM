@@ -1,0 +1,314 @@
+﻿@page
+@model Web.UI.Pages.S2E.AllTransaction.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "All Transaction Page";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "All Transaction" }
+    };
+}
+
+    <style>
+        td {
+            padding: 5px;
+        }
+
+        .container2 {
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            padding: 10px;
+        }
+    </style>
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>All Transaction</h3>
+</div>
+
+<div>
+    <form method="post" enctype="multipart/form-data">
+        <div class="container2">
+            <table width="90%">
+                <tr style="text-align:right;vertical-align:top;">
+                    <td width="15%">
+                        <b>REQUEST NO :</b>
+                    </td>
+                    <td width="35%" style="text-align:left;">
+                        <div class="input-group">
+                            <select id="RequestNo" name="RequestNo" class="form-control"
+                                    style="text-align:left;" multiple="multiple"
+                                    asp-for="RequestNo" asp-items="Model.RequestNoMaster">
+                                <option value="Blanks">(Blanks)</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td width="15%">
+                        <b>STATUS :</b>
+                    </td>
+                    <td width="35%" style="text-align:left;">
+                         <div class="input-group">
+                            <select id="Status" name="Status" class="form-control"
+                                    style="text-align:left;" multiple="multiple"
+                                    asp-for="Status" asp-items="Model.RequestStatusMaster">
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="text-align:right;vertical-align:top;">
+                    <td width="15%">
+                        <b>Search :</b>
+                    </td>
+                    <td colspan="3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="txtSearch" autocomplete="off" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr style="text-align:right;vertical-align:top;">
+                    <td width="15%">
+                    </td>
+                    <td width="35%">
+                    </td>
+                    <td colspan="2">
+                        <button type="button" class="btn btn-info" id="btnSearch" name="btnSearch">
+                            <i class="fa fa-search"></i>
+                            Search
+                        </button>
+                        &nbsp;&nbsp;
+                        <button type="button" class="btn btn-success" id="btnExport" name="btnExport"
+                                onclick="onExportClick();">
+                            <i class="fa fa-file-excel-o"></i>  Export
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <table id="gridList" width="100%" align="left" class="table table-hover" style="font-size: 15px;"></table>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            $("#Status").multipleSelect({
+                filter: true,
+                placeholder: "Select"
+            });
+
+            $("#RequestNo").multipleSelect({
+                filter: true,
+                placeholder: "Select"
+            });
+
+
+            var gridList = "#gridList";
+
+            $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                searching: false,
+                "scrollX": true,
+                ajax: {
+                    url: "/S2E/AllTransaction/Index?handler=Grid&isFristLoad=0",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST NO", data: "requestno" },
+                    { title: "วัตถุดิบ (ที่มีอยู่)", data: "itemnameref" },
+                    { title: "วัตถุดิบ (เปรียบเทียบ)", data: "itemname" },
+                    { title: "ชื่อตัวแทน || ชื่อผู้ผลิต", data: "dealer" },
+                    { title: "Process", data: "process" },
+                    { title: "Status", data: "statusapprove" },
+                    { title: "Action By", data: "actionby" },
+                    { title: "Test Qty", data: "qty" },
+                    { title: "Unit", data: "unit" },
+                    { title: "Testing Plant", data: "testingplant" },
+                    { title: "Remark", data: "remarkalltrans" },
+                    { title: "Sample Type", data: "sampletype" },
+                    { title: "Sample Location", data: "samplelocation" },
+                    { title: "Sample Location Contact", data: "samplelocationcontact" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            return "<span class='badge badge-" + row.colour + "'>" + data + "</span>";
+                        }
+                    },
+                    {
+                        targets: 15,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += actionLink("/S2E/AllTransaction/" + row.requestid + "/ViewList", "fa fa-eye", "View List");
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+  
+            $("#btnSearch").on("click", function () {
+                var status = $('#Status').val();
+                var pSearch = $("#txtSearch").val();
+                var requestno = $('#RequestNo').val();
+
+                var pStatus = "";
+                for (var i = 0; i < status.length; i++) {
+                    pStatus += status[i] + ',';
+                }
+
+                var pRequestNo = "";
+                for (var i = 0; i < requestno.length; i++) {
+                    pRequestNo += requestno[i] + ',';
+                }
+
+                pStatus = pStatus.substring(0, pStatus.length - 1);
+                pRequestNo = pRequestNo.substring(0, pRequestNo.length - 1);
+
+                $(gridList).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    searching: false,
+                    "scrollX": true,
+                    ajax: {
+                        url: "/S2E/AllTransaction/Index?handler=Grid&isFristLoad=1&pSearch=" + encodeURIComponent(pSearch) +
+                             "&pStatus=" + encodeURIComponent(pStatus) + "&pRequestNo=" + encodeURIComponent(pRequestNo),
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    columns: [
+                        { title: "REQUEST CODE", data: "requestcode" },
+                        { title: "REQUEST NO", data: "requestno" },
+                        { title: "วัตถุดิบ (ที่มีอยู่)", data: "itemnameref" },
+                        { title: "วัตถุดิบ (เปรียบเทียบ)", data: "itemname" },
+                        { title: "ชื่อตัวแทน || ชื่อผู้ผลิต", data: "dealer" },
+                        { title: "Process", data: "process" },
+                        { title: "Status", data: "statusapprove" },
+                        { title: "Action By", data: "actionby" },
+                        { title: "Test Qty", data: "qty" },
+                        { title: "Unit", data: "unit" },
+                        { title: "Testing Plant", data: "testingplant" },
+                        { title: "Remark", data: "remarkalltrans" },
+                        { title: "Sample Type", data: "sampletype" },
+                        { title: "Sample Location", data: "samplelocation" },
+                        { title: "Sample Location Contact", data: "samplelocationcontact" },
+                        { title: "Action", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 6,
+                            render: function (data, type, row) {
+                                return "<span class='badge badge-" + row.colour + "'>" + data + "</span>";
+                            }
+                        },
+                        {
+                            targets: 15,
+                            render: function (data, type, row) {
+                                var link = "";
+
+                                link += actionLink("/S2E/AllTransaction/" + row.requestid + "/ViewList", "fa fa-eye", "View List");
+
+                                return link;
+                            }
+                        }
+                    ],
+                });
+
+                return false;
+            });
+
+        });
+
+        function onExportClick() {
+            var status = $('#Status').val();
+            var pSearch = $("#txtSearch").val();
+            var requestno = $('#RequestNo').val();
+
+            var pStatus = "";
+            for (var i = 0; i < status.length; i++) {
+                pStatus += status[i] + ',';
+            }
+
+            var pRequestNo = "";
+            for (var i = 0; i < requestno.length; i++) {
+                pRequestNo += requestno[i] + ',';
+            }
+
+            pStatus = pStatus.substring(0, pStatus.length - 1);
+            pRequestNo = pRequestNo.substring(0, pRequestNo.length - 1);
+
+            $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                searching: false,
+                "scrollX": true,
+                ajax: {
+                    url: "/S2E/AllTransaction/Index?handler=Grid&isFristLoad=1&pSearch=" + encodeURIComponent(pSearch) +
+                        "&pStatus=" + encodeURIComponent(pStatus) + "&pRequestNo=" + encodeURIComponent(pRequestNo),
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST NO", data: "requestno" },
+                    { title: "วัตถุดิบ (ที่มีอยู่)", data: "itemnameref" },
+                    { title: "วัตถุดิบ (เปรียบเทียบ)", data: "itemname" },
+                    { title: "ชื่อตัวแทน || ชื่อผู้ผลิต", data: "dealer" },
+                    { title: "Process", data: "process" },
+                    { title: "Status", data: "statusapprove" },
+                    { title: "Action By", data: "actionby" },
+                    { title: "Test Qty", data: "qty" },
+                    { title: "Unit", data: "unit" },
+                    { title: "Testing Plant", data: "testingplant" },
+                    { title: "Remark", data: "remarkalltrans" },
+                    { title: "Sample Type", data: "sampletype" },
+                    { title: "Sample Location", data: "samplelocation" },
+                    { title: "Sample Location Contact", data: "samplelocationcontact" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            return "<span class='badge badge-" + row.colour + "'>" + data + "</span>";
+                        }
+                    },
+                    {
+                        targets: 15,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/S2E/AllTransaction/" + row.requestid + "/ViewList", "fa fa-eye", "View List");
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            window.location.href = "/S2E/Template/ExportAllTransaction?handler=DownloadAllTrans&pSearch=" + encodeURIComponent(pSearch) + "&pStatus=" + encodeURIComponent(pStatus) + "&pRequestNo=" + encodeURIComponent(pRequestNo);
+        }
+
+    </script>
+}

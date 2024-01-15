@@ -1,0 +1,99 @@
+﻿@page
+@model Web.UI.Pages.User.IndexModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "User";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Dashboard", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "User" }
+    };
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <span>User Management</span>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <a class="btn btn-primary" href="/User/Add"><i class="fa fa-user-plus"></i> Add</a>
+        </div>
+        <form method="post">
+            <table id="gridUser" width="100%" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridUser = "#gridUser";
+
+            var dtUser = $(gridUser).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/User/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtUser.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "EmployeeId", data: "employeeId" },
+                    { title: "Username", data: "username" },
+                    { title: "Email", data: "email" },
+                    { title: "Role", data: "role" },
+                    { title: "UserDomain", data: "userDomain" },
+                    { title: "Is Active?", data: "isActive" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("Active", "success", "fa fa-check") : showBadge("Deactive", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 6,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/User/" + row.id + "/Edit", "fa fa-edit", "Edit");
+                            link += actionLink("/User/" + row.id + "/ResetPassword", "fa fa-refresh", "Reset Password");
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridUser + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridUser + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridUser + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

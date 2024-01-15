@@ -1,0 +1,37 @@
+﻿@page
+@model Web.UI.Pages.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="card" style="margin: 0 auto; max-width: 400px;">
+    <div class="card-header">
+        Login
+    </div>
+    <div class="card-body">
+        <form method="post">
+
+            <div class="form-group">
+                <label asp-for="Username">Username</label>
+                <input type="text" asp-for="Username" class="form-control" autocomplete="off" />
+                <span class="text-danger" asp-validation-for="Username"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Password</label>
+                <input type="password" asp-for="Password" class="form-control" />
+                <span class="text-danger" asp-validation-for="Password"></span>
+            </div>
+
+            <div class="form-group d-flex justify-content-between align-content-center">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check"></i>
+                    Submit
+                </button>
+                <a class="btn btn-light" href="http://lungryn.deestonegrp.com:8613/">
+                    <i class="fa fa-sign-in"></i> เข้าสู่ระบบด้วย Domain
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

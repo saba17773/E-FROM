@@ -1,0 +1,171 @@
+﻿@page "/Queing/Process/DOM/{plant}/{id}/{isoverall}/ViewCheckin"
+@model Web.UI.Pages.Queing.Process.DOM.ViewCheckinModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "View CHECK IN DOM Detail";
+    ViewData["Plant"] = Model.PlantView;
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Process", Link = $"/Queing/Process/{Model.Plant}/Process" },
+        new BreadcrumbModel { Text = "Domestic (DOM)", Link = $"/Queing/Process/DOM/{Model.Plant}/Index" } ,
+        new BreadcrumbModel { Text = $"{Model.PageBackTitle}", Link = $"/Queing/Process/DOM/{Model.Plant}/{Model.PageBack}"  },
+        new BreadcrumbModel { Text = "View Detail" }
+    };
+
+    ViewData["status"] = "0";
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <h5>Domestic</h5>
+    <br />
+    <div class="card">
+        <div class="card-body text-white bg-info">
+
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label><b>Work Order Number</b></label>
+                    <input type="text" class="form-control" asp-for="WorkOrderNumber1" readonly />
+                </div>
+                <div class="form-group col-md-1">
+                    <label style="color:#17a2b8;">year</label>
+                    <input type="text" class="form-control" asp-for="WorkOrderNumber2" id="WorkOrderNumber2" readonly />
+                </div>
+                <div class="form-group col-md-2">
+                    <label style="color:#17a2b8;">number</label>
+                    <input type="text" class="form-control" asp-for="WorkOrderNumber3" id="WorkOrderNumber3" readonly />
+                </div>
+                <div class="form-group col-md-1"></div>
+
+                <div class="form-group col-md-3">
+                    <label>
+                        <b>Load ID (WMS)</b>
+                    </label>
+                    <input type="text" class="form-control" id="txtLoadid" asp-for="Loadid" readonly />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label>
+                        <b>ทะเบียนรถ</b>
+                    </label>
+                    <input type="text" class="form-control" id="txtTruckID" asp-for="TruckId" readonly />
+                </div>
+                <div class="form-group col-md-4">
+                    <label><b>รายละเอียดรถ</b></label>
+                    <input type="text" class="form-control" id="txtTruckDESC" asp-for="TruckDesc" readonly />
+                </div>
+                <div class="form-group col-md-1"></div>
+
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label><b>DriverID</b></label>
+                    <input type="text" class="form-control" id="txtDriverID" asp-for="DriverId" readonly />
+                </div>
+                <div class="form-group col-md-4">
+                    <label><b>ชื่อคนขับ</b></label>
+                    <input type="text" class="form-control" id="txtDrivername" asp-for="DriverName" readonly />
+                </div>
+                <div class="form-group col-md-3">
+                    <label><b>เบอร์โทร</b></label>
+                    <input type="text" class="form-control" id="txtTel" asp-for="DriverTel" readonly />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label> <b>ประเภทรถ</b></label>
+                    <select class="form-control" id="selectCateTruck" asp-for="CateTruck" asp-items="Model.CateTruckMaster" disabled>
+                        <option value="0"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2">
+                    <label><b>STD Time</b></label>
+                    <input type="text" class="form-control" id="txtStdTime" asp-for="StdTime" readonly />
+                </div>
+                <div class="form-group col-md-6">
+                    <label><b>Route</b></label>
+                    <input type="text" class="form-control" asp-for="ProvincesName" readonly />
+                </div>
+            </div>
+
+            @if (Model.IsOverAll == 1 && Model.Status != 1)
+            {
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label> <b>Bay</b></label>
+                        <input type="text" class="form-control" asp-for="Bay" readonly />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label><b>Weight In</b></label>
+                        <input type="text" class="form-control" asp-for="WeightIn" readonly />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><b>Weight In Date</b></label>
+                        <input type="text" class="form-control" asp-for="WeightInDate" readonly />
+                    </div>
+                    @if (Model.Status == 3)
+                    {
+                        <div class="form-group col-md-1"></div>
+                        <div class="form-group col-md-2">
+                            <label><b>Weight Out</b></label>
+                            <input type="text" class="form-control" asp-for="WeightOut" readonly />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label><b>Weight Out Date</b></label>
+                            <input type="text" class="form-control" asp-for="WeightOutDate" readonly />
+                        </div>
+                    }
+                </div>
+            }
+
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <a href="/Queing/Process/DOM/@Model.Plant/@Model.PageBack" class="btn btn-light">
+            <i class="fa fa-reply"></i> Back
+        </a>
+    </div>
+
+</div>

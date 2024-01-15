@@ -1,0 +1,1512 @@
+﻿@page "/S2E/Qtech/LABTest/{LABID}/{LABLINEID}/Edit"
+@model Web.UI.Pages.S2E.Qtech.LABTest.EditModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "Edit Lab Test";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech", Link = "/S2E/Qtech" },
+        new BreadcrumbModel { Text = "Lab Test Main", Link = "/S2E/Qtech/LABTest/Main" },
+        new BreadcrumbModel { Text = "Edit Lab Test" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .table2 {
+        border: 1px solid black;
+        text-align: center;
+    }
+
+        .table2 tr {
+            text-align: center;
+            border: 1px solid black;
+            vertical-align: middle;
+        }
+
+        .table2 td {
+            border: 1px solid black;
+        }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Raw Material Evaluation Test (Edit)</h1>
+</div>
+
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <table width="90%">
+                <tr style="vertical-align:bottom;">
+                    <td width="15%"> <b>Request Code : </b></td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td width="15%"> <b>Project Ref No. : </b></td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="ProjectRefNo" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <table width="30%" align="center">
+                <tr>
+                    <td width="30%">
+                        <label for="RM">
+                            <input type="radio" asp-for="ItemGroup" id="RM" name="ItemGroup" value="RM" class="radio2" disabled/>
+                            <b>Raw Material <span class="text-danger font-weight-bold">*</span></b>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="FS">
+                            <input type="radio" asp-for="ItemGroup" id="FS" name="ItemGroup" value="FS" class="radio2" disabled/>
+                            <b>Factory Supply <span class="text-danger font-weight-bold">*</span></b>
+                        </label>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <br />
+        <div class="container2">
+            <table width="90%">
+                <tr style="vertical-align:bottom;">
+                    <td width="15%"><b>ผู้ขอทดสอบ : </b> <span class="text-danger font-weight-bold">*</span></td>
+                    <td width="30%">
+                        <select asp-for="DepartmentID" asp-items="Model.DepartmentMaster" class="form-control">
+                            <option value="">--- SELECT ---</option>
+                        </select>
+                    </td>
+                    <td width="40%">
+                        <input type="text" asp-for="DepartmentRemark" maxlength="50" class="form-control" autocomplete="off" readonly />
+
+                    </td>
+                </tr>
+                <tr style="vertical-align:bottom;">
+                    <td width="15%"><b>เหตุผลของการทดสอบ : </b><span class="text-danger font-weight-bold">*</span></td>
+                    <td width="30%">
+                        <select asp-for="ResonTestID" asp-items="Model.ResonTestMaster" class="form-control">
+                            <option value="">--- SELECT ---</option>
+                        </select>
+
+                    </td>
+                    <td width="40%">
+                        <input type="text" asp-for="ResonTestRemark" maxlength="50" class="form-control" autocomplete="off" readonly />
+                    </td>
+                </tr>
+                <tr style="vertical-align:bottom;">
+                    <td width="15%"><b>ชนิดของวัตถุดิบ/Type of raw material : </b><span class="text-danger font-weight-bold">*</span></td>
+                    <td width="30%" colspan="2">
+                        <select asp-for="TypeOfRMID" asp-items="Model.TypeOfRMMaster" class="form-control">
+                            <option value="">--- SELECT ---</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <table width="90%">
+                <tr style="text-align:center;">
+                    @if (@Model.isCompaire == 1)
+                    {
+                        <td colspan="2"> <b>ข้อมูลวัตถุดิบที่นำมาทดสอบ</b> </td>
+                        <td colspan="2"> <b>ข้อมูลวัตถุดิบที่นำมาเปรียบเทียบ</b> </td>
+                    }
+                    else
+                    {
+                        <td colspan="2"> <b> ข้อมูลวัตถุดิบที่นำมาทดสอบ </b> </td>
+                    }
+                </tr>
+                <tr>
+                    <td width="10%"> a) Chemical name : <span class="text-danger font-weight-bold">*</span></td>
+                    <td width="40%">
+                        <input type="text" asp-for="ChemicalName" maxlength="200" class="form-control" autocomplete="off" />
+                    </td>
+                    @if (@Model.isCompaire == 1)
+                    {
+                        <td width="10%"> a) Chemical name :  <span class="text-danger font-weight-bold">*</span></td>
+                        <td width="40%">
+                            <input type="text" asp-for="ChemicalNameRef" maxlength="200" class="form-control" autocomplete="off" />
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td width="10%">
+                        b) Trade name :
+                    </td>
+                    <td width="40%">
+                        <table width="100%">
+                            <tr>
+                                <td width="35%">
+                                    <input type="text" asp-for="ItemCode" maxlength="200" class="form-control" autocomplete="off" readonly />
+                                </td>
+                                <td width="65%">
+                                    <textarea asp-for="TradeName" rows="3" style="white-space:normal;display:block;" maxlength="200" class="form-control" autocomplete="off" readonly></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    @if (@Model.isCompaire == 1)
+                    {
+                        <td width="10%">
+                            b) Trade name :
+                        </td>
+                        <td width="40%">
+                            <table width="100%">
+                                <tr>
+                                    <td width="35%" colspan="2">
+                                        <input type="text" asp-for="ItemCodeRef" maxlength="200" class="form-control" autocomplete="off" readonly />
+                                    </td>
+                                    <td width="65%">
+                                        <textarea asp-for="TradeNameRef" rows="3" style="white-space:normal;display:block;" maxlength="200" class="form-control" autocomplete="off" readonly></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td width="10%"> c) Country of origin : <span class="text-danger font-weight-bold">*</span></td>
+                    <td width="40%">
+                        <input type="text" asp-for="Country" maxlength="200" class="form-control" autocomplete="off" />
+                    </td>
+                    @if (@Model.isCompaire == 1)
+                    {
+                        <td width="10%"> c) Country of origin : </td>
+                        <td width="40%">
+                            <input type="text" asp-for="CountryRef" maxlength="200" class="form-control" autocomplete="off" readonly />
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td width="10%"> d) Manufacturer : <span class="text-danger font-weight-bold">*</span></td>
+                    <td width="40%">
+                        <input type="text" asp-for="Manufacture" maxlength="200" class="form-control" autocomplete="off" />
+                    </td>
+                    @if (@Model.isCompaire == 1)
+                    {
+                        <td width="10%"> d) Manufacturer : </td>
+                        <td width="40%">
+                            <input type="text" asp-for="ManufactureRef" maxlength="200" class="form-control" autocomplete="off" readonly />
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td width="10%"> e) Agent/Trader : <span class="text-danger font-weight-bold">*</span></td>
+                    <td width="40%">
+                        <input type="text" asp-for="Agent" maxlength="200" class="form-control" autocomplete="off" />
+                    </td>
+                    @if (@Model.isCompaire == 1)
+                    {
+                        <td width="10%"> e) Agent/Trader : </td>
+                        <td width="40%">
+                            <input type="text" asp-for="AgentRef" maxlength="200" class="form-control" autocomplete="off" readonly />
+                        </td>
+                    }
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <table width="90%" align="center">
+                <tr>
+                    <td width="30%">
+                        <table class="table2" width="90%" style="text-align:center;">
+                            <tr>
+                                <td width="25%"> <b> DSL/DRB </b></td>
+                                <td width="25%"> <b> DSI </b></td>
+                                <td width="25%"> <b> SVO </b></td>
+                                <td width="25%"> <b> STR </b></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" asp-for="PlantCodeD1D2" maxlength="50" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="text" asp-for="PlantCodeD3" maxlength="50" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="text" asp-for="PlantCodeD4" maxlength="50" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="text" asp-for="PlantCodeD5" maxlength="50" class="form-control" autocomplete="off" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    @if (@Model.isCompaire == 1)
+                    {
+                        <td width="30%">
+                            <table class="table2" width="90%" style="text-align:center;">
+                                <tr>
+                                    <td width="25%"> <b> DSL/DRB </b></td>
+                                    <td width="25%"> <b> DSI </b></td>
+                                    <td width="25%"> <b> SVO </b></td>
+                                    <td width="25%"> <b> STR </b></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" asp-for="PlantCodeD1D2Ref" maxlength="50" class="form-control" autocomplete="off" />
+                                    </td>
+                                    <td>
+                                        <input type="text" asp-for="PlantCodeD3Ref" maxlength="50" class="form-control" autocomplete="off" />
+                                    </td>
+                                    <td>
+                                        <input type="text" asp-for="PlantCodeD4Ref" maxlength="50" class="form-control" autocomplete="off" />
+                                    </td>
+                                    <td>
+                                        <input type="text" asp-for="PlantCodeD5Ref" maxlength="50" class="form-control" autocomplete="off" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    }
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>Material group in AX</b>
+            <table width="70%" align="center">
+                <tr style="text-align:left;">
+                    <td width="33%">
+                        <label for="DocRef1">
+                            <input type="checkbox" id="DocRef1" asp-for="DocRef1" name="DocRef1" class="checkbox2" />
+                            Natural rubber
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef2">
+                            <input type="checkbox" id="DocRef2" asp-for="DocRef2" name="DocRef2" class="checkbox2" />
+                            Synthetic rubber
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef3">
+                            <input type="checkbox" id="DocRef3" asp-for="DocRef3" name="DocRef3" class="checkbox2" />
+                            Carbon black
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align:left;">
+                    <td width="33%">
+                        <label for="DocRef4">
+                            <input type="checkbox" id="DocRef4" asp-for="DocRef4" name="DocRef4" class="checkbox2" />
+                            Nylon & polyester
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef5">
+                            <input type="checkbox" id="DocRef5" asp-for="DocRef5" name="DocRef5" class="checkbox2" />
+                            Bead wire & steel cord
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef6">
+                            <input type="checkbox" id="DocRef6" asp-for="DocRef6" name="DocRef6" class="checkbox2" />
+                            White filler
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align:left;">
+                    <td width="33%">
+                        <label for="DocRef7">
+                            <input type="checkbox" id="DocRef7" asp-for="DocRef7" name="DocRef7" class="checkbox2" />
+                            Antidegradant
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef8">
+                            <input type="checkbox" id="DocRef8" asp-for="DocRef8" name="DocRef8" class="checkbox2" />
+                            Process oil
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef9">
+                            <input type="checkbox" id="DocRef9" asp-for="DocRef9" name="DocRef9" class="checkbox2" />
+                            Plasticizer & processsing aid
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align:left;">
+                    <td width="33%">
+                        <label for="DocRef10">
+                            <input type="checkbox" id="DocRef10" asp-for="DocRef10" name="DocRef10" class="checkbox2" />
+                            Accelerator
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef11">
+                            <input type="checkbox" id="DocRef11" asp-for="DocRef11" name="DocRef11" class="checkbox2" />
+                            Activator
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef12">
+                            <input type="checkbox" id="DocRef12" asp-for="DocRef12" name="DocRef12" class="checkbox2" />
+                            Reclaim
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align:left;">
+                    <td width="33%">
+                        <label for="DocRef13">
+                            <input type="checkbox" id="DocRef13" asp-for="DocRef13" name="DocRef13" class="checkbox2" />
+                            Tackifier
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef14">
+                            <input type="checkbox" id="DocRef14" asp-for="DocRef14" name="DocRef14" class="checkbox2" />
+                            Vulcanising agent
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef15">
+                            <input type="checkbox" id="DocRef15" asp-for="DocRef15" name="DocRef15" class="checkbox2" />
+                            Peptizer
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align:left;">
+                    <td width="33%">
+                        <label for="DocRef16">
+                            <input type="checkbox" id="DocRef16" asp-for="DocRef16" name="DocRef16" class="checkbox2" />
+                            Valve
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef17">
+                            <input type="checkbox" id="DocRef17" asp-for="DocRef17" name="DocRef17" class="checkbox2" />
+                            Color pigment
+                        </label>
+                    </td>
+                    <td width="33%">
+                        <label for="DocRef18">
+                            <input type="checkbox" id="DocRef18" asp-for="DocRef18" name="DocRef18" class="checkbox2" />
+                            Factory Supply
+                        </label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>สรุปผลการทดสอบ <span class="text-danger font-weight-bold">*</span> </b>
+            <div class="input-group">
+                <table width="30%">
+                    <tr>
+                        <td width="50%">
+                            <label for="Pass">
+                                <input type="radio" asp-for="TestResult" id="Pass" name="TestResult" value="1" class="radio2" />
+                                ผ่าน/Pass
+                            </label>
+                        </td>
+                        <td width="50%">
+                            <label for="Failed">
+                                <input type="radio" asp-for="TestResult" id="Failed" name="TestResult" value="2" class="radio2" />
+                                ไม่ผ่าน/Failed
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <b>การอนุมัติใช้ <span class="text-danger font-weight-bold">*</span></b>
+            <div class="input-group">
+                <table width="50%">
+                    <tr>
+                        <td width="15%"></td>
+                        <td style="text-align:left;">
+                            @if (Model.TestResult == 1)
+                            {
+                                <label for="ApprovalForID1">
+                                    <input type="radio" asp-for="ApprovalForID" id="ApprovalForID1" name="ApprovalForID" value="1" class="radio2" />
+                                    อนุมัติการใช้/ซื้อ เพื่อการทดสอบเพิ่มเติม (Temporary approval)
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="ApprovalForID1">
+                                    <input type="radio" asp-for="ApprovalForID" id="ApprovalForID1" name="ApprovalForID" value="1" class="radio2" disabled />
+                                    อนุมัติการใช้/ซื้อ เพื่อการทดสอบเพิ่มเติม (Temporary approval)
+                                </label>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="15%"></td>
+                        <td style="text-align:left;">
+                            @if (Model.TestResult == 1)
+                            {
+                                <label for="ApprovalForID2">
+                                    <input type="radio" asp-for="ApprovalForID" id="ApprovalForID2" name="ApprovalForID" value="2" class="radio2" />
+                                    อนุมัติการใช้/ซื้อ เพื่อการผลิตปกติ (Permanent approval)
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="ApprovalForID2">
+                                    <input type="radio" asp-for="ApprovalForID" id="ApprovalForID2" name="ApprovalForID" value="2" class="radio2" disabled />
+                                    อนุมัติการใช้/ซื้อ เพื่อการผลิตปกติ (Permanent approval)
+                                </label>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <b>อนุมัติการใช้/ซื้อ เพื่อการผลิตปกติ (Permanent approval) <span class="text-danger font-weight-bold">*</span></b>
+            <div class="input-group">
+                <table style="width:50%">
+                    <tr>
+                        <td>
+                            @if (Model.TestResult == 1)
+                            {
+                                <label for="Plant1">
+                                    <input type="checkbox" id="Plant1" asp-for="Plant1" name="Plant1" class="checkbox2" />
+                                    DSL
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="Plant1">
+                                    <input type="checkbox" id="Plant1" asp-for="Plant1" name="Plant1" class="checkbox2" disabled />
+                                    DSL
+                                </label>
+                            }
+
+                        </td>
+                        <td>
+                            @if (Model.TestResult == 1)
+                            {
+                                <label for="Plant2">
+                                    <input type="checkbox" id="Plant2" asp-for="Plant2" name="Plant2" class="checkbox2" />
+                                    DRB
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="Plant2">
+                                    <input type="checkbox" id="Plant2" asp-for="Plant2" name="Plant2" class="checkbox2" disabled />
+                                    DRB
+                                </label>
+                            }
+                            
+                        </td>
+                        <td>
+                            @if (Model.TestResult == 1)
+                            {
+                                <label for="Plant3">
+                                    <input type="checkbox" id="Plant3" asp-for="Plant3" name="Plant3" class="checkbox2" />
+                                    DSI
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="Plant3">
+                                    <input type="checkbox" id="Plant3" asp-for="Plant3" name="Plant3" class="checkbox2" disabled />
+                                    DSI
+                                </label>
+                            }
+                        </td>
+                        <td>
+                            @if (Model.TestResult == 1)
+                            {
+                                <label for="Plant4">
+                                    <input type="checkbox" id="Plant4" asp-for="Plant4" name="Plant4" class="checkbox2" />
+                                    DSR
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="Plant4">
+                                    <input type="checkbox" id="Plant4" asp-for="Plant4" name="Plant4" class="checkbox2" disabled />
+                                    DSR
+                                </label>
+                            }
+                        </td>
+                        <td>
+                            @if (Model.TestResult == 1)
+                            {
+                                <label for="Plant5">
+                                    <input type="checkbox" id="Plant5" asp-for="Plant5" name="Plant5" class="checkbox2" />
+                                    STR
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="Plant5">
+                                    <input type="checkbox" id="Plant5" asp-for="Plant5" name="Plant5" class="checkbox2" disabled />
+                                    STR
+                                </label>
+                            }
+
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" asp-for="Plant" id="Plant" class="form-control" autocomplete="off" />
+            </div>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ผลการทดสอบในห้องปฏิบัติการ/Laboratoty evaluation</b>
+            <br />
+            <table id="LabEvaluationTB" width="50%" class="table table-hover"></table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ผลการทดสอบในการผลิต/Process evaluation</b>
+            <br />
+            <table id="ProcessEvaluationTB" width="50%" class="table table-hover"></table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ผลการทดสอบผลิตภัณฑ์/Product evaluation</b>
+            <br />
+            <table id="ProductEvaluationTB_OLD" width="50%" class="table table-hover"></table>
+            <br />
+            <table id="ProductEvaluationTB" align="left" width="60%">
+                <tr style="text-align: left;">
+                    <th>รายการ</th>
+                    <th>ผ่าน</th>
+                    <th>ไม่ผ่าน</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr style="text-align: left;" id="tablerow1">
+                    <td width="50%">
+                        <input type="text" name="ProdList" id="ProdList1" class="form-control" maxlength="200" style="width:90%;" autocomplete="off" />
+                    </td>
+                    <td width="10%">
+                        <input type="radio" name="ProdIsPass1" id="ProdPass1" class="radio2" onclick="isProdPass(1)" />
+                    </td>
+                    <td width="10%">
+                        <input type="radio" name="ProdIsPass1" id="ProdFailed1" class="radio2" onclick="isProdFailed(1)" />
+                    </td>
+                    <td width="5%">
+                        <span id="btnDeleteRow1" class="badge badge-danger" onclick="removeTr(1);"><i class="fa fa-close"></i> ลบ</span>
+                    </td>
+                    <td width="5%">
+                        <input type="hidden" readonly="readonly" name="ProdIsPass" id="txtProdIsPass1" />
+                    </td>
+                </tr>
+            </table>
+            <table width="70%">
+                <tr>
+                    <td style="text-align:right;">
+                        <button type="button" class="btn btn-primary mr-3" id="btnAddRow">
+                            <i class="fa fa-plus"></i>
+                            เพิ่มแถว
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <table id="gridViewFileUpload" width="50%" class="table table-hover"></table>
+            <br />
+            <table width="60%" id="UploadTable" align="left">
+                <tr style="text-align: left;">
+                    <th>File Upload</th>
+                    <th>Delete</th>
+                </tr>
+                <tr style="text-align: left;" id="tbrow0">
+                    <td width="80%">
+                        <input type="file" id="f0" name="FileUpload" style="width:90%;" />
+                    </td>
+                    <td width="20%">
+                        <button type="button" class="btn btn-danger" id="b0" onclick="delTr(0);"> ลบ </button>
+                    </td>
+                </tr>
+                <tr style="text-align: left;" id="tbrow1">
+                    <td width="80%">
+                        <input type="file" id="f1" name="FileUpload" style="width:90%;" />
+                    </td>
+                    <td width="20%">
+                        <button type="button" class="btn btn-danger" id="b1" onclick="delTr(1);"> ลบ </button>
+                    </td>
+                </tr>
+            </table>
+            <table width="70%">
+                <tr>
+                    <td style="text-align:right;">
+                        <button type="button" class="btn btn-primary" id="add"><i class="fa fa-plus"> เพิ่มไฟล์ </i></button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-secondary mr-3" name="draft" value="draft" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-file"></i>
+                        Save Draft
+                    </button>
+                    <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                    <button type="reset" class="btn btn-danger">
+                        <i class="fa fa-times"></i>
+                        ยกเลิก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+
+@section scripts {
+    <script>
+        $(":radio[name=TestResult]").on("change", function () {
+            var val = $(this).val();
+            Testresult = val;
+            if (val == "2") {
+                document.getElementById("Plant1").checked = false;
+                document.getElementById("Plant2").checked = false;
+                document.getElementById("Plant3").checked = false;
+                document.getElementById("Plant4").checked = false;
+                document.getElementById("Plant5").checked = false;
+
+                document.getElementById("Plant1").disabled = true;
+                document.getElementById("Plant2").disabled = true;
+                document.getElementById("Plant3").disabled = true;
+                document.getElementById("Plant4").disabled = true;
+                document.getElementById("Plant5").disabled = true;
+
+                $("#Plant").val("");
+
+                document.getElementById("ApprovalForID1").disabled = true;
+                document.getElementById("ApprovalForID2").disabled = true;
+                document.getElementById("ApprovalForID1").checked = false;
+                document.getElementById("ApprovalForID2").checked = false;
+
+            }
+            else {
+
+                document.getElementById("Plant1").disabled = false;
+                document.getElementById("Plant2").disabled = false;
+                document.getElementById("Plant3").disabled = false;
+                document.getElementById("Plant4").disabled = false;
+                document.getElementById("Plant5").disabled = false;
+
+                document.getElementById("ApprovalForID1").disabled = false;
+                document.getElementById("ApprovalForID2").disabled = false;
+                document.getElementById("ApprovalForID1").checked = false;
+                document.getElementById("ApprovalForID2").checked = false;
+
+            }
+        });
+
+        var DepIsRemark = 0;
+        $("#DepartmentID").on("change", function () {
+            var DeptID = $("#DepartmentID").val();
+
+             $.ajax({
+                url: "/S2E/Qtech/LABTest/@Model.RequestId/@Model.AssessmentId/Create?handler=DepartmentISRemark&DeptID=" + DeptID,
+                type: "get"
+             }).done(function (data)
+             {
+                if (data == true) {
+                    document.getElementById("DepartmentRemark").readOnly = false;
+                    $("#DepartmentRemark").val("");
+                    DepIsRemark = 1;
+                }
+                else {
+                    document.getElementById("DepartmentRemark").readOnly = true;
+                    $("#DepartmentRemark").val("");
+                    DepIsRemark = 0;
+                }
+             });
+        });
+
+        var ResonIsRemark = 0;
+        $("#ResonTestID").on("change", function () {
+            var ResonID = $("#ResonTestID").val();
+
+             $.ajax({
+                 url: "/S2E/Qtech/LABTest/@Model.RequestId/@Model.AssessmentId/Create?handler=ResonTestISRemark&ResonID=" + ResonID,
+                type: "get"
+             }).done(function (data)
+             {
+                if (data == true) {
+                    document.getElementById("ResonTestRemark").readOnly = false;
+                    $("#ResonTestRemark").val("");
+                    ResonIsRemark = 1;
+                }
+                else {
+                    document.getElementById("ResonTestRemark").readOnly = true;
+                    $("#ResonTestRemark").val("");
+                    ResonIsRemark = 0;
+                }
+             });
+        });
+
+        $("#Plant1").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                DataArea += "DSL,";
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            else {
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+
+            }
+
+            $("#Plant").val(DataArea.slice(0, -1));
+        });
+
+        $("#Plant2").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                DataArea += "DRB,";
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            else {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            $("#Plant").val(DataArea.slice(0, -1));
+
+        });
+
+        $("#Plant3").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                DataArea += "DSI,";
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+
+            }
+            else {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+
+            $("#Plant").val(DataArea.slice(0, -1));
+        });
+
+        $("#Plant4").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                DataArea += "DSR,";
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            else {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("Plant5").checked == true) {
+                    DataArea += "STR,";
+                }
+            }
+            $("#Plant").val(DataArea.slice(0, -1));
+
+        });
+
+        $("#Plant5").change(function () {
+            var DataArea = "";
+            if (this.checked) {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+                DataArea += "STR,";
+            }
+            else {
+                if (document.getElementById("Plant1").checked == true) {
+                    DataArea += "DSL,";
+                }
+                if (document.getElementById("Plant2").checked == true) {
+                    DataArea += "DRB,";
+                }
+                if (document.getElementById("Plant3").checked == true) {
+                    DataArea += "DSI,";
+                }
+                if (document.getElementById("Plant4").checked == true) {
+                    DataArea += "DSR,";
+                }
+            }
+            $("#Plant").val(DataArea.slice(0, -1));
+        });
+
+        var ItemGroup_Select = $(":radio[name=ItemGroup]").val();
+        $(":radio[name=ItemGroup]").on("change", function () {
+            var val = $(this).val();
+            ItemGroup_Select = val;
+        });
+
+        var Approval = $(":radio[name=ApprovalForID]").val();
+        $(":radio[name=ApprovalForID]").on("change", function () {
+            var val = $(this).val();
+            Approval = val;
+        });
+
+        $(document).ready(function () {
+
+            var LabEvaluationTB = "#LabEvaluationTB";
+            $(LabEvaluationTB).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                paging:false,
+                ajax: {
+                    url: "/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/Edit?handler=LabEvaluationGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "No.", data: "logid" },
+                    { title: "รายการ", data: "labresultdesc" },
+                    { title: "ผ่าน", data: null },
+                    { title: "ไม่ผ่าน", data: null },
+                    { title: "ไม่ได้ทดสอบ", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        //width: "10%",
+                        "className": "text-left",
+                        orderable: false,
+                        visible: false
+                    },
+                    {
+                        targets: 1,
+                        width: "70%",
+                        "className": "text-left",
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if (row.isremarka == 1 && row.isremarkb == 1) {
+                                var show = "";
+                                show += data;
+                                show += " <input type='text' name='LABTestResultRemark1' id='textRemark1' autocomplete='off'  style='width:10%;' value='" + row.remarka + "' /> °C";
+                                show += "   or  ";
+                                show += " <input type='text' name='LABTestResultRemark2' id='textRemark2' autocomplete='off' style='width:10%;' value='" + row.remarkb + "' > °C";
+                                return show;
+                            }
+                            else {
+                                return data;
+                            }
+                        }
+                    },
+                    {
+                        targets: 2,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            if (row.ispass == 1) {
+                                var link = "";
+                                link += "<input type='radio' name='LabIsPass" + row.id + "' id='LabPass" + row.id + "' value='1' onclick='isPass(" + row.id + ");' class='radio2' checked/>";
+                                return link;
+                            }
+                            else {
+                                var link = "";
+                                link += "<input type='radio' name='LabIsPass" + row.id + "' id='LabPass" + row.id + "' value='1' onclick='isPass(" + row.id + ");' class='radio2'/>";
+                                return link;
+                            }
+                        }
+                    },
+                    {
+                        targets: 3,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            if (row.ispass == 0) {
+                                var link = "";
+                                link += "<input type='radio' name='LabIsPass" + row.id + "' id='LabFailed" + row.id + "' value='0' onclick='isFailed(" + row.id + ");' class='radio2' checked/>";
+                                return link;
+                            }
+                            else {
+                                var link = "";
+                                link += "<input type='radio' name='LabIsPass" + row.id + "' id='LabFailed" + row.id + "' value='0' onclick='isFailed(" + row.id + ");' class='radio2'/>";
+                                return link;
+                            }
+                        }
+                    },
+                    {
+                        targets: 4,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            if (row.ispass == 2) {
+
+                                var link = "";
+                                link += "<input type='radio' name='LabIsPass" + row.id + "' id='LabNotTest" + row.id + "' value='2' onclick='isNotTest(" + row.id + ");' class='radio2' checked/>";
+                                link += "<input type='hidden' name='LabIsPass' id='txtLabIsPass" + row.id + "' value='" + row.ispass + "' />";
+                                link += "<input type='hidden' name='LabResultID' id='txtLabResultID" + row.id + "' value='" + row.id + "' />";
+                                link += "<input type='hidden' name='LabResultLogsID' id='txtLabResultLogsID" + row.id + "' value='" + row.logid + "' />";
+                                return link;
+                            }
+                            else {
+                                var link = "";
+                                link += "<input type='radio' name='LabIsPass" + row.id + "' id='LabNotTest" + row.id + "' value='2' onclick='isNotTest(" + row.id + ");' class='radio2'/>";
+                                link += "<input type='hidden' name='LabIsPass' id='txtLabIsPass" + row.id + "' value='" + row.ispass + "' />";
+                                link += "<input type='hidden' name='LabResultID' id='txtLabResultID" + row.id + "' value='" + row.id + "' />";
+                                link += "<input type='hidden' name='LabResultLogsID' id='txtLabResultLogsID" + row.id + "' value='" + row.logid + "' />";
+                                return link;
+                            }
+                        }
+                    }
+                ],
+            });
+
+            var ProcessEvaluationTB = "#ProcessEvaluationTB";
+            $(ProcessEvaluationTB).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                orderable: false,
+                paging: false,
+                ajax: {
+                    url: "/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/Edit?handler=ProcessEvaluationGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "No.", data: "id" },
+                    { title: "รายการ", data: "processdesc" },
+                    { title: "ผ่าน", data: null },
+                    { title: "ไม่ผ่าน", data: null },
+                    { title: "ไม่ได้ทดสอบ", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        //width: "10%",
+                        "className": "text-left",
+                        orderable: false,
+                        visible:false
+                    },
+                    {
+                        targets: 1,
+                        width: "70%",
+                        "className": "text-left",
+                        orderable: false
+                    },
+                    {
+                        targets: 2,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            if (row.ispass == 1) {
+                                var link = "";
+                                link += "<input type='radio' name='ProcIsPass" + row.id + "' id='ProcPass" + row.id + "' value='1' onclick='isProcPass(" + row.id + ");' class='radio2' checked/>";
+                                return link;
+                            }
+                            else {
+                                var link = "";
+                                link += "<input type='radio' name='ProcIsPass" + row.id + "' id='ProcPass" + row.id + "' value='1' onclick='isProcPass(" + row.id + ");' class='radio2' />";
+                                return link;
+                            }
+
+                        }
+                    },
+                    {
+                        targets: 3,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            if (row.ispass == 0) {
+                                var link = "";
+                                link += "<input type='radio' name='ProcIsPass" + row.id + "' id='ProcFailed" + row.id + "' value='0' onclick='isProcFailed(" + row.id + ");' class='radio2' checked/>";
+                                return link;
+                            }
+                            else {
+                                var link = "";
+                                link += "<input type='radio' name='ProcIsPass" + row.id + "' id='ProcFailed" + row.id + "' value='0' onclick='isProcFailed(" + row.id + ");' class='radio2' />";
+                                return link;
+                            }
+                        }
+                    },
+                    {
+                        targets: 4,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            if (row.ispass == 2) {
+                                var link = "";
+                                link += "<input type='radio' name='ProcIsPass" + row.id + "' id='ProcNotTest" + row.id + "' value='2' onclick='isProcNotTest(" + row.id + ");' class='radio2' checked/>";
+                                link += "<input type='hidden' name='ProcIsPass' id='txtLabProcIsPass" + row.id + "' value='" + row.ispass + "' />";
+                                link += "<input type='hidden' name='ProcResultID' id='txtProcResultID" + row.id + "' value='" + row.id + "' />";
+                                link += "<input type='hidden' name='ProcResultLogsID' id='txtProcResultLogsID" + row.id + "' value='" + row.logid + "' />";
+                                return link;
+                            }
+                            else {
+                                var link = "";
+                                link += "<input type='radio' name='ProcIsPass" + row.id + "' id='ProcNotTest" + row.id + "' value='2' onclick='isProcNotTest(" + row.id + ");' class='radio2'/>";
+                                link += "<input type='hidden' name='ProcIsPass' id='txtLabProcIsPass" + row.id + "' value='" + row.ispass + "' />";
+                                link += "<input type='hidden' name='ProcResultID' id='txtProcResultID" + row.id + "' value='" + row.id + "' />";
+                                link += "<input type='hidden' name='ProcResultLogsID' id='txtProcResultLogsID" + row.id + "' value='" + row.logid + "' />";
+                                return link;
+                            }
+                        }
+                    }
+                ],
+            });
+
+            var ProductEvaluationTB_OLD = "#ProductEvaluationTB_OLD";
+            $(ProductEvaluationTB_OLD).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                orderable: false,
+                paging: false,
+                ajax: {
+                    url: "/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/Edit?handler=ProductEvaluationGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "No.", data: "id" },
+                    { title: "รายการ", data: "producttestdesc" },
+                    { title: "ผ่าน", data: null },
+                    { title: "ไม่ผ่าน", data: null },
+                    { title: "", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        "className": "text-left",
+                        orderable: false,
+                        visible:false
+                    },
+                    {
+                        targets: 1,
+                        width: "70%",
+                        "className": "text-left",
+                        orderable: false
+                    },
+                    {
+                        targets: 2,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            var link = "";
+                            if (row.ispass == 1) {
+                                link += "<input type='radio' name='ProdIsPassOLD" + row.row + "' id='ProdPassOLD" + row.row + "'  onclick='isProdPassOLD(" + row.row + ")' class='radio2' checked/>";
+                            }
+                            else {
+                                link += "<input type='radio' name='ProdIsPassOLD" + row.row + "'  id='ProdPassOLD" + row.row + "'  onclick='isProdPassOLD(" + row.row + ")' class='radio2'/>";
+                            }
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 3,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            var link = "";
+                            if (row.ispass == 0) {
+                                link += "<input type='radio' name='ProdIsPassOLD" + row.row + "'  id='ProdFailedOLD" + row.row + "'  onclick='isProdFailedOLD(" + row.row + ")' class='radio2' checked/>";
+                            }
+                            else {
+                                link += "<input type='radio' name='ProdIsPassOLD" + row.row + "'  id='ProdFailedOLD" + row.row + "'  onclick='isProdFailedOLD(" + row.row + ")' class='radio2'/>";
+                            }
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 4,
+                        width: "10%",
+                        orderable: false,
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += "<span id='btnDeleteRow" + row.row + "' class='badge badge-danger' onclick='del(" + row.id + ")'><i class='fa fa-close'></i> ลบ</span>";
+                            link += "<input type='hidden' readonly='readonly' name='ProdIsPassOLD' id='txtProdIsPassOLD" + row.row + "' value='" + row.ispass + "' />";
+                            link += "<input type='hidden' name='ProdResultLogsID' id='txtProdResultLogsID" + row.row + "' value='" + row.id + "' />";
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            var gridViewFileUpload = "#gridViewFileUpload";
+            $(gridViewFileUpload).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: false,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                ajax: {
+                    url: "/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/Edit?handler=GridViewFileUpload",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "FILE NAME", data: "filename" },
+                    { title: "UPLOADDATE", data: "createdate" },
+                    { title: "Download", data: null },
+                    { title: "Delete", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return actionLink("/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/Edit?handler=DownloadFileUpload&LABID=@Model.LabID&Fileid=" + row.id, "fa fa-download", "<span> Download </span>");
+                         }
+                    },
+                    {
+                        targets: 3,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += "<button type='button' class='btn btn-danger' onclick='return delfile(" + row.id + ")'><i class='fa fa-close'></i></button>";
+                            return link;
+                        }
+                    }
+
+                ]
+            });
+
+        });
+
+        var counter = 2;
+        $("#btnAddRow").click(function () {
+            $('<tr style="text-align: left;" id="tablerow' + counter + '">' +
+                '<td width="50%">' +
+                '<input type="text" id="ProdList' + counter + '" name="ProdList" class="form-control" maxlength="200" style="width:90%;" autocomplete="off" />' +
+                '</td>' +
+                '<td width="10%">' +
+                '<input type="radio" name="ProdIsPass' + counter + '" id="ProdPass' + counter + '" class="radio2" onclick="isProdPass('+counter+')" />' +
+                '</td>' +
+                '<td width="10%">' +
+                '<input type="radio" name="ProdIsPass' + counter + '" id="ProdFailed' + counter + '"  class="radio2" onclick="isProdFailed(' + counter +')" />' +
+                '</td >' +
+                '<td width="5%">' +
+                '<span id="btnDeleteRow' + counter + '" class="badge badge-danger" onclick="removeTr(' + counter + ');"><i class="fa fa-close"></i> ลบ</span>'+
+                '</td>' +
+                '<td width="5%">' +
+                '<input type="hidden" readonly="readonly" name="ProdIsPass" id="txtProdIsPass' + counter + '" />' +
+                '</td>' +
+                '</tr>').appendTo('#ProductEvaluationTB');
+
+            counter++;
+
+            return false;
+        });
+
+        function removeTr(index) {
+            if (counter > 2) {
+                $('#tablerow' + index).remove();
+                counter--;
+            }
+            return false;
+        }
+
+        function isPass(rowid) {
+            var tool = "#txtLabIsPass" + rowid;
+            $(tool).val(1);
+        }
+
+        function isFailed(rowid) {
+            var tool = "#txtLabIsPass" + rowid;
+            $(tool).val(0);
+        }
+
+        function isNotTest(rowid) {
+            var tool = "#txtLabIsPass" + rowid;
+            $(tool).val(2);
+        }
+
+        function isProcPass(rowid) {
+            var tool = "#txtLabProcIsPass" + rowid;
+            $(tool).val(1);
+        }
+
+        function isProcFailed(rowid) {
+            var tool = "#txtLabProcIsPass" + rowid;
+            $(tool).val(0);
+        }
+
+        function isProcNotTest(rowid) {
+            var tool = "#txtLabProcIsPass" + rowid;
+            $(tool).val(2);
+        }
+
+        function isProdPass(rowid) {
+            var tool = "#txtProdIsPass" + rowid;
+            $(tool).val(1);
+        }
+
+        function isProdFailed(rowid) {
+            var tool = "#txtProdIsPass" + rowid;
+            $(tool).val(0);
+        }
+
+        function isProdPassOLD(rowid) {
+            var tool = "#txtProdIsPassOLD" + rowid;
+            $(tool).val(1);
+        }
+
+        function isProdFailedOLD(rowid) {
+            var tool = "#txtProdIsPassOLD" + rowid;
+            $(tool).val(0);
+        }
+
+        $("#form_submit").submit(function (e) {
+            if ( ItemGroup_Select == "" ||
+                $("#DepartmentID").val() == 0 ||
+                ($("#DepartmentRemark").val() == "" && DepIsRemark == 1) ||
+                $("#ResonTestID").val() == 0 ||
+                ($("#ResonTestRemark").val() == "" && ResonIsRemark == 1) ||
+                $("#TypeOfRMID").val() == 0 ||
+                (@Model.isCompaire == 1 && $("#ChemicalNameRef").val() == "") ||
+                $("#ChemicalName").val() == "" ||
+                $("#Country").val() == "" ||
+                $("#Manufacture").val() == "" ||
+                $("#Agent").val() == "" ||
+                (Testresult == "1" && Approval == "") ||
+                (Testresult == "1" && $("#Plant").val() == "")
+               )
+            {
+                alert("กรุณาใส่ข้อมูลที่มี * ให้ครบ");
+                return false;
+            }
+            $(".overlay").show();
+            $('#btn_submit').html("Submit...");
+        });
+
+        var counter2 = 2;
+        $("#add").click(function () {
+
+            $('<tr style="text-align: left;" id="tbrow' + counter2 + '">' +
+                '<td width="80%">' +
+                '<input type="file" id="f' + counter2 + '" name="FileUpload" style="width:90%;" />' +
+                '</td>' +
+                '<td>' +
+                '<button type="button" class="btn btn-danger" id="b' + counter2 + '" onclick="delTr(' + counter2 + ');"> ลบ </button>' +
+                '</td>' +
+                '</tr>'
+            ).appendTo('#UploadTable');
+
+            counter2++;
+
+            return false;
+        });
+
+        function delTr(index) {
+            if (counter2 > 1) {
+                $('#tbrow' + index).remove();
+                counter2--;
+            }
+            return false;
+        }
+
+        function del(id) {
+
+            $.ajax({
+                url: "/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/Edit?handler=DelelteProdResult&ProdID=" + id,
+                type: "get"
+            }).done(function (data) {
+                if (data == true) {
+                    reloadGrid(ProductEvaluationTB_OLD);
+                }
+            });
+
+            return false;
+
+        }
+
+        function delfile(id) {
+
+            $.ajax({
+                url: "/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/Edit?handler=DelelteFile&Fileid=" + id,
+                type: "get"
+            }).done(function (data) {
+                if (data == true) {
+                    reloadGrid(gridViewFileUpload);
+                }
+            });
+
+            return false;
+
+        }
+
+    </script>
+}

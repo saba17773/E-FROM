@@ -1,0 +1,244 @@
+﻿@page "/S2E/Purchase/AddRawMaterialSample/{AssessmentID}/Create"
+@model Web.UI.Pages.S2E.Purchase.AddRawMaterialSample.CreateModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "สร้างใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (LAB Sample)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Purchase/AddRawMaterialSample/Main" },
+        new BreadcrumbModel { Text = "สร้างใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (LAB Sample)" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>สร้างใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (SAMPLE)</h3>
+</div>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <b>
+        <label>REQUEST DATE : @DateTime.Now.ToString("dd/MM/yyyy")</label>
+    </b>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <b>รายละเอียดผู้ขาย</b>
+            <table style="width:90%">
+                <tr>
+                    <td> Request Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"> รหัสผู้ขาย/ผู้ผลิต : </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="VendorID" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td> ตัวแทนจำหน่าย : </td>
+                    <td>
+                        <div class="input-group">
+                            <textarea asp-for="SupplierName" rows="2" style="white-space:normal;display:block;"
+                                      class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ที่อยู่ของตัวแทนจำหน่าย : </td>
+                    <td colspan="3">
+                        <div class="input-group">
+                            <textarea asp-for="DealerAddress" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Item Name : </td>
+                    <td colspan="3">
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemName" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ราคา : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Price" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td>Currency Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="CurrencyCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> จำนวน :</td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Qty" class="form-control" autocomplete="off"
+                                   onkeyup="this.value=addCommas(this.value);" asp-format="{0:#,##0.#0}" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td> หน่วย : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Unit" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="text-align:left">
+                    <td width="15%" style="text-align:right">Plant เพิ่มวัตถุดิบ : </td>
+                    <td width="35%">
+                        <label for="Plant1">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant1" value="DSL" class="radio2" disabled />
+                            <b>DSL</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant2">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant2" value="DRB" class="radio2" disabled />
+                            <b>DRB</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant3">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant3" value="DSI" class="radio2" disabled />
+                            <b>DSI</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant4">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant4" value="DSR" class="radio2" disabled />
+                            <b>DSR</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant5">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant5" value="STR" class="radio2" disabled />
+                            <b>STR</b>
+                        </label>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-secondary mr-3" name="draft" value="draft" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-file"></i>
+                        Save Draft
+                    </button>
+                    <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                    <button type="reset" class="btn btn-danger">
+                        <i class="fa fa-times"></i>
+                        ยกเลิก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+
+@section scripts {
+    <script>
+
+        $("#form_submit").submit(function (e)
+        {
+            $(".overlay").show();
+             $('#btn_submit').html("Submit...");
+        });
+
+        function addCommas(Num) {
+            if (event.key == "1" || event.key == "2" || event.key == "3" || event.key == "4" ||
+                event.key == "5" || event.key == "6" || event.key == "7" || event.key == "8" ||
+                event.key == "9" || event.key == "0" || event.key == "." ||
+                event.key == "Backspace" || event.key == "Tab" || event.key == "Delete" ||
+                event.key == "Del" || event.key == "ArrowUp" || event.key == "ArrowLeft" ||
+                event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "Up" ||
+                event.key == "Left" || event.key == "Down" || event.key == "Right") {
+                Num += '';
+                Num = Num.replace(/,/g, '');
+
+                x = Num.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1))
+                    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                return x1 + x2;
+            }
+            else {
+                alert("ใส่ได้เฉพาะตัวเลข");
+                return "";
+            }
+        }
+
+    </script>
+}

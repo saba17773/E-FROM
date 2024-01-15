@@ -1,0 +1,451 @@
+﻿@page
+@model Web.UI.Pages.FixAssets.ApproveModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Approve";
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+    
+    [type="radio"] {
+        width: 20px;
+        height: 20px;
+    }
+    table {
+        width: 100%;
+    }
+    th, td {
+        padding: 5px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        แบบฟอร์ม ร้องขอการตัดจำหน่ายทรัพย์สินและโอนย้ายทรัพย์สินถาวร
+    </div>
+    <div class="card-body">
+        
+        <table>
+            <tr>
+                <td width="15%">
+                    หมายเลขคำร้อง
+                </td>
+                <td>
+                    : @Model.Assets.AssetNumber
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    วันที่ยื่นคำร้อง
+                </td>
+                <td>
+                    : @Model.AssetsDateStr
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <u>ข้อมูลผู้ร้องขอ</u>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    สังกัดทรัพย์สิน
+                </td>
+                <td>
+                    : @Model.AssetsCompanyStr
+                </td>
+            </tr>
+            <tr>
+                <td width="15%">
+                    ชื่อ-สกุล (ไทย)
+                </td>
+                <td width="30%">
+                    : @Model.AssetsNameThaiStr
+                </td>
+                <td width="15%">
+                    ชื่อ-สกุล (อังกฤษ)
+                </td>
+                <td>
+                    : @Model.AssetsNameEngStr
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ฝ่าย
+                </td>
+                <td>
+                    : @Model.AssetsDivisionStr
+                </td>
+                <td>
+                    แผนก
+                </td>
+                <td>
+                    : @Model.AssetsDepartmentStr
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ตำแหน่ง
+                </td>
+                <td>
+                    : @Model.AssetsPositionStr
+                </td>
+                <td>
+                    เบอร์ติดต่อ
+                </td>
+                <td>
+                    : @Model.Assets.Phone
+                </td>
+            </tr>
+
+            @if (@Model.Assets.AssetCategory == 2)
+            {
+                <tr>
+                    <td>
+                        <u>ข้อมูลผู้รับปลายทาง</u>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%">
+                        ชื่อ-สกุล (ไทย)
+                    </td>
+                    <td width="30%">
+                        : @Model.txtEmployeeReceive
+                    </td>
+                    <td width="15%">
+                        ชื่อ-สกุล (อังกฤษ)
+                    </td>
+                    <td>
+                        : @Model.txtEmployeeReceiveEng
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        ฝ่าย
+                    </td>
+                    <td>
+                        : @Model.txtEmployeeDivision
+                    </td>
+                    <td>
+                        แผนก
+                    </td>
+                    <td>
+                        : @Model.txtEmployeeDepartment
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        ตำแหน่ง
+                    </td>
+                    <td>
+                        : @Model.txtEmployeePosition
+                    </td>
+                    <td>
+                        เบอร์ติดต่อ
+                    </td>
+                    <td>
+                        : @Model.txtEmployeeTel
+                    </td>
+                </tr>
+            }
+            @*<tr>
+            <td>
+
+            </td>
+            <td>
+
+            </td>
+            <td>
+                @if(@Model.Assets.AssetCategory == 2)
+                {
+                    <span>โอนย้ายไปยังแผนก</span>
+                }
+            </td>
+            <td>
+                @if(@Model.Assets.AssetCategory == 2)
+                {
+                    <span> : @Model.txtAssetsLocationTo </span>
+                }
+            </td>
+        </tr>*@
+
+            <tr>
+                <td colspan="4">
+                    <hr>
+                    <u>รายละเอียดการร้องขอ</u>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ประเภทและรายละเอียด
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ประเภทรายการ
+                </td>
+                <td>
+                    @if (@Model.Assets.AssetCategory == 1)
+                    {
+                        <span> : ตัดทรัพย์สิน</span>
+                    }
+                    else
+                    {
+                        <span> : โอนย้ายทรัพย์สิน</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ชนิดรายการ
+                </td>
+                <td colspan="4">
+                    @if (@Model.Assets.AssetType == 1)
+                    {
+                        <span> : ตัดทรัพย์สิน</span>
+                    }
+                    else if (@Model.Assets.AssetType == 2)
+                    {
+                        <span> : โอนย้ายทรัพย์สิน - แจ้งเปลี่ยนผู้ถือครอง</span>
+                    }
+                    else
+                    {
+                        <span> : โอนย้ายทรัพย์สิน - แจ้งเปลี่ยนผู้ถือครอง & เคลื่อนย้ายอุปปกรณ์</span>
+                    }
+                </td>
+            </tr>
+            @if (@Model.Assets.AssetCategory == 2  && @Model.Assets.AssetType == 3)
+            {
+                <tr>
+                    <td>
+                        รายละเอียดการขนย้าย
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table width="100%">
+                            <tr style="background-color: #f59f81; color: white;">
+                                <td style="border: 1px solid black;" width="50%">
+                                    ย้ายจากที่
+                                </td>
+                                <td style="border: 1px solid black;" width="50%">
+                                    ย้ายไปที่
+                                </td>
+                            </tr>
+                            <tr>
+                                @if (Model.AssetsLocationFrom.Count > 0)
+                                {
+                                    foreach (var item in Model.AssetsLocationFrom)
+                                    {
+                                        <td style="border: 1px solid black;">
+                                            บริษัท :@item.CompanyId<br>
+                                            สถานที่ : @item.Location<br>
+                                            ชั้น : @item.Floor<br>
+                                            ห้อง : @item.Room<br>
+                                        </td>
+                                    }
+                                }
+                                @if (Model.AssetsLocationTo.Count > 0)
+                                {
+                                    foreach (var item in Model.AssetsLocationTo)
+                                    {
+                                        <td style="border: 1px solid black;">
+                                            บริษัท : @item.CompanyId<br>
+                                            สถานที่ : @item.Location<br>
+                                            ชั้น : @item.Floor<br>
+                                            ห้อง : @item.Room<br>
+                                        </td>
+                                    }
+                                }
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>
+                    รายละเอียดรายการทรัพย์สิน
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table width="100%">
+                        <tr style="background-color: #8bc34a; color: white; border: 1px solid black;">
+                            <td style="border: 1px solid black;" width="30%">
+                                เลขที่ทรัพย์สินถาวร
+                            </td>
+                            <td style="border: 1px solid black;" width="10%">
+                                จำนวน
+                            </td>
+                            <td style="border: 1px solid black;" width="45%">
+                                รายละเอียด
+                            </td>
+                            <td style="border: 1px solid black;" width="15%">
+                                ปัจจุบันถือครองโดย
+                            </td>
+                        </tr>
+                        @if (Model.AssetsLine.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model.AssetsLine)
+                            {
+                                <tr>
+                                    <td style="border: 1px solid black;">
+                                        @item.AssetsNumber
+                                    </td>
+                                    <td style="border: 1px solid black;">
+                                        @item.Qty
+                                    </td>
+                                    <td style="border: 1px solid black;">
+                                        @item.Description
+                                    </td>
+                                    <td style="border: 1px solid black;">
+                                        @item.EmployeeName
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <u>สภาพทรัพย์สินและประมาณการค่าใช้จ่ายในการซ่อมแซ่มให้ใช้งานได้</u>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    @Html.Raw(@Model.txtAssetCondition)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <u>ชี้แจงสาเหตุในการตัดสินใจที่จะทำการจัดการ/โอนย้ายทรัพย์สินถาวรตามรายการที่เลือก</u>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    @Html.Raw(@Model.txtAssetCause)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    เอกสารแนบ
+                </td>
+                <td colspan="3">
+                    @if (Model.AttachFile.Count > 0)
+                    {
+                        foreach (var item in Model.AttachFile)
+                        {
+                            <a href="/FixAssets/Index?handler=Download&id=@item.Id" target="_blank"> : @item.FileName</a>
+                        }
+                    }
+                </td>
+            </tr>
+        </table>
+
+        <hr>
+        <form method="post" enctype="multipart/form-data" id="form_submit">
+            
+            @if(@Model.Assets.AssetCategory == 1)
+            { 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Disposition">การจัดการทรัพย์สิน</label>
+                            <br>
+                            <span class="mr-3">
+                                <label>
+                                    <input type="radio" asp-for="Disposition" id="1" value="1" checked/> ทำลาย/เศษซาก
+                                </label>
+                            </span>
+                            <span class="mr-3">
+                                <label>
+                                    <input type="radio" asp-for="Disposition" id="2" value="2" />  เก็บไว้
+                                </label>
+                            </span>
+                            <span class="mr-3">
+                                <label>
+                                    <input type="radio" asp-for="Disposition" id="3" value="3" /> ขาย
+                                </label>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ </label>
+                        <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <span class="mr-3">
+                            <label>
+                                <input type="radio" asp-for="ApproveResult" id="1" value="1" /> อนุมัติ
+                            </label>
+                        </span>
+                        <span>
+                            <label>
+                                <input type="radio" asp-for="ApproveResult" id="2" value="2" /> ไม่อนุมัติ
+                            </label>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group d-flex justify-content-center align-items-center my-3">
+                <button type="submit" class="btn btn-success mr-3" id="btn_submit">
+                    <i class="fa fa-check"></i>
+                    ยืนยัน
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            
+            $("#form_submit").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("กำลังยืนยัน...");
+            });
+            
+        });
+    </script>
+}

@@ -1,0 +1,219 @@
+﻿@page
+@model Web.UI.Pages.Promotion.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Promotion E-Form";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Promotion Discount"}
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Promotion Discount
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridPromotion" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+<!-- modal Approve Transaction -->
+<div class="modal" id="modalCancel" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title"><span id="CancelAlert"></span></b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal_CancelBody">
+                <form method="post" enctype="multipart/form-data" id="form_submit">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">เหตุผล : </label>
+                        <div class="col-sm-7">
+                            <textarea class="form-control" asp-for="Remark" name="Remark" id="txtRemark" autocomplete="off"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" class="form-control" asp-for="CcId" id="txtId" name="CcId" autocomplete="off">
+                    <div class="form-group row">
+                        <div class="col-sm-10 text-right">
+                            <button type="submit" class="btn btn-success" name="btn_cancel" onclick="return confirm('ต้องการบันทึกข้อมูลใช่หรือไม่?')">
+                                <i class="fa fa-check-circle"></i>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridPromotion = "#gridPromotion";
+
+            var dtPromotion = $(gridPromotion).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Promotion/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtPromotion.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Number", data: "requestNumber" },
+                    { title: "ชื่อเรื่อง", data: "pattern" },
+                    { title: "Customer Name", data: "customerName" },
+                    { title: "Type", data: "requestType"},
+                    { title: "Status", data: "requestStatus" },
+                    { title: "Approve Step", data: "currentApproveStep" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            if (row.requestStatus === "Complete Approve") {
+                                return "<span class='badge badge-success'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Cancel") {
+                                return "<span class='badge badge-warning'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Reject") {
+                                return "<span class='badge badge-danger'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Waiting For Approve") {
+                                return "<span class='badge badge-info'>" + data + "</span>";
+                            }
+
+                            return "<span class='badge badge-secondary'>" + data + "</span>";
+                        }
+                    },
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            if (row.requestStatus === 5) {
+                                rettu
+                            }
+                            return row.currentApproveStep + "/" + row.totalApproveStep;
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            var link = "";
+                            if(row.requestStatus == "Draft" || row.requestStatus == "Reject"){
+                                if(row.requestType == "DOM"){
+                                    link += actionLink("/Promotion/" + row.id + "/EditDOM", "fa fa-edit", "Edit");
+                                }else{
+                                    link += actionLink("/Promotion/" + row.id + "/EditOVS", "fa fa-edit", "Edit");
+                                }
+                            }
+
+                            link += actionLink("/Promotion/" + row.id + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                            link += actionLinkBlank("/Promotion/" + row.id + "/Render", "fa fa-eye", "View");
+                            //link += actionLinkBlank("/Promotion/" + row.id + "/Cancel", "fa fa-ban", "Cancel");
+                           // <span style="cursor: pointer;" class="badge badge-info" id="addCancel"><i class="fa fa-plus-circle"></i> add</span>
+                            link += "<a class='badge badge-light mr-2' onclick='fn_cancel(" + row.id + ",\"" + row.requestNumber + "\")'>"
+                                 + "<i class='fa fa-ban'></i> Cancel";
+                                 +  "</a>";
+                            return link;
+                        }
+                    }
+                ]
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+            $("#addCancel").click(function() {
+                $('#ModalAttn').modal('show');
+            });
+
+        });
+
+        function reportdom(id){
+            $.ajax({
+                url: "/Promotion/Index?handler=ReportDOM",
+                type: "get",
+                data : {
+                    id : id
+                }
+            }).done(function (data) {
+                @* window.location.reload(); *@
+                console.log(data);
+            });
+        }
+        function fn_cancel(id, requestNumber)
+        {
+            $("#CancelAlert").text("Cancel Request Number : " + requestNumber);
+            $("#txtId").val(id);
+
+            $("#modalCancel").modal({ backdrop: "static" });
+            $("#modal_CancelBody").show();
+
+        }
+
+        $("#form_submit").submit(function (e) {
+            if ($("#txtRemark").val() == "") {
+                alert("Please input Remark");
+                return false;
+            }
+            $('#modalCancel').modal('hide');
+            $(".overlay").show();
+        });
+
+    </script>
+}

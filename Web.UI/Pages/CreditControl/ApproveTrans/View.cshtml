@@ -1,0 +1,109 @@
+﻿@page "/CreditControl/ApproveTrans/{id}/View"
+@model Web.UI.Pages.CreditControl.ApproveTrans.ViewModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Approve Transaction";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Credit Control", Link = "/CreditControl" },
+        new BreadcrumbModel { Text = "Approve Transaction" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Approve Transaction
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridApproveTrans" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        var gridApproveTrans = "#gridApproveTrans";
+
+        var dtApproveTrans = $(gridApproveTrans).DataTable({
+            serverSide: false,
+            processing: false,
+            destroy: true,
+            responsive: false,
+            ajax: {
+                url: "/CreditControl/ApproveTrans/@Model.CCId/View?handler=Grid&id=@Model.CCId",
+                type: "post",
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                }
+            },
+            initComplete: function () {
+                $('.dataTables_filter input').unbind();
+                $('.dataTables_filter input').on("keyup", function (e) {
+                    if (e.keyCode == 13) {
+                        dtApproveTrans.search($(this).val()).draw();
+                    }
+                });
+            },
+            columns: [
+                { title: "Level", data: "approveLevel" },
+                { title: "Email", data: "email" },
+                { title: "Remark", data: "remark" },
+                { title: "Approve Group", data: "approveGroup" },
+                { title: "Urgent", data: "urgent" },
+                { title: "Backup Email", data: "backupEmail"},
+                { title: "Status", data: "isDone"},
+                { title: "Send Email Date", data: "sendEmailDate" },
+                { title: "Approve Date", data: "approveDate" },
+                { title: "Reject Date", data: "rejectDate" }
+            ],
+            columnDefs: [
+                {
+                    targets: 4,
+                    render: function (data, type, row) {
+                        if (data === 1) {
+                            return "<a href='/CreditControl/ApproveTrans/@Model.CCId/View?tid="+row.id+"&urgent=0' class='text-danger'>เร่งด่วน</a>";
+                        } else {
+                            return "<a href='/CreditControl/ApproveTrans/@Model.CCId/View?tid=" + row.id +"&urgent=1' class='text-success'>ปรกติ</a>";
+                        }
+                    }
+                },
+                {
+                    targets: 6,
+                    render: function (data, type, row) {
+                        if (data === 0 &&
+                            row.sendEmailDate === null &&
+                            row.approveDate === null &&
+                            row.rejectDate === null) {
+                            return "<span class='badge badge-danger'>ยังไม่ได้ดำเนินการ</span>";
+                        } else if (data === 1) {
+                            return "<span class='badge badge-success'>ดำเนินการแล้ว</span>";
+                        } else if (data === 0 &&
+                            row.sendEmailDate !== null &&
+                            row.approveDate === null &&
+                            row.rejectDate === null) {
+                            return "<span class='badge badge-warning'>รอดำเนินการ</span>";
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: [7, 8, 9],
+                    render: function (data, type, row) {
+                        if (data !== null && data !== "") {
+                            return dayjs(data).format("DD-MM-YYYY HH:mm");
+                        } else {
+                            return data;
+                        }
+
+                    }
+                }
+            ]
+        });
+    });
+    </script>
+}

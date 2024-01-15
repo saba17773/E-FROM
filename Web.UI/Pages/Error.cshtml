@@ -1,0 +1,9 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="alert alert-danger" role="alert">
+    @Model.ErrorCode @Model.ErrorMessage
+</div>

@@ -1,0 +1,112 @@
+﻿@page
+@model Web.UI.Pages.Promotion.CancelModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Promotion E-Form";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Promotion Discount (Cancel)"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Promotion Discount (Cancel)
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridPromotion" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridPromotion = "#gridPromotion";
+
+            var dtPromotion = $(gridPromotion).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                "order": [[7, 'desc']],
+                ajax: {
+                    url: "/Promotion/Cancel?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtPromotion.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Number", data: "requestNumber" },
+                    { title: "ชื่อเรื่อง", data: "pattern" },
+                    { title: "Customer Name", data: "customerName" },
+                    { title: "Type", data: "requestType"},
+                    { title: "Status", data: "requestStatus" },
+                    { title: "Approve Step", data: "currentApproveStep" },
+                    { title: "Remark", data: "cancelRemark" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            if (row.requestStatus === "Complete Approve") {
+                                return "<span class='badge badge-success'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Cancel") {
+                                return "<span class='badge badge-warning'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Reject") {
+                                return "<span class='badge badge-danger'>" + data + "</span>";
+                            }
+
+                            if (row.requestStatus === "Waiting For Approve") {
+                                return "<span class='badge badge-info'>" + data + "</span>";
+                            }
+
+                            return "<span class='badge badge-secondary'>" + data + "</span>";
+                        }
+                    },
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            if (row.requestStatus === 5) {
+                                rettu
+                            }
+                            return row.currentApproveStep + "/" + row.totalApproveStep;
+                        }
+                    },
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Promotion/" + row.id + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                            link += actionLinkBlank("/Promotion/" + row.id + "/Render", "fa fa-eye", "View");
+                            return link;
+                        }
+                    }
+                ]
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+    </script>
+}

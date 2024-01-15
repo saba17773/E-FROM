@@ -1,0 +1,158 @@
+﻿@page
+@model Web.UI.Pages.CreditControl.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Credit Control E-Form";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Credit Control"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Credit Control
+    </div>
+    <div class="card-body overflow-auto">
+        
+        <form method="post">
+            <div class="form-group" style="max-width:200px;">
+                <label>กรอกตามสถานะ</label>
+                <select id="filter_status" asp-items="Model.StatusList" class="form-control">
+                    <option value="">== เลือกรายการ ==</option>
+                </select>
+            </div>
+            <table id="gridCreditControl" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var dtCreditControl = loadGrid();
+
+            $("select#filter_status").on("change", function () {
+                var val = $("select#filter_status option:selected").text();
+                var def = $("select#filter_status").val();
+
+                if (val != "" && def != "") {
+                    dtCreditControl.column(4).search(val).draw();
+                } else {
+                    dtCreditControl = loadGrid();
+                }
+                
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function loadGrid() {
+            var gridCreditControl = "#gridCreditControl";
+
+            var dtCreditControl = $(gridCreditControl).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                order: [],
+                ajax: {
+                    url: "/CreditControl/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtCreditControl.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Number", data: "requestNumber" },
+                    { title: "Sale Name", data: "saleName" },
+                    { title: "Company", data: "companyName" },
+                    { title: "Type", data: "requestType" },
+                    { title: "Status", data: "requestStatus" },
+                    { title: "Approve Step", data: "currentApproveStep" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        render: function (data, type, row) {
+                            if (row.requestStatusId === 5) {
+                                return "<span class='badge badge-success'>" + row.requestStatus + "</span>";
+                            }
+
+                            if (row.requestStatusId === 2) {
+                                return "<span class='badge badge-warning'>" + row.requestStatus + "</span>";
+                            }
+
+                            if (row.requestStatusId === 4) {
+                                return "<span class='badge badge-danger'>" + row.requestStatus + "</span>";
+                            }
+
+                            if (row.requestStatusId === 3) {
+                                return "<span class='badge badge-info'>" + row.requestStatus + "</span>";
+                            }
+
+                            return "<span class='badge badge-secondary'>" + row.requestStatus + "</span>";
+                        }
+                    },
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            if (row.requestStatus === 5) {
+                                rettu
+                            }
+                            return row.currentApproveStep + "/" + row.totalApproveStep;
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            if (row.requestType === 'DOM') {
+                                link += actionLink("/CreditControl/" + row.id + "/ViewDOM", "fa fa-eye", "View");
+                                if (row.requestStatusId !== 5) {
+                                    link += actionLink("/CreditControl/" + row.id + "/EditDOM", "fa fa-edit", "Edit");
+                                }
+                            } else {
+                                link += actionLink("/CreditControl/" + row.id + "/ViewOVS", "fa fa-eye", "View");
+
+                                if (row.requestStatusId !== 5) {
+                                    link += actionLink("/CreditControl/" + row.id + "/EditOVS", "fa fa-edit", "Edit");
+                                }
+                            }
+
+                            link += actionLink("/CreditControl/ApproveTrans/" + row.id + "/View", "fa fa-list", "Approve Transaction");
+
+                            if (row.requestStatusId === 5) {
+                                if (row.requestType === "DOM") {
+                                    link += actionLink("/CreditControl/Export/DOM/" + row.id + "?handler=PDF", "fa fa-print", "Print", true);
+                                } else {
+                                    link += actionLink("/CreditControl/Export/OVS/" + row.id + "?handler=PDF", "fa fa-print", "Print", true);
+                                }
+
+                            }
+
+                            return link;
+                        }
+                    }
+                ]
+            });
+
+            return dtCreditControl;
+        }
+    </script>
+}

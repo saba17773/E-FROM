@@ -1,0 +1,391 @@
+﻿@page "/Role/{id}/Permission"
+@model Web.UI.Pages.Permission.IndexModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Permission";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Dashboard", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Role", Link = "/Role" },
+        new BreadcrumbModel { Text = "Permission" }
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Permission (@Model.RoleName)</h1>
+</div>
+
+<form method="post">
+
+    <div class="row">
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">General</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(GeneralPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="UserPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="UserPermission" value="@item.Name" />
+                            }
+
+                            @GeneralPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">User</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(UserPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="UserPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="UserPermission" value="@item.Name" />
+                            }
+
+                            @UserPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Role</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(RolePermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="RolePermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="RolePermission" value="@item.Name" />
+                            }
+
+                            @RolePermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Credit Control</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(CreditControlPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="CreditControlPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="CreditControlPermission" value="@item.Name" />
+                            }
+
+                            @CreditControlPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Vender</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(VenderPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="VenderPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="VenderPermission" value="@item.Name" />
+                            }
+
+                            @VenderPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Approve Master</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(ApproveMasterPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="ApproveMasterPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="ApproveMasterPermission" value="@item.Name" />
+                            }
+
+                            @ApproveMasterPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Import</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(ImportPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="ImportPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="ImportPermission" value="@item.Name" />
+                            }
+
+                            @ImportPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Promotion Discount</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(PromotionPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="PromotionPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="PromotionPermission" value="@item.Name" />
+                            }
+
+                            @PromotionPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">TicketBlock</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(TicketPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="TicketPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="TicketPermission" value="@item.Name" />
+                            }
+
+                            @TicketPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">S2E</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(S2EPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="S2EPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="S2EPermission" value="@item.Name" />
+                            }
+
+                            @S2EPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">MEMO</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(MemoPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="MemoPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="MemoPermission" value="@item.Name" />
+                            }
+
+                            @MemoPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">ASSETS</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(AssetsPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="AssetsPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="AssetsPermission" value="@item.Name" />
+                            }
+
+                            @AssetsPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Queing</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(QueingPermissionModel).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="QueingPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="QueingPermission" value="@item.Name" />
+                            }
+
+                            @QueingPermissionModel.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 col-sm-12">
+
+            <h3 class="mb-3">Covid Tracker</h3>
+
+            <ul style="list-style: none; margin-left: -40px;">
+                @foreach (var item in typeof(CovidTrackerPermission).GetProperties())
+                {
+                    <li>
+                        <label>
+                            @if (Model.Permission.Any(x => x.CapabilityId == item.Name))
+                            {
+                                <input type="checkbox" name="CovidTrackerPermission" value="@item.Name" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="CovidTrackerPermission" value="@item.Name" />
+                            }
+
+                            @CovidTrackerPermission.GetPermissionText(item.Name.ToString())
+                        </label>
+                    </li>
+                }
+            </ul>
+        </div>
+
+
+    </div>
+
+    <div class="form-group text-center my-4">
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-check"></i>
+            Submit
+        </button>
+    </div>
+</form>
+
+
+

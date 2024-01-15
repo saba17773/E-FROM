@@ -1,0 +1,60 @@
+﻿@page
+@model Web.UI.Pages.Purchase.Import.TemplateSupplierModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Import Template Supplier";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Import", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Import Template Supplier" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 5%;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Import Template Supplier
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id = "form_import">
+            <input type="file" name="TemplateUpload" />
+
+            <button type="submit" id="btn_submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#form_import").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("Submit...");
+            });
+        });
+    </script>
+}

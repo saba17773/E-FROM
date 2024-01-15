@@ -1,0 +1,129 @@
+﻿@page
+@model Web.UI.Pages.Planing.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Master BP";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "TicketBlock", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Master BP"}
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Master BP
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridBP" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridBP = "#gridBP";
+
+            var dtCreditControl = $(gridBP).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Planing/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtCreditControl.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Year", data: "year" },
+                    { title: "Version", data: "version" },
+                    { title: "Remark", data: "remark" },
+                    { title: "Type", data: "setType"},
+                    { title: "Status", data: "status" },
+                    { title: "CreateBy", data: "createName" },
+                    { title: "CreateDate", data: "createDate" },
+                    { title: "Actions", data: null },
+                    { title: "Download", data: null },
+                    { title: "Cancel", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Planing/" + row.year +"/"+ row.versionId +"/"+ row.type + "/LineBP", "fa fa-list", "ตรวจสอบข้อมูล");
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 8,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Planing/" +row.year+"/"+row.versionId+"/"+row.type+ "/Download/Bp?handler=DownLoadBP", "fa fa-download", "download", true);
+                            return link;
+                        }
+                    },
+                    {
+                        targets: 9,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += "<a href='javascript:void();' onclick='return deleteTrans("+row.year+","+row.versionId+","+row.type+");'><span class='badge badge-danger'><i class='fa fa-times'></i> ยกเลิก</span></a>";
+                            return link;
+                        }
+                    }
+                ]
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function deleteTrans(year,version,type){
+            if (confirm("Are You Sure!")) {
+                $.ajax({
+                    url: "/Planing/Index?handler=DeleteBP",
+                    type: "get",
+                    data : {
+                        year : year,
+                        version : version,
+                        type : type
+                    }
+                }).done(function (data) {
+                    window.location.reload();
+                });
+            }
+        }
+
+        function downloadTrans(year,version,type){
+            $.ajax({
+                url: "/Planing/Index?handler=DownLoadBP",
+                type: "get",
+                data : {
+                    year : year,
+                    version : version,
+                    type : type
+                }
+            }).done(function (data) {
+                @* window.location.reload(); *@
+                console.log(data);
+            });
+        }
+
+    </script>
+
+}

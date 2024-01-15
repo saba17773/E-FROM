@@ -1,0 +1,101 @@
+﻿@page
+@model Web.UI.Pages.ApproveManage.ApproveFlow.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Flow Page";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Approve Manage", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Flow" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Approve Flow</h1>
+
+    <div>
+        <a class="btn btn-primary" href="/ApproveManage/ApproveFlow/Add"><i></i> Add New Flow</a>
+    </div>
+</div>
+
+<form method="post">
+    <table id="gridFlow" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridFlow = "#gridFlow";
+
+            var dtFlow = $(gridFlow).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/ApproveManage/ApproveFlow/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtFlow.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Approve Master", data: "groupDescription" },
+                    { title: "Level", data: "approveLevel" },
+                    { title: "Employee ID", data: "employeeId" },
+                    { title: "Name", data: "name" },
+                    { title: "Company", data: "company" },
+                    { title: "Email", data: "email" },
+                    { title: "Remark", data: "remark" },
+                    { title: "Is Active?", data: "isActive" },
+                    { title: "Is Skip?", data: "isSkipAlert" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("Active", "success", "fa fa-check") : showBadge("InActive", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 8,
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("Yes", "success", "fa fa-check") : showBadge("No", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 9,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/ApproveManage/ApproveFlow/" + row.id + "/Edit", "fa fa-edit", "Edit");
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridFlow + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridFlow + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridFlow + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

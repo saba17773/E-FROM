@@ -1,0 +1,54 @@
+﻿@page "/FixAssets/ApproveMapping/{id}/Edit"
+@model Web.UI.Pages.FixAssets.ApproveMapping.EditModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Edit";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "FixAssets", Link = "/FixAssets" },
+        new BreadcrumbModel { Text = "Approve Mapping", Link = "/FixAssets/ApproveMapping" },
+        new BreadcrumbModel { Text = "Edit" }
+    };
+
+}
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Edit</h1>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="ApproveMappingMaster.CCType"> Document Type</label>
+                <input type="text" asp-for="ApproveMappingMaster.CCType" class="form-control" />
+                <span class="text-danger" asp-validation-for="ApproveMappingMaster.CCType"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ApproveMappingMaster.ApproveMasterId"> Approve Master Id</label>
+                <select asp-for="ApproveMappingMaster.ApproveMasterId" asp-items="Model.ApproveMaster" class="form-control">
+                    <option value="">--- เลือกรายการ ---</option>
+                </select>
+                <span class="text-danger" asp-validation-for="ApproveMappingMaster.ApproveMasterId"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ApproveMappingMaster.CompanyId"> Company Id</label>
+                <select asp-for="ApproveMappingMaster.CompanyId" asp-items="Model.CompanyMaster" class="form-control">
+                    <option value="">--- เลือกรายการ ---</option>
+                </select>
+                <span class="text-danger" asp-validation-for="ApproveMappingMaster.CompanyId"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check"></i>
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

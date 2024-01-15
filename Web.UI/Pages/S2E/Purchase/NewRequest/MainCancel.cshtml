@@ -1,0 +1,100 @@
+﻿@page
+@model Web.UI.Pages.S2E.Purchase.NewRequest.MainCancelModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "New Request Cancel List";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "New Request Cancel List" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1> Request Cancel List</h1>
+</div>
+
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                responsive: false,
+                "scrollX": true,
+                ajax: {
+                    url: "/S2E/Purchase/NewRequest/MainCancel?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "ID", data: "id" },
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST NO", data: "requestno" },
+                    { title: "SUPPLIER NAME", data: "suppliername" },
+                    { title: "Request By", data: "requestby" },
+                    { title: "Status", data: "approvestatus" },
+                    { title: "Remark", data: "cancelremark"},
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        visible: false
+                    },
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+
+                            return "<span class='badge badge-danger'>Cancel</span>";
+                        }
+                    },
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += actionLink("/S2E/Purchase/NewRequest/" + row.id + "/" + row.approvegroupid + "/" + row.approvestatus + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+
+                            link += actionLink("/S2E/Purchase/NewRequest/" + row.id + "/ViewInfo", "fa fa-eye", "View");
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

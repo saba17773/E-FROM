@@ -1,0 +1,303 @@
+﻿@page "/Queing/Process/OVS/{Plant}/Transaction"
+@model Web.UI.Pages.Queing.Process.OVS.TransactionModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "TRANSACTION DOM";
+    ViewData["Plant"] = Model.PlantView;
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Process", Link = $"/Queing/Process/{Model.Plant}/Process" },
+        new BreadcrumbModel { Text = "Oversea (OVS)", Link = $"/Queing/Process/OVS/{Model.Plant}/Index" } ,
+        new BreadcrumbModel { Text = "Transaction" }
+    };
+
+    ViewData["status"] = "0";
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    td {
+        padding: 5px;
+    }
+</style>
+
+<div class="container2">
+    <h5>Transaction Oversea (OVS)</h5>
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="post">
+                <table width="90%">
+                    <tr style="text-align:right;vertical-align:top;">
+                        <td width="15%">
+                            <b>Check In Date (From) :</b>
+                        </td>
+                        <td width="35%">
+                            <div class="input-group">
+                                <input class="form-control" id="CheckInDateFrom" name="CheckInDateFrom"
+                                       placeholder="YYYY-MM-DD" type="text" autocomplete="off" />
+                            </div>
+                        </td>
+                        <td width="15%">
+                            <b>Check In  Date (To) :</b>
+                        </td>
+                        <td width="35%">
+                            <div class="input-group">
+                                <input class="form-control" id="CheckInDateTo" name="CheckInDateTo"
+                                       placeholder="YYYY-MM-DD" type="text" autocomplete="off" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="text-align:right;vertical-align:top;">
+                        <td width="15%">
+                            <b>Truck ID :</b>
+                        </td>
+                        <td width="35%">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="TruckID" autocomplete="off" />
+                            </div>
+                        </td>
+                        <td width="15%">
+                            <b>Truck Category :</b>
+                        </td>
+                        <td width="35%">
+                            <div class="input-group">
+                                <select asp-for="TruckCate" asp-items="Model.TruckCateMaster" class="form-control">
+                                    <option value="">--- SELECT ---</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="text-align:right;vertical-align:top;">
+                        <td width="15%">
+                            <b>Work Order No :</b>
+                        </td>
+                        <td width="35%">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="WorkOrderNo" autocomplete="off" />
+                            </div>
+                        </td>
+                        <td width="15%">
+                            <b>Status :</b>
+                        </td>
+                        <td width="35%">
+                            <div class="input-group">
+                                <select asp-for="Status" asp-items="Model.StatusMaster" class="form-control">
+                                    <option value="">--- SELECT ---</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="text-align:right;vertical-align:top;">
+                        <td colspan="2">
+                        </td>
+                        <td colspan="2">
+                            <button type="button" class="btn btn-outline-info" id="btnSearch" name="btnSearch">
+                                <i class="fa fa-search"></i>
+                                Search
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <table id="gridTrans" width="100%" class="table table-hover"></table>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <a href="/Queing/Process/OVS/@Model.Plant/Index" class="btn btn-light">
+            <i class="fa fa-reply"></i> Back
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function ()
+        {
+
+            var date_from = $('input[name="CheckInDateFrom"]');
+            var con_from = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+            var options = {
+                format: 'yyyy-mm-dd',
+                container: con_from,
+                todayHighlight: true,
+                autoclose: true,
+            };
+            date_from.datepicker(options);
+
+            var date_to = $('input[name="CheckInDateTo"]');
+            var con_to = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+            var options = {
+                format: 'yyyy-mm-dd',
+                container: con_to,
+                todayHighlight: true,
+                autoclose: true,
+            };
+            date_to.datepicker(options);
+
+            var CheckInDateFrom = null;
+            var CheckInDateTo = null;
+            var TruckID = null;
+            var TruckCateID = null;
+            var WorkOrderNo = null;
+            var Status = null;
+
+            var gridTrans = "#gridTrans";
+
+            $(gridTrans).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                searching: false,
+                ajax: {
+                    url: "/Queing/Process/OVS/@Model.Plant/Transaction?handler=Grid&CheckInDateFrom=" + CheckInDateFrom + "&CheckInDateTo=" + CheckInDateTo + "&TruckID=" + TruckID + "&TruckCateID=" + TruckCateID + "&WorkOrderNo=" + WorkOrderNo + "&Status=" + Status + "&isFristLoad=1",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "CHECKIN DATE", data: "checkindate" },
+                    { title: "No", data: "no" },
+                    { title: "Truck ID", data: "truckid" },
+                    { title: "ประเภทรถ", data: "truckcatedesc" },
+                    { title: "Work Order No", data: "workorderno" },
+                    { title: "Status", data: "statusdetail" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row)
+                        {
+                            if (row.status === 1) {
+                                return "<span class='badge badge-warning'> " + row.statusdetail + " </span>";
+                            }
+                            else if (row.status === 2) {
+                                return "<span class='badge badge-info'> " + row.statusdetail + " </span>";
+                            }
+                            else if (row.status === 3) {
+                                return "<span class='badge badge-success'> " + row.statusdetail + " </span>";
+                            }
+                            else if (row.status === 4) {
+                                return "<span class='badge badge-dark'> " + row.statusdetail + " </span>";
+                            }
+
+                        }
+                    },
+                    {
+                        targets: 6,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Queing/Process/OVS/@Model.Plant/" + row.id + "/1/ViewCheckin", "fa fa-eye", "View Detail");
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $("#btnSearch").on("click", function ()
+            {
+                var CheckInDateFrom = $("#CheckInDateFrom").val();
+                var CheckInDateTo = $("#CheckInDateTo").val();
+                var TruckID = $("#TruckID").val();
+                var TruckCateID = $("#TruckCate").val();
+                var WorkOrderNo = $("#WorkOrderNo").val();
+                var Status = $("#Status").val();
+
+                //var test = CheckInDateFrom + " " + CheckInDateTo + " " + TruckID + " " + TruckCateID + " " + WorkOrderNo + " " + Status + " ";
+                //console.log(test);
+
+
+                $(gridTrans).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: true,
+                    searching: false,
+                    ajax: {
+                        url: "/Queing/Process/OVS/@Model.Plant/Transaction?handler=Grid&CheckInDateFrom=" + CheckInDateFrom + "&CheckInDateTo=" + CheckInDateTo + "&TruckID=" + TruckID + "&TruckCateID=" + TruckCateID + "&WorkOrderNo=" + WorkOrderNo + "&Status=" + Status + "&isFristLoad=0",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    columns: [
+                    { title: "CHECKIN DATE", data: "checkindate" },
+                    { title: "No", data: "no" },
+                    { title: "Truck ID", data: "truckid" },
+                    { title: "ประเภทรถ", data: "truckcatedesc" },
+                    { title: "Work Order No", data: "workorderno" },
+                    { title: "Status", data: "statusdetail" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row)
+                        {
+                            if (row.status === 1) {
+                                return "<span class='badge badge-warning'> " + row.statusdetail + " </span>";
+                            }
+                            else if (row.status === 2) {
+                                return "<span class='badge badge-info'> " + row.statusdetail + " </span>";
+                            }
+                            else if (row.status === 3) {
+                                return "<span class='badge badge-success'> " + row.statusdetail + " </span>";
+                            }
+                            else if (row.status === 4) {
+                                return "<span class='badge badge-dark'> " + row.statusdetail + " </span>";
+                            }
+
+                        }
+                    },
+                    {
+                        targets: 6,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/Queing/Process/OVS/@Model.Plant/" + row.id + "/1/ViewCheckin", "fa fa-eye", "View Detail");
+                            return link;
+                        }
+                    }
+                ],
+                });
+            });
+
+        });
+    </script>
+}

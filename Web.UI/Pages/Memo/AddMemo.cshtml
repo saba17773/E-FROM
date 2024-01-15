@@ -1,0 +1,765 @@
+@page
+@model Web.UI.Pages.Memo.AddMemoModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Add Memo";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "List Memo", Link = "/Memo" },
+        new BreadcrumbModel { Text = "Add Memo" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+    input[type=checkbox] {
+        width: 20px;
+        height: 20px;
+    }
+    .table {
+        text-align: center;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">Internal Memo</div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id="form_submit">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Memo.AttnId">Attn <span class="text-danger font-weight-bold">*</span>
+                        <span style="cursor: pointer;" class="badge badge-info" id="addAttn"><i class="fa fa-plus-circle"></i> add</span>
+                        <span style="cursor: pointer;" class="badge badge-danger" id="delAttn"><i class="fa fa-minus-circle"></i> delete</span>
+                        </label>
+                        <select asp-for="Memo.AttnId" asp-items="Model.MemoAttnMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Memo.AttnId"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Memo.SubjectId">Subject <span class="text-danger font-weight-bold">*</span>
+                        <span style="cursor: pointer;" class="badge badge-info" id="addSubject"><i class="fa fa-plus-circle"></i> add</span>
+                        <span style="cursor: pointer;" class="badge badge-danger" id="delSubject"><i class="fa fa-minus-circle"></i> delete</span>
+                        </label>
+                        <select asp-for="Memo.SubjectId" asp-items="Model.MemoSubjectMaster" class="form-control" >
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Memo.CustomerCode">Customer <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Memo.CustomerCode" asp-items="Model.MemoCustomerMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Memo.CustomerCode"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Memo.Description">Description <span class="text-danger font-weight-bold">*</span></label>
+                        <textarea rows="4" class="form-control" asp-for="Memo.Description" autocomplete="off"></textarea>
+                        <span class="text-danger" asp-validation-for="Memo.Description"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Memo.Remark">Remark </label>
+                        <textarea rows="4" class="form-control" asp-for="Memo.Remark" autocomplete="off"></textarea>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="SO">SO Number</label> 
+                        <span id="selectSO" class="badge badge-info" style="cursor: pointer;">
+                        <i class="fa fa-search"></i> Search
+                        </span>
+                        <input type="text" asp-for="SO" class="form-control form-control-sm" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="QA">Quorantine Number</label> 
+                        <span id="selectQA" class="badge badge-info" style="cursor: pointer;">
+                        <i class="fa fa-search"></i> Search
+                        </span>
+                        <input type="text" asp-for="QA" class="form-control form-control-sm" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="EN">Enquiry Number</label> 
+                        <span id="selectEN" class="badge badge-info" style="cursor: pointer;">
+                        <i class="fa fa-search"></i> Search
+                        </span>
+                        <input type="text" asp-for="EN" class="form-control form-control-sm" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <label>Item By SKU</label> 
+                    <div class="btn-group shadow-0" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-outline-info btn-sm" data-mdb-color="info" value="SO" id="itemSO">
+                            SO
+                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm" data-mdb-color="info" value="EN" id="itemEN">
+                            Enquiry
+                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm" data-mdb-color="info" value="QN" id="itemQN">
+                            Quorantine
+                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card-body">
+                        <input type="hidden" asp-for="ChangeType">
+                        <div id="form_item"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>Attached File </label>
+                        <input type="file" name="UploadFileMemo" class="form-control"/>
+                    </div>
+                </div>
+            </div>    
+            <div class="form-group d-flex justify-content-center align-items-center my-3">
+                <button type="submit" class="btn btn-success mr-3" id="btn_submit">
+                    <i class="fa fa-floppy-o"></i>
+                    Save
+                </button>
+                <button type="reset" class="btn btn-danger">
+                    <i class="fa fa-times"></i>
+                    Cancel
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@* Modal Attn *@
+<div id="ModalAttn" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Attn</h4>
+        
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label>Attn</label>
+                        <input type="text" name="attn_name" id="attn_name" class="form-control">
+                    </div>
+                </div>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info" id="btn_addattn">
+            <i class="fa fa-plus-circle"></i>
+            Submit
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+@* Modal Subject *@
+<div id="ModalSubject" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Subject</h4>
+        
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" name="subject_name" id="subject_name" class="form-control">
+                    </div>
+                </div>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info" id="btn_addsubject">
+            <i class="fa fa-plus-circle"></i>
+            Submit
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+@* Model SO *@
+<div class="modal" id="modalSO" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">SO Number</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridSO" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Model QA *@
+<div class="modal" id="modalQA" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quorantine Number</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridQA" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Model EN *@
+<div class="modal" id="modalEN" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Enquiry  Number</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridEN" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#Memo_Description').keypress(function(e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    this.value = this.value.substring(0, this.selectionStart) + "" + "\n" + this.value.substring(this.selectionEnd, this.value.length);
+                }
+            });
+
+            $('#Memo_Remark').keypress(function(e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    this.value = this.value.substring(0, this.selectionStart) + "" + "\n" + this.value.substring(this.selectionEnd, this.value.length);
+                }
+            });
+
+            $("#Memo_SubjectId").select2({ filter: true });
+            $("#Memo_AttnId").select2({ filter: true });
+            $("#Memo_CustomerCode").select2({ filter: true });
+            $("#Memo_SO").select2({ filter: true });
+            $("#Memo_QA").select2({ filter: true });
+            $("#Memo_Enquiry").select2({ filter: true });
+            
+            var countItem = 0;
+
+            $("#Memo_SO").on('change', function() {
+                var so = $("#Memo_SO").val();
+                getSOItem(so)
+                    .done(function(data) {
+                    $("#Memo_QA").val(data[0].quatationId).trigger('change');
+                    $("#Memo_Enquiry").val(data[0].enquiryId).trigger('change');
+                });
+            });
+            
+
+            $("#ChangeType").on('change', function() {
+                
+                if($("#ChangeType").val()=="EN"){
+                    var enquiry = $("#Memo_Enquiry").val();
+                    var itemdata = '';
+                    var i = 0;
+                    getEnquiryItem(enquiry)
+                        .done(function(data) {
+                        $.each(data, function(index, val) {
+                            itemdata += '<tr><td>'+val.itemId+'</td><td style="text-align:left;">'+val.itemName+'</td><td>'+val.qty+'</td><td>'+val.unit+'</td><td><input name="CencelItem[]" id="c'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="0"></td></tr>';
+                        i++; 
+                        });
+                        countItem = i;
+                            $("#form_item").html("<table class='table'><tr class='table-secondary'><td>Item Number</td><td>Item Name</td><td>Quantity</td><td>Unit</td><td>ยกเลิก</td><td>ผลิตแล้ว</td><td>ยังไม่ผลิต</td></tr>"+itemdata+"</table>");
+                    });
+                }else if($("#ChangeType").val()=="SO"){
+                    var so = $("#Memo_SO").val();
+                    var itemdata = '';
+                    var i = 0;
+                    getSOItem(so)
+                        .done(function(data) {
+                        $.each(data, function(index, val) {
+                            itemdata += '<tr><td>'+val.itemId+'</td><td style="text-align:left;">'+val.itemName+'</td><td>'+val.qty+'</td><td>'+val.unit+'</td><td><input name="CencelItem[]" id="c'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="0"></td></tr>';
+                        i++; 
+                        });
+                        //$("#Memo_QA").val(data[0].quatationId).trigger('change');
+                        //$("#Memo_Enquiry").val(data[0].enquiryId).trigger('change');
+                        countItem = i;
+                            $("#form_item").html("<table class='table'><tr class='table-secondary'><td>Item Number</td><td>Item Name</td><td>Quantity</td><td>Unit</td><td>ยกเลิก</td><td>ผลิตแล้ว</td><td>ยังไม่ผลิต</td></tr>"+itemdata+"</table>");
+                    });
+                }else{
+                    var qa = $("#Memo_QA").val();
+                    var itemdata = '';
+                    var i = 0;
+                    getQAItem(qa)
+                        .done(function(data) {
+                        $.each(data, function(index, val) {
+                            itemdata += '<tr><td>'+val.itemId+'</td><td style="text-align:left;">'+val.itemName+'</td><td>'+val.qty+'</td><td>'+val.unit+'</td><td><input name="CencelItem[]" id="c'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="0"></td></tr>';
+                        i++; 
+                        });
+                        countItem = i;
+                            $("#form_item").html("<table class='table'><tr class='table-secondary'><td>Item Number</td><td>Item Name</td><td>Quantity</td><td>Unit</td><td>ยกเลิก</td><td>ผลิตแล้ว</td><td>ยังไม่ผลิต</td></tr>"+itemdata+"</table>");
+                    });
+                }
+            });
+            
+            $('#form_submit').on('change', ':checkbox', function () {
+                //console.log(countItem);
+                for (i=0; i < countItem;  i++) {
+                    if ($('#c'+i+':checked').val() == undefined) {
+                        $('#c'+i+'').val(0);
+                    }else{
+                        $('#c'+i+'').val(1);
+                    }
+                    
+                    if ($('#p'+i+':checked').val() == undefined) {
+                        $('#p'+i+'').val(0);
+                    }else{
+                        $('#p'+i+'').val(1);
+                    }
+
+                    if ($('#n'+i+':checked').val() == undefined) {
+                        $('#n'+i+'').val(0);
+                    }else{
+                        $('#n'+i+'').val(1);
+                    }
+                    //console.log("this value "+i+":"+$('#p'+i+'').val());
+                }
+                //console.log("this value 0 :"+$('#0').val());
+                //console.log("this value 1 :"+$('#1').val());
+                var $box = $(this);
+                if ($box.is(":checked")) {
+                    var groupid = "input:checkbox[id='" + $box.attr("id") + "']";
+                    //console.log(groupid);
+                    $(groupid).prop("checked", false);
+                    $box.prop("checked", true);
+                }else{
+                    $box.prop("checked", false);
+                }
+                
+            });
+
+            $('#btn_submit').click(function() { 
+                for (i=0; i < countItem;  i++) {
+                    $('#c'+i+'').prop("checked", true);
+                    $('#p'+i+'').prop("checked", true);
+                    $('#n'+i+'').prop("checked", true);
+                }
+            });
+
+            $("#addAttn").click(function() { 
+                $('#ModalAttn').modal('show');
+            });
+
+            $("#addSubject").click(function() { 
+                $('#ModalSubject').modal('show');
+            });
+
+            $("#btn_addattn").click(function() {
+                $.ajax({
+                    url: "/Memo/AddMemo?handler=AddAttn",
+                    type: "get",
+                    data : {
+                        attn_name : $("#attn_name").val()
+                    }
+                }).done(function (data) {
+                    window.location.reload();
+                });
+                return false;
+            });
+
+            $("#btn_addsubject").click(function() {
+                $.ajax({
+                    url: "/Memo/AddMemo?handler=AddSubject",
+                    type: "get",
+                    data : {
+                        subject_name : $("#subject_name").val()
+                    }
+                }).done(function (data) {
+                    window.location.reload();
+                });
+                return false;
+            });
+
+            $("#form_submit").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("Submit...");
+            });
+            
+            $("#selectSO").on("click", function () {
+                $("#modalSO").modal({ backdrop: "static" });
+
+                var dtSO = $(gridSO).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    pageLength : 5,
+                    ajax: {
+                        url: "/Memo/AddMemo?handler=SOGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtSO.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "SO Number", data: "salesId" },
+                        { title: "Actions", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 1,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<div class='mt-0'><span style='cursor: pointer;' class='badge badge-secondary' onclick='selectSO(\"" + row.salesId + "\", \"" + row.quotationId + "\")'>เลือก</span></div>";
+                                return link;
+                            
+                            }
+                        }
+                    ],
+                    
+                });
+            });
+
+            $("#selectQA").on("click", function () {
+                $("#modalQA").modal({ backdrop: "static" });
+
+                var dtQA = $(gridQA).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    pageLength : 5,
+                    ajax: {
+                        url: "/Memo/AddMemo?handler=QAGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtQA.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Quotation Number", data: "quotationId" },
+                        { title: "Actions", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 1,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<div class='mt-0'><span style='cursor: pointer;' class='badge badge-secondary' onclick='selectQA(\"" + row.quotationId + "\")'>เลือก</span></div>";
+                                return link;
+                            }
+                        }
+                    ],
+                    
+                });
+            });
+
+            $("#selectEN").on("click", function () {
+                $("#modalEN").modal({ backdrop: "static" });
+
+                var dtEN = $(gridEN).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    pageLength : 5,
+                    ajax: {
+                        url: "/Memo/AddMemo?handler=ENGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtEN.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Enquiry Number", data: "dsg_EnquiryId" },
+                        { title: "Actions", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 1,
+                            render: function (data, type, row) {
+                                var link = "";
+                                link += "<div class='mt-0'><span style='cursor: pointer;' class='badge badge-secondary' onclick='selectEN(\"" + row.dsg_EnquiryId + "\")'>เลือก</span></div>";
+                                return link;
+                            }
+                        }
+                    ],
+                    
+                });
+            });
+            
+            $("#itemSO").on('click', function() {
+                $("#itemSO").prop('disabled',true);
+                $("#itemEN").prop('disabled',false);
+                $("#itemQN").prop('disabled',false);
+                $("#ChangeType").val("SO");
+                var so = $("#SO").val();
+                var itemdata = '';
+                var i = 0;
+                getSOItem(so)
+                    .done(function(data) {
+                    $.each(data, function(index, val) {
+                        itemdata += '<tr><td>'+val.itemId+'</td><td style="text-align:left;">'+val.itemName+'</td><td>'+val.qty+'</td><td>'+val.unit+'</td><td><input name="CencelItem[]" id="c'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="1"></td><td><input name="NoProducedItem[]" id="n'+i+'" type="checkbox" value="1"></td></tr>';
+                    i++; 
+                    });
+                    
+                    countItem = i;
+                        $("#form_item").html("<table class='table'><tr class='table-secondary'><td>Item Number</td><td>Item Name</td><td>Quantity</td><td>Unit</td><td>ยกเลิก</td><td>ผลิตแล้ว</td><td>ยังไม่ผลิต</td></tr>"+itemdata+"</table>");
+                });
+            });
+            
+            $("#itemEN").on('click', function() {
+                $("#itemSO").prop('disabled',false);
+                $("#itemQN").prop('disabled',false);
+                $("#itemEN").prop('disabled',true);
+                $("#ChangeType").val("EN");
+                var enquiry = $("#EN").val();
+                var itemdata = '';
+                var i = 0;
+                getEnquiryItem(enquiry)
+                    .done(function(data) {
+                    $.each(data, function(index, val) {
+                        itemdata += '<tr><td>'+val.itemId+'</td><td style="text-align:left;">'+val.itemName+'</td><td>'+val.qty+'</td><td>'+val.unit+'</td><td><input name="CencelItem[]" id="c'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="1"></td><td><input name="NoProducedItem[]" id="n'+i+'" type="checkbox" value="1"></td></tr>';
+                    i++; 
+                    });
+                    countItem = i;
+                        $("#form_item").html("<table class='table'><tr class='table-secondary'><td>Item Number</td><td>Item Name</td><td>Quantity</td><td>Unit</td><td>ยกเลิก</td><td>ผลิตแล้ว</td><td>ยังไม่ผลิต</td></tr>"+itemdata+"</table>");
+                });
+            });
+
+            $("#itemQN").on('click', function() {
+                $("#itemQN").prop('disabled',true);
+                $("#itemSO").prop('disabled',false);
+                $("#itemEN").prop('disabled',false);
+                $("#ChangeType").val("QA");
+                var qa = $("#QA").val();
+                var itemdata = '';
+                var i = 0;
+                getQAItem(qa)
+                    .done(function(data) {
+                    $.each(data, function(index, val) {
+                        itemdata += '<tr><td>'+val.itemId+'</td><td style="text-align:left;">'+val.itemName+'</td><td>'+val.qty+'</td><td>'+val.unit+'</td><td><input name="CencelItem[]" id="c'+i+'" type="checkbox" value="1"></td><td><input name="ProducedItem[]" id="p'+i+'" type="checkbox" value="1"></td><td><input name="NoProducedItem[]" id="n'+i+'" type="checkbox" value="1"></td></tr>';
+                    i++; 
+                    });
+                    countItem = i;
+                        $("#form_item").html("<table class='table'><tr class='table-secondary'><td>Item Number</td><td>Item Name</td><td>Quantity</td><td>Unit</td><td>ยกเลิก</td><td>ผลิตแล้ว</td><td>ยังไม่ผลิต</td></tr>"+itemdata+"</table>");
+                });
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+            $("#delSubject").hide();
+            $("#delAttn").hide();
+            $("#Memo_SubjectId").change(function (){
+                $("#delSubject").show();
+            });
+            $("#Memo_AttnId").change(function (){
+                $("#delAttn").show();
+            });
+            $("#delSubject").on('click', function(){
+                if(confirm("Are You Sure?")){
+                    $.ajax({
+                        url: "/Memo/Index?handler=DeleteSubject",
+                        type: "get",
+                        data : {
+                            id : $("#Memo_SubjectId").val()
+                        }
+                    }).done(function (data) {
+                        window.location.reload();
+                    });
+                }
+            });
+            $("#delAttn").on('click', function(){
+                if(confirm("Are You Sure?")){
+                    $.ajax({
+                        url: "/Memo/Index?handler=DeleteAttn",
+                        type: "get",
+                        data : {
+                            id : $("#Memo_AttnId").val()
+                        }
+                    }).done(function (data) {
+                        window.location.reload();
+                    });
+                }
+            });
+        });
+
+        function selectSO(salesid,quotationid) {
+            $("#SO").val(salesid);
+            $("#QA").val(quotationid);
+
+            var en = getEnquiryBySO(salesid);
+            en.done(function(data) {
+                $("#EN").val(data[0].dsg_EnquiryId);
+            });
+
+            $("#modalSO").modal("hide");
+            $("#itemSO").prop('disabled',false);
+            $("#itemEN").prop('disabled',false);
+        }
+
+        function selectQA(quotationid) {
+            $("#QA").val(quotationid);
+            $("#modalQA").modal("hide");
+            $("#itemSO").prop('disabled',false);
+            $("#itemEN").prop('disabled',false);
+        }
+
+        function selectEN(enquiryid) {
+            $("#EN").val(enquiryid);
+            $("#modalEN").modal("hide");
+        }
+
+        function getEnquiryBySO(salesid) {
+            return $.ajax({
+                url : "/Memo/AddMemo?handler=EnquiryBySO",
+                type : 'get',
+                data : { salesid : salesid },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getEnquiryItem(enquiry) {
+            return $.ajax({
+                url : "/Memo/AddMemo?handler=EnquiryGetItem",
+                type : 'get',
+                data : { enquiry : enquiry },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getSOItem(so) {
+            return $.ajax({
+                url : "/Memo/AddMemo?handler=SOGetItem",
+                type : 'get',
+                data : { so : so },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getQAItem(qa) {
+            return $.ajax({
+                url : "/Memo/AddMemo?handler=QAGetItem",
+                type : 'get',
+                data : { qa : qa },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+    </script>
+}

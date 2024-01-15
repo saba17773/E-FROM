@@ -1,0 +1,519 @@
+@page "/Promotion/{id}/EditOVS"
+@model Web.UI.Pages.Promotion.EditOVSModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Edit OVS";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Promotion Discount", Link = "/Promotion" },
+        new BreadcrumbModel { Text = "Edit OVS" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">Promotion Discount (OVS)</div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id="form_submit">
+        
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.RequestNumber">เลขที่คำขอ </label>
+                        <input type="text" asp-for="Promotion_OVS.RequestNumber" class="form-control" readonly/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.RequestNumber"></span>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.TypeOfProduct">กลุ่มผลิตภัณฑ์ <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Promotion_OVS.TypeOfProduct" asp-items="Model.PromotionTypeByProductMaster" class="form-control" disabled>
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.TypeOfProduct"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.Pattern">ชื่อเรื่อง </label>
+                        <input type="text" asp-for="Promotion_OVS.Pattern" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.Pattern"></span>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.CustomerName">ลูกค้า/Area <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Promotion_OVS.CustomerName" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.CustomerName"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.TypeOf">ประเภทโปรโมชั่น <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Promotion_OVS.TypeOf" asp-items="Model.PromotionTypeByMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.TypeOf"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.TypeOfRemark">อื่นๆ <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Promotion_OVS.TypeOfRemark" class="form-control"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.TypeOfRemark"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.CustomerGroup">กลุ่มลูกค้า <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Promotion_OVS.CustomerGroup" asp-items="Model.PromotionGroupCustomerMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.CustomerGroup"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.CustomerGroupRemark">ระบุ <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Promotion_OVS.CustomerGroupRemark" class="form-control"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.CustomerGroupRemark"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.PaymentType">เงื่อนไขการชำระเงิน</label>
+                        <input type="text" asp-for="Promotion_OVS.PaymentType" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.PaymentType"></span>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.FromDate">FromDate <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Promotion_OVS.FromDate" class="form-control" placeholder="FromDate" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.FromDate"></span>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.ToDate">ToDate</label>
+                        <input type="text" asp-for="Promotion_OVS.ToDate" class="form-control" placeholder="ToDate" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.ToDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.TypeFrom">รูปแบบโปรโมชั่น <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Promotion_OVS.TypeFrom" asp-items="Model.PromotionTypeFromByMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.TypeFrom"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.TypeFromRemark">อื่นๆ <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Promotion_OVS.TypeFromRemark" class="form-control"/>
+                        <span class="text-danger" asp-validation-for="Promotion_OVS.TypeFromRemark"></span>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="Promotion_OVS.Objective">วัตถุประสงค์ </label>
+                        <textarea rows="4" class="form-control" asp-for="Promotion_OVS.Objective" autocomplete="off"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <label asp-for="Promotion_OVS.Objective">ประมาณการ </label>
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                              <th scope="col">รายละเอียด</th>
+                              <th scope="col">ยอดขายปัจจุบัน</th>
+                              <th scope="col">ยอดขายประมาณการ</th>
+                              <th scope="col">เปลี่ยนแปลง (%)</th>
+                              <th scope="col">หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">ยอดขาย(บาท)</th>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesPresentBath" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesForecastBath" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesChangeBath" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesRemarkBath" class="form-control" autocomplete="off"/></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">ยอดขาย(เส้น)</th>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesPresentQty" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesForecastQty" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesChangeQty" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.SalesRemarkQty" class="form-control" autocomplete="off"/></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">งบประมาณโปรโมชั่น</th>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetPresent" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetForecast" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetChange" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetRemark" class="form-control" autocomplete="off"/></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">งบประมาณต่อยอดขาย</th>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetPresentBath" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetForecastBath" class="form-control" onkeyup="this.value=addCommas(this.value);" autocomplete="off"/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetChangeBath" class="form-control" readonly/></td>
+                                <td><input type="text" asp-for="Promotion_OVS.BudgetRemarkBath" class="form-control" autocomplete="off"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <label>เงื่อนไขโปรโมชั่น </label>
+                    <table class="table table-borderless" width="100%">
+                        <tr>
+                            <td width="20%" align="center"> สินค้าจากรายการส่งเสริมการขายนี้จะ </td>
+                            <td>
+                                <select asp-for="Promotion_OVS.GetDiscount" class="form-control">
+                                    <option value="">--- เลือกรายการ ---</option>
+                                    <option value="1">ได้รับส่วนลดรายเดือน, ไตรมาส, ปี</option>
+                                    <option value="0">ไม่ได้รับส่วนลดรายเดือน, ไตรมาส, ปี</option>
+                                </select>
+                                <span class="text-danger" asp-validation-for="Promotion_OVS.GetDiscount"></span>
+                            </td>
+                            <td>
+                                <select asp-for="Promotion_OVS.GetPoint" class="form-control">
+                                    <option value="">--- เลือกรายการ ---</option>
+                                    <option value="1">ได้รับคะแนนสะสม</option>
+                                    <option value="0">ไม่ได้รับคะแนนสะสม</option>
+                                </select>
+                                <span class="text-danger" asp-validation-for="Promotion_OVS.GetPoint"></span>
+                            </td>
+                            <td width="30%"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <textarea rows="5" class="form-control" asp-for="Promotion_OVS.PromotionConditions" autocomplete="off"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <label>อื่นๆ </label>
+                    <table class="table table-bordered" width="70%">
+                        <tr>
+                            <th width="5%"></th>
+                            <th width="20%">เอกสารแนบ / เอกสารอ้างอิง</th>
+                            <th width="5%"></th>
+                            <th width="20%"></th>
+                            <th width="20%">เอกสารแนบ / เอกสารอ้างอิง</th>
+                        </tr>
+                        <tr>
+                            <td>1.)</td>
+                            @if (Model.AttachFile.Count > 0)
+                            {
+                                int fileNull1=0;
+                                foreach (var item in Model.AttachFile)
+                                {
+                                    if(item.FileLevel==0 && item.FileNo==1)
+                                    {   
+                                        fileNull1 = 1;
+                                        var delId = "x"+item.Id; 
+                                        <td>
+                                        <a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank" id="@delId">@item.FileName</a>
+                                        </td>
+                                        <td><button type="button" class="btn btn-danger btn-sm" value="@item.Id" onclick='deleteFile("@item.Id")'><i class="fa fa-times"></i></button></td>
+                                    }
+                                }
+                                if(fileNull1 != 1){
+                                    <td></td>
+                                    <td></td>
+                                }
+                            }
+                            <td><input type="text" asp-for="FileLeft_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                            <td><input type="file" name="UploadFileLeft_1" /></td>
+                        </tr>
+                        <tr>
+                            <td>2.)</td>
+                            @if (Model.AttachFile.Count > 0)
+                            {
+                                int fileNull2=0;
+                                foreach (var item in Model.AttachFile)
+                                {
+                                    if(item.FileLevel==0 && item.FileNo==2)
+                                    {   
+                                        fileNull2 = 1;
+                                        var delId = "x"+item.Id; 
+                                        <td>
+                                        <a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank" id="@delId">@item.FileName</a>
+                                        </td>
+                                        <td><button type="button" class="btn btn-danger btn-sm" value="@item.Id" onclick='deleteFile("@item.Id")'><i class="fa fa-times"></i></button></td>
+                                    }
+                                }
+                                if(fileNull2 != 1){
+                                    <td></td>
+                                    <td></td>
+                                }
+                            }
+                            <td><input type="text" asp-for="FileLeft_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                            <td><input type="file" name="UploadFileLeft_2" /></td>
+                        </tr>
+                        <tr>
+                            <td>3.)</td>
+                            @if (Model.AttachFile.Count > 0)
+                            {
+                                int fileNull3=0;
+                                foreach (var item in Model.AttachFile)
+                                {
+                                    if(item.FileLevel==0 && item.FileNo==3)
+                                    {   
+                                        fileNull3 = 1;
+                                        var delId = "x"+item.Id; 
+                                        <td>
+                                        <a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank" id="@delId">@item.FileName</a>
+                                        </td>
+                                        <td><button type="button" class="btn btn-danger btn-sm" value="@item.Id" onclick='deleteFile("@item.Id")'><i class="fa fa-times"></i></button></td>
+                                    }
+                                }
+                                if(fileNull3 != 1){
+                                    <td></td>
+                                    <td></td>
+                                }
+                            }
+                            <td><input type="text" asp-for="FileLeft_3" class="form-control form-control-sm" autocomplete="off"/></td>
+                            <td><input type="file" name="UploadFileLeft_3" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="form-group d-flex justify-content-center align-items-center my-3">
+                <input type="hidden" asp-for="TypeOVS" value="OVS"/>
+                <button type="submit" class="btn btn-secondary mr-3" name="draft" value="draft">
+                    <i class="fa fa-file"></i>
+                    Save Draft
+                </button>
+                <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save">
+                    <i class="fa fa-check"></i>
+                    Send Approve
+                </button>
+                <button type="reset" class="btn btn-danger">
+                    <i class="fa fa-times"></i>
+                    Cancel
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#Promotion_OVS_Objective').keypress(function(e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    this.value = this.value.substring(0, this.selectionStart) + "" + "\n" + this.value.substring(this.selectionEnd, this.value.length);
+                }
+            });
+            
+            $('#Promotion_OVS_PromotionConditions').keypress(function(e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    this.value = this.value.substring(0, this.selectionStart) + "" + "\n" + this.value.substring(this.selectionEnd, this.value.length);
+                }
+            });
+
+            $("#Promotion_OVS_TypeOfRemark").attr("disabled", true);
+            $("#Promotion_OVS_TypeOf").click(function() { 
+                if($("#Promotion_OVS_TypeOf").val()==12){
+                    $("#Promotion_OVS_TypeOfRemark").attr("disabled", false);
+                }else{
+                    $("#Promotion_OVS_TypeOfRemark").attr("disabled", true);
+                    $("#Promotion_OVS_TypeOfRemark").val("");
+                }
+            });
+
+            $("#Promotion_OVS_TypeFromRemark").attr("disabled", true);
+            $("#Promotion_OVS_TypeFrom").click(function() { 
+                if($("#Promotion_OVS_TypeFrom").val()==5){
+                    $("#Promotion_OVS_TypeFromRemark").attr("disabled", false);
+                }else{
+                    $("#Promotion_OVS_TypeFromRemark").attr("disabled", true);
+                    $("#Promotion_OVS_TypeFromRemark").val("");
+                }
+            });
+
+            $("#Promotion_OVS_FromDate").datepicker();
+            $("#Promotion_OVS_ToDate").datepicker();
+            
+            $("#form_submit").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("Submit...");
+            });
+
+            @* Bath *@
+            $("#Promotion_OVS_SalesPresentBath").on("keyup", function (e) {
+                var a = $("#Promotion_OVS_SalesPresentBath").val();
+                var b = $("#Promotion_OVS_SalesForecastBath").val();
+                var c = CalculateSale(a,b);
+                $("#Promotion_OVS_SalesChangeBath").val(c);
+            });
+
+            $("#Promotion_OVS_SalesForecastBath").on("keyup", function (e) {
+                var a = $("#Promotion_OVS_SalesPresentBath").val();
+                var b = $("#Promotion_OVS_SalesForecastBath").val();
+                var c = CalculateSale(a,b);
+                $("#Promotion_OVS_SalesChangeBath").val(c);
+            });
+
+            @* Qty *@
+            $("#Promotion_OVS_SalesPresentQty").on("keyup", function (e) {
+                var a = $("#Promotion_OVS_SalesPresentQty").val();
+                var b = $("#Promotion_OVS_SalesForecastQty").val();
+                var c = CalculateSale(a,b);
+                $("#Promotion_OVS_SalesChangeQty").val(c);
+            });
+
+            $("#Promotion_OVS_SalesForecastQty").on("keyup", function (e) {
+                var a = $("#Promotion_OVS_SalesPresentQty").val();
+                var b = $("#Promotion_OVS_SalesForecastQty").val();
+                var c = CalculateSale(a,b);
+                $("#Promotion_OVS_SalesChangeQty").val(c);
+            });
+
+            @* Budget *@
+            $("#Promotion_OVS_BudgetPresent").on("keyup", function (e) {
+                var a = $("#Promotion_OVS_BudgetPresent").val();
+                var b = $("#Promotion_OVS_BudgetForecast").val();
+                var e = $("#Promotion_OVS_SalesPresentBath").val();
+                var c = CalculateSale(a,b);
+                var d = CalculateBudgetBath(a,e);
+                $("#Promotion_OVS_BudgetChange").val(c);
+                $("#Promotion_OVS_BudgetPresentBath").val(d);
+            });
+
+            $("#Promotion_OVS_BudgetForecast").on("keyup", function (e) {
+                var a = $("#Promotion_OVS_BudgetPresent").val();
+                var b = $("#Promotion_OVS_BudgetForecast").val();
+                var e = $("#Promotion_OVS_SalesForecastBath").val();
+                var c = CalculateSale(a,b);
+                var d = CalculateBudgetBath(b,e);
+                $("#Promotion_OVS_BudgetChange").val(c);
+                $("#Promotion_OVS_BudgetForecastBath").val(d);
+            });
+
+            @* DeleteFile *@
+            $("#deleteFile").on("click", function (){
+                var IdFile = $("#deleteFile").val();
+                $.ajax({
+                    url: "/Promotion/{id}/EditOVS?handler=DeleteFile",
+                    type: "get",
+                    data : {
+                        IdFile : IdFile
+                    }
+                }).done(function (data) {
+                    $("#x"+IdFile).remove();
+                });
+                
+            });
+        });
+        
+        function CalculateSale(a,b){
+            a = parseFloat(a.replace(/[^\d\.\-]/g, ""));
+            b = parseFloat(b.replace(/[^\d\.\-]/g, ""));
+            var changerate = ((b-a)/a)*100;
+            var result = changerate.toFixed(2);
+            return result;
+        }
+
+        function CalculateBudgetBath(a,b){
+            a = parseFloat(a.replace(/[^\d\.\-]/g, ""));
+            b = parseFloat(b.replace(/[^\d\.\-]/g, ""));
+            var changerate = (a/b)*100;
+            var result = changerate.toFixed(2);
+            return result;
+        }
+
+        function addCommas(Num) {
+            Num += '';
+            Num = Num.replace(/,/g, '');
+
+            x = Num.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1))
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            return x1 + x2;
+        }
+
+        function deleteFile(id){
+            var IdFile = id;
+            $.ajax({
+                url: "/Promotion/{id}/EditOVS?handler=DeleteFile",
+                type: "get",
+                data : {
+                    IdFile : IdFile
+                }
+            }).done(function (data) {
+                $("#x"+IdFile).remove();
+            });
+        }
+    </script>
+}

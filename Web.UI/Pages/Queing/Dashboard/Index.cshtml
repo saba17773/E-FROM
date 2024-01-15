@@ -1,0 +1,526 @@
+@page "/Queing/Dashboard/Index"
+@model Web.UI.Pages.Queing.Dashboard.DashboardModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueingDashboard";
+}
+@{
+    ViewData["Title"] = "Queing Dashboard";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "OVER SEA TRANSPORTATION" }
+    };
+}
+
+@* 3840x2160px; *@
+
+<style>
+    .containerx {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .box {
+        height: 39vh;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 49%;
+        min-width: 300px;
+    }
+    .boxspace {
+        height: 39vh;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 2%;
+    }
+
+    .box1 {  
+        background: rgb(245,243,243);
+        background: linear-gradient(0deg, rgba(245,243,243,1) 0%, rgba(208,208,208,1) 30%);
+    }
+    .box2 {  
+        background: rgb(245,243,243);
+        background: linear-gradient(0deg, rgba(245,243,243,1) 0%, rgba(208,208,208,1) 30%);
+    }
+    .box3 {  
+        background: rgb(245,243,243);
+        background: linear-gradient(0deg, rgba(245,243,243,1) 0%, rgba(208,208,208,1) 30%);
+    }
+    .box4 {  
+        background: rgb(245,243,243);
+        background: linear-gradient(0deg, rgba(245,243,243,1) 0%, rgba(208,208,208,1) 30%);
+    }
+
+    .boxlinear {
+        background: rgb(37,43,72);
+        background: linear-gradient(0deg, rgba(37,43,72,1) 0%, rgba(226,226,226,1) 100%);
+    } 
+    .boxlineartr {
+        background: rgb(208,208,208);
+        background: linear-gradient(0deg, rgba(208,208,208,1) 0%, rgba(255,177,130,1) 30%);
+    }
+    .boxlineargreentr {
+        background: rgb(139,203,143);
+        background: linear-gradient(0deg, rgba(139,203,143,1) 0%, rgba(197,229,199,1) 49%, rgba(139,203,143,1) 99%);
+    }
+    .boxlinearredtr {
+        background: rgb(255,116,106);
+        background: linear-gradient(0deg, rgba(255,116,106,1) 0%, rgba(250,179,174,1) 49%, rgba(255,116,106,1) 99%);
+    } 
+    .strokeheadorange{
+        color: #f37022;
+        font-size: 25px;
+        text-align: center;
+        font-weight: 1000;
+        text-shadow: -2px -2px 0 white,
+				    -2px 2px 0 white,
+                    2px 2px 0 white,
+				    2px -2px 0 white;
+    }
+    .strokeheadwhite{
+        color: #145c05;
+        font-size: 25px;
+        -webkit-text-stroke: 1px 145c05;
+        text-shadow: 0px 2px 4px #145c05;
+    }
+    .strokeheadwhitedetail{
+        color: white;
+        font-size: 20x;
+        font-weight: bold;
+    }
+    .strokeheadblackdetail{
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .detail{
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    table {
+        width: 100%;
+    }
+    tr td {
+        padding: 5px;
+    }
+    .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+    
+</style>
+
+<div class="containerx">
+  <div class="box box1">
+      <table>
+          <tr>
+              <td width="30%" class="strokeheadorange">รอชั่งเข้า</td>
+              <td></td>
+          </tr>
+      </table>
+      <body onload=cal__weightin();>
+            <div id="body_In"></div>
+      </body>
+      @* <table>
+          <tr>
+              <td class="strokeheadwhite">ลำดับที่</td>
+              <td class="strokeheadwhite">ทะเบียนรถ</td>
+              <td class="strokeheadwhite">Invoice/WO</td>
+              <td class="strokeheadwhite">ชื่อลูกค้า</td>
+              <td class="strokeheadwhite">Activity Time</td>
+          </tr>
+          <tr class='boxlineartr' style='text-align: center;'>
+              <td class="strokeheadblackdetail" align="center">9</td>
+              <td class="strokeheadblackdetail">1กก 1234</td>
+              <td class="strokeheadblackdetail">765/2021123</td>
+              <td class="strokeheadblackdetail">Green Ball</td>
+              <td class="strokeheadblackdetail" align="center">00:25:01</td>
+          </tr>
+          <tr class='boxlineartr' style='text-align: center;'>
+              <td class="strokeheadblackdetail" align="center">10</td>
+              <td class="strokeheadblackdetail">1กก 1234</td>
+              <td class="strokeheadblackdetail">765/2021123</td>
+              <td class="strokeheadblackdetail">Green Ball</td>
+              <td class="strokeheadblackdetail" align="center">00:25:01</td>
+          </tr>
+      </table> *@
+  </div>
+  <div class="boxspace"> </div>
+  <div class="box box2">
+      <table>
+          <tr>
+              <td width="30%" class="strokeheadorange">BAY</td>
+              <td></td>
+          </tr>
+      </table>
+      <body onload=cal__weightin();>
+            <div id="body_Bay"></div>
+      </body>
+      @* <table>
+          <tr>
+              <td class="strokeheadwhite">Bay</td>
+              <td class="strokeheadwhite">Status</td>
+              <td class="strokeheadwhite">ทะเบียนรถ</td>
+              <td class="strokeheadwhite">Invoice/WO</td>
+              <td class="strokeheadwhite">Time to idle</td>
+          </tr>
+          <tr class="boxlineargreentr">
+              <td class="strokeheadblackdetail">DBO1</td>
+              <td class="strokeheadblackdetail">idle</td>
+              <td class="strokeheadblackdetail">---</td>
+              <td class="strokeheadblackdetail">---</td>
+              <td class="strokeheadblackdetail" align="center">NOW</td>
+          </tr>
+          <tr class="boxlinearredtr">
+              <td class="strokeheadblackdetail">DBO5</td>
+              <td class="strokeheadblackdetail">Loading</td>
+              <td class="strokeheadblackdetail">8จล 6789</td>
+              <td class="strokeheadblackdetail">756</td>
+              <td class="strokeheadblackdetail" align="center">00:32:05</td>
+          </tr>
+      </table> *@
+  </div>
+  
+  <div class="box box3">
+      <table>
+          <tr>
+              <td width="30%">
+                  <p class="strokeheadorange"> รอเอกสาร </p>
+              </td>
+              <td></td>
+          </tr>
+      </table>
+      <body onload=cal__doc();>
+            <div id="body_Doc"></div>
+      </body>
+      @* <table>
+          <tr>
+              <td class="strokeheadwhite">ลำดับที่</td>
+              <td class="strokeheadwhite">ทะเบียนรถ</td>
+              <td class="strokeheadwhite">Invoice/WO</td>
+              <td class="strokeheadwhite">ชื่อลูกค้า</td>
+              <td class="strokeheadwhite">Activity Time</td>
+          </tr>
+          <tr class='boxlineartr' style='text-align: center;'>
+              <td class="strokeheadblackdetail" align="center">9</td>
+              <td class="strokeheadblackdetail">1กก 1234</td>
+              <td class="strokeheadblackdetail">765/2021123</td>
+              <td class="strokeheadblackdetail">Green Ball</td>
+              <td class="strokeheadblackdetail" align="center">00:25:01</td>
+          </tr>
+          <tr class='boxlineartr' style='text-align: center;'>
+              <td class="strokeheadblackdetail" align="center">10</td>
+              <td class="strokeheadblackdetail">1กก 1234</td>
+              <td class="strokeheadblackdetail">765/2021123</td>
+              <td class="strokeheadblackdetail">Green Ball</td>
+              <td class="strokeheadblackdetail" align="center">00:25:01</td>
+          </tr>
+      </table> *@
+  </div>
+  <div class="boxspace"> </div>
+  <div class="box box4">
+      <table>
+          <tr>
+              <td width="30%">
+                  <p class="strokeheadorange"> Check-Out </p>
+              </td>
+              <td></td>
+          </tr>
+      </table>
+      <body onload=cal__checkout();>
+            <div id="body_Checkout"></div>
+      </body>
+      @* <table>
+          <tr>
+              <td class="strokeheadwhite">ลำดับที่</td>
+              <td class="strokeheadwhite">ทะเบียนรถ</td>
+              <td class="strokeheadwhite">Invoice/WO</td>
+              <td class="strokeheadwhite">ชื่อลูกค้า</td>
+          </tr>
+          <tr class='boxlineartr' style='text-align: center;'>
+              <td class="strokeheadblackdetail" align="center">9</td>
+              <td class="strokeheadblackdetail">1กก 1234</td>
+              <td class="strokeheadblackdetail">765/2021123</td>
+              <td class="strokeheadblackdetail">Green Ball</td>
+          </tr>
+      </table> *@
+  </div>
+</div>
+
+<br>
+<div class="footer">
+    <button class="btn btn-light btn-sm" onclick="openFullscreen();">
+        <i class="fa fa-expand" aria-hidden="true"></i>
+    </button>
+    <button class="btn btn-light btn-sm" onclick="closeFullscreen();">
+        <i class="fa fa-compress" aria-hidden="true"></i>
+    </button>
+</div>
+
+@section Scripts {
+    <script>
+        cal__weightin();
+        cal__doc();
+        cal__checkout();
+        cal__bayin();
+
+        var elem = document.documentElement;
+        function openFullscreen() {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function closeFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
+        }
+
+        function display_refresh(){
+            var refresh=60000; 
+            mytime=setTimeout('cal__weightin()',refresh)
+            mytime=setTimeout('cal__weightout()',refresh)
+        }
+
+        function displaytime (seconds) {
+            const format = val => `0${Math.floor(val)}`.slice(-2)
+            const hours = seconds / 3600
+            const minutes = (seconds % 3600) / 60
+
+            return [hours, minutes, seconds % 60].map(format).join(':')
+        }
+
+        function cal__weightin(){
+            
+            var body_ = "";
+            var i = 0;
+            var we_in = getIn('svo');
+            we_in.done(function(data) {
+                $.each(data, function(index, val) {
+                    
+                    var olddate = new Date ( val.checkindate),
+                    checkindate = new Date ( olddate );
+                    checkindate.setMinutes(checkindate.getMinutes() + 20);
+                    
+                    var nowDate = new Date();
+                    var seconds = (checkindate.getTime() - nowDate.getTime()) / 1000;
+                    
+                    body_ += "<tr class='boxlineartr' style='text-align: center;'>";
+                    body_ += "<td class='detail'>"+val.no+"</td>";
+                    body_ += "<td class='detail' colspan='2'>"+val.truckid+"</td>";
+                    if(seconds<0){   
+                        body_ += "<td class='detail' colspan='2'>--:--</td>"; 
+                    }else{
+                        body_ += "<td class='detail' colspan='2'>"+displaytime(seconds)+"</td>";  
+                    }
+                    body_ += "</tr>";  
+                    
+                    i++;
+                });
+                    if(i<4){
+                        for(r=0; r<(4-i); r++){
+                            body_ += "<tr style='text-align: center;'>";
+                            body_ += "<td class='detail'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";  
+                            body_ += "</tr>"; 
+                        }
+                    }
+
+                    $("#body_In").html("<table><tr><td class='strokeheadwhite'>ลำดับที่</td><td class='strokeheadwhite'>ทะเบียนรถ</td><td class='strokeheadwhite'>Invoice/WO</td><td class='strokeheadwhite'>ชื่อลูกค้า</td><td class='strokeheadwhite'>Activity Time</td></tr>"+body_+"</table>")
+                
+            });
+
+            display_refresh();
+        }
+
+        function cal__doc(){
+            
+            var body_ = "";
+            var i = 0;
+            var we_in = getDoc('svo');
+            we_in.done(function(data) {
+                $.each(data, function(index, val) {
+                    
+                    var olddate = new Date ( val.checkindate),
+                    checkindate = new Date ( olddate );
+                    checkindate.setMinutes(checkindate.getMinutes() + 20);
+                    
+                    var nowDate = new Date();
+                    var seconds = (checkindate.getTime() - nowDate.getTime()) / 1000;
+                    
+                    body_ += "<tr class='boxlineartr' style='text-align: center;'>";
+                    body_ += "<td class='detail'>"+val.no+"</td>";
+                    body_ += "<td class='detail' colspan='2'>"+val.truckid+"</td>";
+                    if(seconds<0){   
+                        body_ += "<td class='detail' colspan='2'>--:--</td>"; 
+                    }else{
+                        body_ += "<td class='detail' colspan='2'>"+displaytime(seconds)+"</td>";  
+                    }
+                    body_ += "</tr>";  
+                    
+                    i++;
+                });
+                    if(i<4){
+                        for(r=0; r<(4-i); r++){
+                            body_ += "<tr style='text-align: center;'>";
+                            body_ += "<td class='detail'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";  
+                            body_ += "</tr>"; 
+                        }
+                    }
+
+                    $("#body_Doc").html("<table><tr><td class='strokeheadwhite'>ลำดับที่</td><td class='strokeheadwhite'>ทะเบียนรถ</td><td class='strokeheadwhite'>Invoice/WO</td><td class='strokeheadwhite'>ชื่อลูกค้า</td><td class='strokeheadwhite'>Activity Time</td></tr>"+body_+"</table>")
+                
+            });
+
+            display_refresh();
+        }
+
+        function cal__checkout(){
+            
+            var body_ = "";
+            var i = 0;
+            var we_in = getCheckout('svo');
+            we_in.done(function(data) {
+                $.each(data, function(index, val) {
+                    
+                    var olddate = new Date ( val.checkindate),
+                    checkindate = new Date ( olddate );
+                    checkindate.setMinutes(checkindate.getMinutes() + 20);
+                    
+                    var nowDate = new Date();
+                    var seconds = (checkindate.getTime() - nowDate.getTime()) / 1000;
+                    
+                    body_ += "<tr class='boxlineartr' style='text-align: center;'>";
+                    body_ += "<td class='detail'>"+val.no+"</td>";
+                    body_ += "<td class='detail' colspan='2'>"+val.truckid+"</td>"; 
+                    body_ += "</tr>";  
+                    
+                    i++;
+                });
+                    if(i<4){
+                        for(r=0; r<(4-i); r++){
+                            body_ += "<tr style='text-align: center;'>";
+                            body_ += "<td class='detail'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";
+                            body_ += "<td class='detail' >&nbsp;</td>";  
+                            body_ += "</tr>"; 
+                        }
+                    }
+
+                    $("#body_Checkout").html("<table><tr><td class='strokeheadwhite'>ลำดับที่</td><td class='strokeheadwhite'>ทะเบียนรถ</td><td class='strokeheadwhite'>Invoice/WO</td><td class='strokeheadwhite'>ชื่อลูกค้า</td></tr>"+body_+"</table>")
+                
+            });
+
+            display_refresh();
+        }
+
+        function cal__bayin(){
+            
+            var body_ = "";
+            var body_out = "";
+            var we_in = getBayin('svo');
+            var we_out = getBayout('svo');
+            we_in.done(function(data) {
+                $.each(data, function(index, val) {
+
+                    body_ += "<tr class='boxlineargreentr' style='text-align: center;'>";
+                    body_ += "<td class='strokeheadblackdetail'>"+val.bayid+"</td>";
+                    body_ += "<td class='strokeheadblackdetail'>Idle</td>";
+                    body_ += "<td class='strokeheadblackdetail'>---</td>"; 
+                    body_ += "<td class='strokeheadblackdetail'>---</td>"; 
+                    body_ += "<td class='strokeheadblackdetail' style='text-align: center;'>NOW</td>"; 
+                    body_ += "</tr>";  
+                    
+                });
+            });
+
+            we_out.done(function(data) {
+                $.each(data, function(index, val) {
+
+                    assignbaydate = new Date ( val.assignbaydate);
+                    
+                    var seconds = (assignbaydate.getTime()) / 1000;
+
+                    body_out += "<tr class='boxlineargreentr' style='text-align: center;'>";
+                    body_out += "<td class='strokeheadblackdetail'>"+val.bayid+"</td>";
+                    body_out += "<td class='strokeheadblackdetail'>Loading/td>";
+                    body_out += "<td class='strokeheadblackdetail'>---</td>"; 
+                    body_out += "<td class='strokeheadblackdetail'>---</td>"; 
+                    body_out += "<td class='strokeheadblackdetail' style='text-align: center;'>N"+displaytime(seconds)+"</td>"; 
+                    body_out += "</tr>";  
+
+                });
+            });
+
+            $("#body_Bay").html("<table><tr><td class='strokeheadwhite'>Bay</td><td class='strokeheadwhite'>Status</td><td class='strokeheadwhite'>ทะเบียนรถ</td><td class='strokeheadwhite'>Invoice/WO</td><td class='strokeheadwhite'>Time to idle</td></tr>"+body_+body_out+"</table>")
+                
+            display_refresh();
+        }
+
+        function getIn(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/WeighInOut?handler=In",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getDoc(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/Index?handler=Doc",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getCheckout(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/Index?handler=CheckOut",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getBayin(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/Index?handler=BayIn",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getBayout(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/Index?handler=BayOut",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+    </script>
+}

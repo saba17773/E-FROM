@@ -1,0 +1,888 @@
+﻿@page "/CreditControl/{id}/EditDOM"
+@model Web.UI.Pages.CreditControl.EditDOMModel
+
+@using Infrastructure.Models
+@using Web.UI.Infrastructure.Entities
+
+@{
+    ViewData["Title"] = "Edit DOM";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Credit Control", Link = "/CreditControl" },
+        new BreadcrumbModel { Text = "Edit DOM" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">Edit Credit Control (DOM)</div>
+    <div class="card-body">
+
+        <div class="text-danger" asp-validation-summary="All"></div>
+
+        <form method="post" enctype="multipart/form-data">
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.RequestNumber">เลขที่คำขอ</label>
+                        <input type="text" asp-for="CreditControl_DOM.RequestNumber" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.RequestNumber"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.RequestDate">วันที่</label>
+                        <input type="text" asp-for="CreditControl_DOM.RequestDate" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.RequestDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.CustomerCode">เลขทะเบียนลูกค้า</label>
+                        <input type="text" asp-for="CreditControl_DOM.CustomerCode" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.CustomerCode"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">รายละเอียดทั่วไปเกี่ยวกับลูกค้า</div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.TypeOfBusiness">ลักษณะของกิจการ <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="CreditControl_DOM.TypeOfBusiness" asp-items="Model.CustomerTypeMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.TypeOfBusiness"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.TypeOfProduct">ประเภทกลุ่มลูกค้าในระบบ (Type of Customer Group) <span class="text-danger font-weight-bold">*</span></label>
+
+                        <table width="100%">
+                            @foreach (var item in Model.CustomerTypeTrans)
+                            {
+                                <tr>
+                                    <td>
+                                        <label>
+                                            @if ((int)item.CustomerByProductId == 0)
+                                            {
+                                                <input type="checkbox" name="TypeOfCustomer" value="@item.Id" /> @item.ByName
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="TypeOfCustomer" value="@item.Id" checked /> @item.ByName
+                                            }
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input type="text" value="@item.CustomerCode" readonly />
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">ชื่อจดทะเบียนประกอบการ</div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.CompanyName">ชื่อบริษัท <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="CreditControl_DOM.CompanyName" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.CompanyName"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.IsHeadQuarter">Company Type <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="CreditControl_DOM.IsHeadQuarter" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                            <option value="1">สำนักงานใหญ่</option>
+                            <option value="2">สาขา</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.IsHeadQuarter"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.Branch">สาขา</label>
+                        <input type="text" asp-for="CreditControl_DOM.Branch" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.Branch"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">ที่อยู่ตามทะเบียนการค้า</div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address1.AddressNo">เลขที่ <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Address1.AddressNo" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.AddressNo"></span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address1.Moo">หมู่</label>
+                        <input type="text" asp-for="Address1.Moo" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.Moo"></span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address1.Soi">ซอย</label>
+                        <input type="text" asp-for="Address1.Soi" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.Soi"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.Street">ถนน </label>
+                        <input type="text" asp-for="Address1.Street" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.Street"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.Province">จังหวัด <span class="text-danger font-weight-bold">*</span></label>
+                        <select class="form-control" asp-for="Address1.Province" asp-items="Model.ProvinceMaster">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Address1.Province"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.District">เขต/อำเภอ <span class="text-danger font-weight-bold">*</span></label>
+                        <select class="form-control" asp-for="Address1.District" asp-items="Model.DistrictMaster">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Address1.District"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.SubDistrict">แขวง/ตำบล <span class="text-danger font-weight-bold">*</span></label>
+                        <select class="form-control" asp-for="Address1.SubDistrict" asp-items="Model.SubDistrictMaster">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Address1.SubDistrict"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.ZipCode">รหัสไปรษณีย์ <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Address1.ZipCode" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.ZipCode"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.Tel">โทรศัพท์ </label>
+                        <input type="text" asp-for="Address1.Tel" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.Tel"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.Fax">โทรสาร </label>
+                        <input type="text" asp-for="Address1.Fax" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.Fax"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address1.Email">Email </label>
+                        <input type="text" asp-for="Address1.Email" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address1.Email"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">ที่อยู่ที่สามารถติดต่อได้</div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address2.AddressNo">เลขที่</label>
+                        <input type="text" asp-for="Address2.AddressNo" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.AddressNo"></span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address2.Moo">หมู่</label>
+                        <input type="text" asp-for="Address2.Moo" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.Moo"></span>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address2.Soi">ซอย</label>
+                        <input type="text" asp-for="Address2.Soi" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.Soi"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.Street">ถนน </label>
+                        <input type="text" asp-for="Address2.Street" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.Street"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.Province">จังหวัด</label>
+                        <select class="form-control" asp-for="Address2.Province" asp-items="Model.ProvinceMaster">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Address2.Province"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.District">เขต/อำเภอ</label>
+                        <select class="form-control" asp-for="Address2.District" asp-items="Model.DistrictMaster">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Address2.District"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.SubDistrict">แขวง/ตำบล</label>
+                        <select class="form-control" asp-for="Address2.SubDistrict" asp-items="Model.SubDistrictMaster">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Address2.SubDistrict"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.ZipCode">รหัสไปรษณีย์</label>
+                        <input type="text" asp-for="Address2.ZipCode" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.ZipCode"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.Tel">โทรศัพท์</label>
+                        <input type="text" asp-for="Address2.Tel" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.Tel"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.Fax">โทรสาร </label>
+                        <input type="text" asp-for="Address2.Fax" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.Fax"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address2.Email">Email </label>
+                        <input type="text" asp-for="Address2.Email" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address2.Email"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">ที่อยู่รายละเอียดของส่วนงานขาย</div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.SaleEmployeeId">พนักงานขาย</label> <span style="cursor: pointer;" class="badge badge-info" id="selectEmployee"><i class="fa fa-search"></i> ค้นหา</span>
+                        <input type="hidden" asp-for="CreditControl_DOM.SaleEmployeeId" class="form-control" />
+                        <input type="text" asp-for="SaleName" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.SaleEmployeeId"></span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.SaleZone">เขตการขาย</label>
+                        <input type="text" asp-for="CreditControl_DOM.SaleZone" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.SaleZone"></span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.DimensionNo">Dimension No.</label>
+                        <input type="text" asp-for="CreditControl_DOM.DimensionNo" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.DimensionNo"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.DiscountByConstant">ส่วนลดการค้าตายตัว (%)</label>
+                        <input type="text" asp-for="CreditControl_DOM.DiscountByConstant" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.DiscountByConstant"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.DiscountByStep">ส่วนลดการค้าเป็นขั้น (%)</label>
+                        <input type="text" asp-for="CreditControl_DOM.DiscountByStep" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.DiscountByStep"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.PaymentMethod">เงื่อนไขการชำระเงิน</label>
+
+                        <table width="100%">
+                            @foreach (var item in Model.PaymentMethodList)
+                            {
+                                <tr>
+                                    @if (Model.PaymentMethodTransSelected.Any(x => x.PaymentMethodId == item.Id))
+                                    {
+                                        <td>
+                                            <label>
+                                                <input type="checkbox" name="PaymentMethod" value="@item.Id" checked /> @item.MethodName
+                                            </label>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var t = Model.PaymentMethodTransSelected.Where(x => x.PaymentMethodId == item.Id).FirstOrDefault();
+                                            }
+                                            <input type="text" name="PaymentMethodText[]" value="@t.Remark" class="form-control" />
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <label>
+                                                <input type="checkbox" name="PaymentMethod" value="@item.Id" /> @item.MethodName
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="PaymentMethodText[]" class="form-control" />
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_DOM.TermOfDelivery">เงื่อนไขการส่งสินค้า</label>
+                        <select asp-for="CreditControl_DOM.TermOfDelivery" asp-items="Model.TermOfDeliveryMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.TermOfDelivery"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" asp-for="CreditControl_DOM.TermOfDelivery_Other" class="form-control" placeholder="อื่นๆ" />
+                        <span class="text-danger" asp-validation-for="CreditControl_DOM.TermOfDelivery_Other"></span>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.EditCreditLimit)
+            {
+                <div class="h3 my-3">รายละเอียดของส่วนงานสินเชื่อ</div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.CreditLimited">วงเงินเครดิตที่เสนอขออนุมัติ</label>
+                            <input type="text" asp-for="CreditControl_DOM.CreditLimited" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.CreditRating">Credit Rating</label>
+                            <input type="text" asp-for="CreditControl_DOM.CreditRating" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_DOM.CreditRating"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.GuaranteeDOM_Check">หลักประกัน</label>
+                            <select asp-for="CreditControl_DOM.GuaranteeDOM_Check" class="form-control">
+                                <option value="">--- เลือกรายการ ---</option>
+                                <option value="1">B/G</option>
+                                <option value="2">Other</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="CreditControl_DOM.GuaranteeDOM_Check"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.GuaranteeDOM_BGTotal">จำนวน</label>
+                            <input type="text" asp-for="CreditControl_DOM.GuaranteeDOM_BGTotal" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_DOM.GuaranteeDOM_BGTotal"></span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.GuaranteeDOM_IssueDate">Issue Date</label>
+                            <input type="text" asp-for="CreditControl_DOM.GuaranteeDOM_IssueDate" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_DOM.GuaranteeDOM_IssueDate"></span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.GuaranteeDOM_ExpireDate">Expire Date</label>
+                            <input type="text" asp-for="CreditControl_DOM.GuaranteeDOM_ExpireDate" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_DOM.GuaranteeDOM_ExpireDate"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.GuaranteeDOM_Other">Other</label>
+                            <input type="text" asp-for="CreditControl_DOM.GuaranteeDOM_Other" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_DOM.GuaranteeDOM_Other"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_DOM.TermOfPayment">ระยะเวลาสินเชื่อ</label>
+                            <input type="hidden" name="PaymentTermType" />
+                            <select asp-for="CreditControl_DOM.TermOfPayment" asp-items="Model.PaymentTermMaster" class="form-control">
+                                <option value="">--- เลือกรายการ ---</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="CreditControl_DOM.TermOfPayment"></span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="h3 my-3">เอกสารที่ลูกค้าต้องนำส่ง (ต้นฉบับ หรือ สำเนาภาพถ่ายเอกสาร)</div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_1" />
+                        <span>1.หนังสือแสดงความจำนงขอเป็นผู้จัดจำหน่ายผลิตภัณฑ์</span>
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_2" />
+                        <span>2.หนังสือสัญญาซื้อขายและจัดจำหน่าย</span>
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_3" />
+                        <span>3. หนังสือมอบอำนาจให้ Ship To พร้อมเอกสารพิสูจน์ตัวตนของลูกจ้าง</span>
+
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_4"/>
+                        4.หนังสือรับรองการจดทะเบียนนิติบุคคล ออกให้ไม่เกิน 3 เดือน (กรมพัฒนาธุรกิจการค้า)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_5"/>
+                        5. ใบทะเบียนพาณิชย์ (กรมพัฒนาธุรกิจการค้า)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_6"/>
+                        6. ใบทะเบียนภาษีมูลค่าเพิ่ม ภ.พ.20/ภ.พ.01/ภ.พ.09 (ถ้ามี) กรณีจดทะเบียนเข้าระบบภาษีมูลค่าเพิ่ม
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_7"/>
+                        7 .บัญชีรายชื่อผู้ถือหุ้น (บอจ.5)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_8"/>
+                        8. บัตรประจำตัวประชาชน/ทะเบียนบ้านของเจ้าของร้านค้า/กรรมการผู้มีอำนาจลงนาม/หุ้นส่วนผู้จัดการ
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_9"/>
+                        9. Statement บัญชีเงินฝากกระแสรายวัน,บัญชีเงินฝากออมทรัพย์,บัญชีเงินฝากประจำ (ไม่ต่ำกว่า 3 เดือน)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_10"/>
+                        10. หนังสือค้ำประกันธนาคาร (BG/Standby LC)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_11"/>
+                        11. แผนที่ตั้งกิจการ
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_12"/>
+                        12. ภาพถ่ายแสดงชื่อที่ตั้งกิจการ
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_13"/>
+                        13. ใบสำคัญแสดงการจดทะเบียนห้างหุ้นส่วนจำกัด (กรมทะเบียนการค้า)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_14"/>
+                        14. งบการเงิน 3 ปี (ปีปัจจุบันและย้อนหลัง 2 ปี)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="file" name="FileUpload" multiple />
+                    </label>
+                </div>
+            </div>
+
+            <input type="hidden" name="FileUploadType" value="0" />
+
+            <div class="h3 my-3">ความเห็นของฝ่ายขาย</div>
+
+            <textarea rows="5" class="form-control" asp-for="CreditControl_DOM.CommentFromSale"></textarea>
+
+            <div class="h3 my-3">ความคิดเห็นเพิ่มเติมของผู้อนุมัติ</div>
+
+            @if (Model.AllComment.Count > 0)
+            {
+                <ul class="mb-3">
+                    @foreach (var item in (Model.AllComment as List<Web.UI.Infrastructure.ViewModels.AllCommentsApprovalViewModel>))
+                    {
+                        if (item.Remark != null)
+                        {
+                            <li>@item.Name : @item.Remark</li>
+                        }
+                    }
+                </ul>
+            }
+
+            <textarea rows="5" class="form-control" asp-for="CreditControl_DOM.CommentFromApproval"></textarea>
+
+            <div class="form-group d-flex justify-content-center align-items-center my-3">
+                <button type="submit" name="SendApprove" value="1" class="btn btn-outline-info mr-3">
+                    <i class="fa fa-send"></i>
+                    Send Approve
+                </button>
+                <button type="submit" name="SendApprove" value="0" class="btn btn-success mr-3">
+                    <i class="fa fa-check"></i>
+                    บันทึก
+                </button>
+                <button type="reset" class="btn btn-danger">
+                    <i class="fa fa-times"></i>
+                    ยกเลิก
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Model Employee *@
+<div class="modal" id="modalEmployee" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridEmployee" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridEmployee = "#gridEmployee";
+
+            $("#CreditControl_DOM_TermOfPayment").select2({ filter: true });
+
+            $("#Address1_Province").select2({ filter: true });
+            $("#Address1_District").select2({ filter: true });
+            $("#Address1_SubDistrict").select2({ filter: true });
+
+            $("#Address2_Province").select2({ filter: true });
+            $("#Address2_District").select2({ filter: true });
+            $("#Address2_SubDistrict").select2({ filter: true });
+
+            $("#CreditControl_DOM_TypeOfBusiness").select2({ filter: true });
+            $("#CreditControl_DOM_TypeOfProduct").select2({ filter: true });
+
+            $("#CreditControl_DOM_TermOfPayment").select2({ filter: true });
+
+            $("#CreditControl_DOM_GuaranteeDOM_IssueDate").datepicker();
+            $("#CreditControl_DOM_GuaranteeDOM_ExpireDate").datepicker();
+
+            $("#Address1_Province").on("change", function () {
+                var provinceId = $("#Address1_Province").val();
+
+                $.ajax({
+                    url: "/CreditControl/AddDOM?handler=DistrictByProvince&provinceId=" + provinceId,
+                    type: "get"
+                }).done(function (data) {
+                    //console.log(data);
+
+                    $("#Address1_District").html("<option value=''>--- เลือกรายการ ---</option>");
+                    $("#Address1_SubDistrict").html("<option value=''>--- เลือกรายการ ---</option>");
+
+                    $.each(data, function (i, v) {
+                        $("#Address1_District").append("<option value='" + v.id + "'>" + v.nameInThai + "</option>");
+                    });
+                });
+            });
+
+            $("#Address2_Province").on("change", function () {
+                var provinceId = $("#Address2_Province").val();
+
+                $.ajax({
+                    url: "/CreditControl/AddDOM?handler=DistrictByProvince&provinceId=" + provinceId,
+                    type: "get"
+                }).done(function (data) {
+                    //console.log(data);
+
+                    $("#Address2_District").html("<option value=''>--- เลือกรายการ ---</option>");
+                    $("#Address2_SubDistrict").html("<option value=''>--- เลือกรายการ ---</option>");
+
+                    $.each(data, function (i, v) {
+                        $("#Address2_District").append("<option value='" + v.id + "'>" + v.nameInThai + "</option>");
+                    });
+                });
+            });
+
+            $("#Address1_District").on("change", function () {
+                var districtId = $("#Address1_District").val();
+
+                $.ajax({
+                    url: "/CreditControl/AddDOM?handler=SubDistrictByProvince&districtId=" + districtId,
+                    type: "get"
+                }).done(function (data) {
+                    //console.log(data);
+
+                    $("#Address1_SubDistrict").html("");
+
+                    $.each(data, function (i, v) {
+                        $("#Address1_SubDistrict").append("<option value='" + v.id + "'>" + v.nameInThai + "</option>");
+                    });
+                });
+            });
+
+            $("#Address2_District").on("change", function () {
+                var districtId = $("#Address2_District").val();
+
+                $.ajax({
+                    url: "/CreditControl/AddDOM?handler=SubDistrictByProvince&districtId=" + districtId,
+                    type: "get"
+                }).done(function (data) {
+                    //console.log(data);
+
+                    $("#Address2_SubDistrict").html("");
+
+                    $.each(data, function (i, v) {
+                        $("#Address2_SubDistrict").append("<option value='" + v.id + "'>" + v.nameInThai + "</option>");
+                    });
+                });
+            });
+
+            $("#selectEmployee").on("click", function () {
+                $("#modalEmployee").modal({ backdrop: "static" });
+            });
+
+
+            var dtEmployee = $(gridEmployee).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/CreditControl/AddDOM?handler=EmployeeGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtEmployee.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Employee Id", data: "employeeId" },
+                    { title: "Name", data: "name" },
+                    { title: "Last Name", data: "lastName" },
+                    { title: "Name Eng", data: "nameEng" },
+                    { title: "Company", data: "company" },
+                    { title: "Position", data: "positionName" },
+                    { title: "Division", data: "divisionName" },
+                    { title: "Department", data: "departmentName" },
+                    { title: "Old Employee Id", data: "employeeIdOld" },
+                    { title: "Email", data: "email" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function (data, type, row) {
+                            var _name = row.name + " " + row.lastName;
+                            return data + "<div class='mt-2'><span style='cursor: pointer;' class='badge badge-secondary' onclick='selectEmp(" + row.employeeId + ", \"" + _name + "\")'>เลือก</span></div>";
+                        }
+                    }
+                ],
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+
+            $("#CreditControl_DOM_TermOfPayment").on("change", function () {
+
+                $.ajax({
+                    url: "/CreditControl/AddDOM?handler=PaymentType",
+                    type: "get",
+                    data: {
+                        termId: $("#CreditControl_DOM_TermOfPayment").val()
+                    }
+                }).done(function (data) {
+
+                    var _type = data.uploadType;
+
+                    $("input[name=FileUploadType]").val(_type);
+
+                    var type1 = [4, 5, 6, 8, 9, 11, 12, 13];
+                    var type2 = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14];
+
+                    if (_type === 0) {
+                        $("input[type=file]").show();
+                    } else if (_type === 1) {
+                        $("input[type=file]").hide();
+                        $.each(type1, function (i, v) {
+                            $("input[name=UploadFile_" + v + "]").show();
+                        });
+                    } else if (_type === 2) {
+                        $("input[type=file]").hide();
+                        $.each(type2, function (i, v) {
+                            $("input[name=UploadFile_" + v + "]").show();
+                        });
+                    }
+                });
+            });
+        });
+
+        function selectEmp(empid, name) {
+            $("input[name=SaleEmployeeId]").val(empid);
+            $("input[name=SaleName]").val(name);
+            $("#modalEmployee").modal("hide");
+        }
+    </script>
+}
+

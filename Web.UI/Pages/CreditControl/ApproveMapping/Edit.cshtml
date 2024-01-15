@@ -1,0 +1,56 @@
+﻿@page "/CreditControl/ApproveMapping/{id}/Edit"
+@model Web.UI.Pages.CreditControl.ApproveMapping.EditModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Edit";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Credit Control", Link = "/CreditControl" },
+        new BreadcrumbModel { Text = "Approve Mapping", Link = "/CreditControl/ApproveMapping" },
+        new BreadcrumbModel { Text = "Edit" }
+    };
+
+}
+
+<div class="card">
+    <div class="card-header">
+        Edit
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="ApproveMappingMaster.CCType"> Credit Control Type</label>
+                <select asp-for="ApproveMappingMaster.CCType" asp-items="Model.CreditControlTypeMaster" class="form-control">
+                    <option value="">--- เลือกรายการ ---</option>
+                </select>
+                <span class="text-danger" asp-validation-for="ApproveMappingMaster.CCType"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ApproveMappingMaster.CreateBy"> Create By</label>
+                <select asp-for="ApproveMappingMaster.CreateBy" asp-items="Model.UserMaster" class="form-control">
+                    <option value="">--- เลือกรายการ ---</option>
+                </select>
+                <span class="text-danger" asp-validation-for="ApproveMappingMaster.CreateBy"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ApproveMappingMaster.ApproveMasterId"> Approve Master Id</label>
+                <select asp-for="ApproveMappingMaster.ApproveMasterId" asp-items="Model.ApproveMaster" class="form-control">
+                    <option value="">--- เลือกรายการ ---</option>
+                </select>
+                <span class="text-danger" asp-validation-for="ApproveMappingMaster.ApproveMasterId"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check"></i>
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

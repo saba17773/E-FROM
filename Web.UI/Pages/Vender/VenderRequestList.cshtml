@@ -1,0 +1,98 @@
+﻿@page
+@model Web.UI.Pages.Vender.VenderRequestListModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "List Approve Vendor";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Vendor", Link = "/Vender" },
+        new BreadcrumbModel { Text = "List Approve Vendor" }
+    };
+}
+
+<div class="h3 my-3">List Approve Vendor</div>
+
+<div>
+    <p>EMAIL : @Model.EMAIL </p>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+            var dtList= $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/Vender/VenderRequestList?handler=Grid&mail=@Model.EMAIL",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST DATE", data: "requestdate" },
+                    { title: "AX Code", data: "vendcodeax" },
+                    { title: "VENDOR ID", data: "vendidnum" },
+                    { title: "VENDOR NAME", data: "vendname" },
+                    { title: "Request By", data: "createname" },
+                    { title: "Detail", data: "process" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function (data, type, row)
+                        {
+                            if (row.process == "Vendor Sample" || row.process == "Vendor Normal") {
+                                return '<a href="/Vender/ApproveVender?VendID=' + row.requestid + '&TranID=' + row.id + '&nonce=' + row.noncekey +'&email=@Model.EMAIL">'+row.requestcode+'</a>';
+                                //return actionLink("/Vender/ApproveVender?VendID=" + row.requestid + "&TranID=" + row.id + "&nonce=" + row.noncekey, "fa fa-download", "<span> "+row.requestcode+" </span>");
+                            }
+                            else if (row.process == "Release") {
+                                return '<a href="/Vender/ApproveVender_Release?VendID=' + row.requestid + '&TranID=' + row.id + '&nonce=' + row.noncekey + '&email=@Model.EMAIL">' + row.requestcode + '</a>';
+                                //return actionLink("/Vender/ApproveVender_Release?VendID=" + row.requestid + "&TranID=" + row.id + "&nonce=" + row.noncekey, "fa fa-download", "<span> " + row.requestcode +" </span>");
+                            }
+                            else if (row.process == "Active" || row.process == "InActive") {
+                                return '<a href="/Vender/ApproveVender_isActive?VendID=' + row.requestid + '&TranID=' + row.id + '&nonce=' + row.noncekey + '&email=@Model.EMAIL">' + row.requestcode + '</a>';
+                                // return actionLink("/Vender/ApproveVender_isActive?VendID=" + row.requestid + "&TranID=" + row.id + "&nonce=" + row.noncekey, "fa fa-download", "<span> " + row.requestcode + " </span>");
+                            }
+                            else if (row.process == "Revise") {
+                                return '<a href="/Vender/ApproveVender_Revise?VendID=' + row.requestid + '&TranID=' + row.id + '&nonce=' + row.noncekey + '&email=@Model.EMAIL">' + row.requestcode + '</a>';
+                                // return actionLink("/Vender/ApproveVender_Revise?VendID=" + row.requestid + "&TranID=" + row.id + "&nonce=" + row.noncekey, "fa fa-download", "<span> " + row.requestcode + " </span>");
+                            }
+                        }
+                    }
+
+                ]
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

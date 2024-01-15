@@ -1,0 +1,504 @@
+﻿@page "/Vender/{id}/Cancel"
+@model Web.UI.Pages.Vender.CancelModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+<style>
+    .table2 tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .table2 td {
+        padding: 5px;
+    }
+
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+</style>
+@{
+    ViewData["Title"] = "Cancel Request Vendor";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Vendor", Link = "/Vender" },
+        new BreadcrumbModel { Text = "Cancel Vendor Sample" }
+    };
+}
+
+
+<form method="post" enctype="multipart/form-data">
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <h1>Cancel Request Vendor</h1>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('ต้องการยกเลิกคำร้องใช่หรือไม่?')">
+                        <i class="fa fa-ban"></i>
+                        Cancel Request
+                    </button>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="container2">
+            <input type="text" asp-for="RequestDate" autocomplete="off" hidden="hidden">
+            <input type="text" asp-for="CreateBy" autocomplete="off" value="@authService.GetClaim().UserId" hidden="hidden">
+            <b>รายละเอียดผู้ขาย</b>
+            <table style="width:90%" class="table2">
+                <tr>
+                    <td> Request Code </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td> Request Date</td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestDate" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Plant </td>
+                    <td align="left">
+                        <label for="DataAreaId1">
+                            <input type="checkbox" asp-for="DataAreaId1" id="DataAreaId1" onclick="return false;" name="DataAreaId1" class="checkbox2">
+                            โรงงาน
+                        </label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label for="DataAreaId2">
+                            <input type="checkbox" asp-for="DataAreaId2" id="DataAreaId2" onclick="return false;" name="DataAreaId2" class="checkbox2">
+                            DSC
+                        </label>
+                        <input type="hidden" asp-for="DataAreaId" id="DataAreaId" class="form-control" autocomplete="off">
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td> Vendor Code </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="VenderCode" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td> Vendor Code AX </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="VenderCodeAX" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> เลขประจำตัวผู้เสียภาษีอากร</td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="VenderIDNum" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td> ชื่อผู้ขาย </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="VenderName" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ที่อยู่ </td>
+                    <td>
+                        <div class="input-group">
+                            <textarea asp-for="Address" rows="2" style="white-space:normal;display:block;" class="form-control" autocomplete="off" readonly></textarea>
+                        </div>
+                    </td>
+                    <td> ชื่อผู้ติดต่อ </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="ContactName" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td> โทรศัพท์ </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Telephone" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td> แฟ็กซ์ </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Fax" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>  อีเมล / Chat ID </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Email" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td> เว็บไซต์ </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Website" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ข้อมูลเพิ่มเติม</b>
+            <table style="width:90%" class="table2">
+                <tr style="vertical-align:bottom;">
+                    <td>ประเภทธุรกิจ :</td>
+                    <td width="70%">
+                        <div class="input-group">
+                            <input type="text" asp-for="VenderGroup" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="vertical-align:bottom;">
+                    <td>ประเภท Vendor :</td>
+                    <td width="70%">
+                        <div class="input-group">
+                            <input type="text" asp-for="VenderType" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="vertical-align:bottom;">
+                    <td>ประเภทสินค้า : </td>
+                    <td width="70%">
+                        <table width="100%">
+                            <tr>
+                                <td width="30%">
+                                    <input type="text" asp-for="ProductType" class="form-control" autocomplete="off" readonly>
+                                </td>
+                                <td width="70%">
+                                    <div class="input-group">
+                                        <input type="text" asp-for="ProductTypeDetail" class="form-control" autocomplete="off" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr style="vertical-align:bottom;">
+                    <td>สกุลเงิน : </td>
+                    <td width="70%">
+                        <div class="input-group">
+                            <input type="text" asp-for="Currency" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="vertical-align:bottom;">
+                    <td>Terms of payment : </td>
+                    <td width="70%">
+                        <div class="input-group">
+                            <input type="text" asp-for="Paymterm" class="form-control" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>ข้อมูลประกอบการพิจารณา</b>
+            <p> 1. เอกสารผู้ขาย</p>
+            <table width="80%" align="center" class="table2">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef1">
+                            <input type="checkbox" asp-for="DocRef1" id="DocRef1" name="DocRef1" class="checkbox2" onclick="return false;">
+                            ภ.พ. 20 หรือสำเนาบัตรประชาชน (บุคคลทั่วไป)
+                        </label>
+                    </td>
+                    <td>
+                        @*เงื่อนไขการชำระเงิน*@
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef2">
+                            <input type="checkbox" asp-for="DocRef2" id="DocRef2" name="DocRef2" class="checkbox2" onclick="return false;">
+                            หนังสือรับรองการจดทะเบียน
+                        </label>
+                    </td>
+                    <td>
+                        @*<label for="DocRef7">
+                            <input type="checkbox" asp-for="DocRef7" id="DocRef7" name="DocRef7" class="checkbox2" onclick="return false;">
+                            เงินสด
+                        </label>*@
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef3">
+                            <input type="checkbox" asp-for="DocRef3" id="DocRef3" name="DocRef3" class="checkbox2" onclick="return false;">
+                            สำเนาบัญชีรายชื่อผู้ถือหุ้น (บอจ.5)
+                        </label>
+                    </td>
+                    <td>
+                        @*<label for="DocRef8">
+                            <input type="checkbox" asp-for="DocRef8" id="DocRef8" name="DocRef8" class="checkbox2" onclick="return false;">
+                            เครดิต
+                        </label>*@
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef4">
+                            <input type="checkbox" asp-for="DocRef4" id="DocRef4" name="DocRef4" class="checkbox2" onclick="return false;">
+                            Company Profile
+                        </label>
+                    </td>
+                    <td>
+                        @*<table width="100%" align="left">
+                            <tr style="text-align: left;vertical-align:bottom;">
+                                <td style="padding:unset;">
+                                    <label for="DocRef9">
+                                        <input type="checkbox" asp-for="DocRef9" id="DocRef9" name="DocRef9" class="checkbox2" onclick="return false;">
+                                        อื่นๆ
+                                    </label>
+                                </td>
+                                <td style="padding:unset;">
+                                    <input type="text" class="form-control" asp-for="DocRef9_Desc" id="DocRef9_Desc" name="DocRef9_Desc" autocomplete="off" readonly>
+                                </td>
+                            </tr>
+                        </table>*@
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef5">
+                            <input type="checkbox" asp-for="DocRef5" id="DocRef5" name="DocRef5" class="checkbox2" onclick="return false;">
+                            แผนที่บริษัท/กิจการ
+                        </label>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        <table width="100%" align="left">
+                            <tr style="text-align: left;vertical-align:bottom;">
+                                <td style="padding:unset;">
+                                    <label for="DocRef6">
+                                        <input type="checkbox" asp-for="DocRef6" id="DocRef6" name="DocRef6" class="checkbox2" onclick="return false;">
+                                        อื่นๆ
+                                    </label>
+                                </td>
+                                <td style="padding:unset;">
+                                    <input type="text" class="form-control" asp-for="DocRef6_Desc" id="DocRef6_Desc" name="DocRef6_Desc" autocomplete="off" readonly>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+            <p>2. การรับรองมาตรฐานระบบบริหารจัดการ</p>
+            <table width="80%" align="center" class="table2">
+                <tr style="text-align: left;">
+                    <td>
+                        ใบรับรองมาตรฐานระบบการบริหารงานคุณภาพ
+                    </td>
+                    <td>
+                        <label for="DocRef10">
+                            <input type="checkbox" asp-for="DocRef10" id="DocRef10" name="DocRef10" class="checkbox2" onclick="return false;">
+                            ISO 9001
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef11">
+                            <input type="checkbox" asp-for="DocRef11" id="DocRef11" name="DocRef11" class="checkbox2" onclick="return false;">
+                            IATF 16949
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        ใบรับรองมาตรฐานระบบการจัดการสิ่งแวดล้อม
+                    </td>
+                    <td>
+                        <label for="DocRef12">
+                            <input type="checkbox" asp-for="DocRef12" id="DocRef12" name="DocRef12" class="checkbox2" onclick="return false;">
+                            ISO 14001
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef13">
+                            <input type="checkbox" asp-for="DocRef13" id="DocRef13" name="DocRef13" class="checkbox2" onclick="return false;">
+                            REACH
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td>
+                        ใบรับรองมาตรฐานระบบการจัดการอาชีวอนามัยและความปลอดภัย
+                    </td>
+                    <td>
+                        <label for="DocRef14">
+                            <input type="checkbox" asp-for="DocRef14" id="DocRef14" name="DocRef14" class="checkbox2" onclick="return false;">
+                            OHSAS 18001
+                        </label>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr style="text-align: left;">
+                    <td colspan="3">
+                        <table width="100%" align="left">
+                            <tr style="text-align: left;">
+                                <td width="20%" style="padding:unset;">
+                                    ใบรับรองมาตรฐานอื่นๆ
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" asp-for="DocRef15" id="DocRef15" name="DocRef15" autocomplete="off" readonly>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <p>3. ระบบการผลิต</p>
+            <table width="80%" align="center" class="table2">
+                <tr style="text-align: left;vertical-align:bottom;">
+                    <td>
+                        <table width="100%" align="left">
+                            <tr style="text-align: left;vertical-align:bottom;">
+                                <td style="padding:unset;">
+                                    <label for="DocRef16">
+                                        <input type="checkbox" asp-for="DocRef16" id="DocRef16" name="DocRef16" class="checkbox2" onclick="return false;">
+                                        กำลังการผลิต
+                                    </label>
+                                </td>
+                                <td style="padding:unset;">
+                                    <input type="text" class="form-control" asp-for="DocRef16_Desc" id="DocRef16_Desc" name="DocRef16_Desc" autocomplete="off" readonly>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <label for="DocRef19">
+                            <input type="checkbox" asp-for="DocRef19" id="DocRef19" name="DocRef19" class="checkbox2" onclick="return false;">
+                            ความสามารถในการออกแบบสินค้า
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left">
+                    <td>
+                        <label for="DocRef17">
+                            <input type="checkbox" asp-for="DocRef17" id="DocRef17" name="DocRef17" class="checkbox2" onclick="return false;">
+                            แผนรองรับเหตุขัดข้อง (Contingency Plan)
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef20">
+                            <input type="checkbox" asp-for="DocRef20" id="DocRef20" name="DocRef20" class="checkbox2" onclick="return false;">
+                            ความสามารถในการออกแบบแก้ไขอุปกรณ์การผลิต
+                        </label>
+                    </td>
+                </tr>
+                <tr style="text-align: left">
+                    <td>
+                        <label for="DocRef18">
+                            <input type="checkbox" asp-for="DocRef18" id="DocRef18" name="DocRef18" class="checkbox2" onclick="return false;">
+                            การส่งต่อการผลิตให้ผู้รับจ้างช่วง (Outsource)
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef21">
+                            <input type="checkbox" asp-for="DocRef21" id="DocRef21" name="DocRef21" class="checkbox2" onclick="return false;">
+                            ความสามารถของกระบวนการ (Cpk, Ppk)
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <p>4. ระบบโลจิสติกส์</p>
+            <table width="80%" align="center" class="table2">
+                <tr style="text-align: left;">
+                    <td>
+                        <label for="DocRef22">
+                            <input type="checkbox" asp-for="DocRef22" id="DocRef22" name="DocRef22" class="checkbox2" onclick="return false;">
+                            ขนส่งของบริษัทฯ
+                        </label>
+                    </td>
+                    <td>
+                        <label for="DocRef23">
+                            <input type="checkbox" asp-for="DocRef23" id="DocRef23" name="DocRef23" class="checkbox2" onclick="return false;">
+                            ว่าจ้างผู้รับจ้างช่วง (Outsource)
+                        </label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="container2">
+            <b>หมายเหตุ</b>
+            <div class="input-group">
+                <textarea asp-for="Remark" class="form-control" autocomplete="off" rows="2" style="white-space:normal;display:block;" readonly></textarea>
+            </div>
+        </div>
+
+        <table id="gridView" style="text-align:left;" width="40%" class="table table-hover"></table>
+
+
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        var gridView = "#gridView";
+
+        var dtView = $(gridView).DataTable({
+            serverSide: false,
+            processing: false,
+            destroy: false,
+            responsive: true,
+            ajax: {
+                url: "/Vender/@Model.RequestID/Cancel?handler=Grid&id=@Model.RequestID",
+                type: "post",
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                }
+            },
+            columns: [
+                { title: "FILE NAME", data: "filename" },
+                { title: "UPLOADDATE", data: "uploaddate" }
+            ]
+        });
+    });
+    </script>
+}
+

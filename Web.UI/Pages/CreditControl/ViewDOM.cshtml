@@ -1,0 +1,480 @@
+﻿@page "/CreditControl/{id}/ViewDOM"
+@model Web.UI.Pages.CreditControl.ViewDOMModel
+
+@using Infrastructure.Models
+@using Web.UI.Infrastructure.Entities
+
+@{
+    ViewData["Title"] = "View DOM";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Credit Control", Link = "/CreditControl" },
+        new BreadcrumbModel { Text = "View DOM" }
+    };
+}
+
+<div class="card max-width">
+    <div class="card-header">
+        View DOM
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.RequestNumber">เลขที่คำขอ</label>
+                    <input type="text" asp-for="ViewDOMData.RequestNumber" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.RequestDate">วันที่</label>
+                    <input type="text" asp-for="ViewDOMData.RequestDate" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.CustomerCode">เลขทะเบียนลูกค้า</label>
+                    <input type="text" asp-for="ViewDOMData.CustomerCode" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="h3 my-3">รายละเอียดทั่วไปเกี่ยวกับลูกค้า</div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.TypeOfBusiness">ลักษณะของกิจการ</label>
+                    <input asp-for="ViewDOMData.TypeOfBusiness" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>ประเภทกลุ่มลูกค้าในระบบ (Type of Customer Group) </label>
+
+                    <table width="100%">
+                        @foreach (var item in Model.CustomerTypeTrans)
+                        {
+                            <tr>
+                                <td>
+                                    <label>
+                                        @if ((int)item.CCId == 0)
+                                        {
+                                            <input type="checkbox" name="TypeOfCustomer" value="@item.CustomerByProductId" disabled="disabled" /> @item.ByName
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="TypeOfCustomer" value="@item.CustomerByProductId" disabled="disabled" checked /> @item.ByName
+                                        }
+
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="text" value="@item.CustomerCode" readonly />
+                                </td>
+
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="h3 my-3">ชื่อจดทะเบียนประกอบการ</div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.CompanyName">ชื่อบริษัท</label>
+                    <input type="text" asp-for="ViewDOMData.CompanyName" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.IsHeadQuarter">ลักษณะของบรษัท</label>
+                    <input type="text" asp-for="ViewDOMData.IsHeadQuarter" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Branch">สาขา</label>
+                    <input type="text" asp-for="ViewDOMData.Branch" class="form-control" readonly />
+
+                </div>
+            </div>
+        </div>
+
+        <div class="h3 my-3">ที่อยู่ตามทะเบียนการค้า</div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_AddressNo">เลขที่</label>
+                    <input type="text" asp-for="ViewDOMData.Address1_AddressNo" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_Moo">หมู่</label>
+                    <input type="text" asp-for="ViewDOMData.Address1_Moo" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_Soi">ซอย</label>
+                    <input type="text" asp-for="ViewDOMData.Address1_Soi" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_Street">ถนน </label>
+                    <input type="text" asp-for="ViewDOMData.Address1_Street" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_Province">จังหวัด</label>
+                    <input type="text" asp-for="ViewDOMData.Address1_Province" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_District">เขต/อำเภอ</label>
+                    <input type="text" asp-for="ViewDOMData.Address1_District" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_SubDistrict">แขวง/ตำบล</label>
+                    <input type="text" asp-for="ViewDOMData.Address1_SubDistrict" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_ZipCode">รหัสไปรษณีย์</label>
+                    <input type="text" asp-for="ViewDOMData.Address1_ZipCode" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_Tel">โทรศัพท์ </label>
+                    <input type="text" asp-for="ViewDOMData.Address1_Tel" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_Fax">โทรสาร </label>
+                    <input type="text" asp-for="ViewDOMData.Address1_Fax" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address1_Email">Email </label>
+                    <input type="text" asp-for="ViewDOMData.Address1_Email" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="h3 my-3">ที่อยู่ที่สามารถติดต่อได้</div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_AddressNo">เลขที่</label>
+                    <input type="text" asp-for="ViewDOMData.Address2_AddressNo" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_Moo">หมู่</label>
+                    <input type="text" asp-for="ViewDOMData.Address2_Moo" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_Soi">ซอย</label>
+                    <input type="text" asp-for="ViewDOMData.Address2_Soi" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_Street">ถนน </label>
+                    <input type="text" asp-for="ViewDOMData.Address2_Street" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_Province">จังหวัด</label>
+                    <input type="text" asp-for="ViewDOMData.Address2_Province" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_District">เขต/อำเภอ</label>
+                    <input type="text" asp-for="ViewDOMData.Address2_District" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_SubDistrict">แขวง/ตำบล</label>
+                    <input type="text" asp-for="ViewDOMData.Address2_SubDistrict" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_ZipCode">รหัสไปรษณีย์</label>
+                    <input type="text" asp-for="ViewDOMData.Address2_ZipCode" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_Tel">โทรศัพท์ </label>
+                    <input type="text" asp-for="ViewDOMData.Address2_Tel" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_Fax">โทรสาร </label>
+                    <input type="text" asp-for="ViewDOMData.Address2_Fax" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.Address2_Email">Email </label>
+                    <input type="text" asp-for="ViewDOMData.Address2_Email" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="h3 my-3">ที่อยู่รายละเอียดของส่วนงานขาย</div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.SaleName">พนักงานขาย</label>
+                    <input type="text" asp-for="ViewDOMData.SaleName" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.SaleZone">เขตการขาย</label>
+                    <input type="text" asp-for="ViewDOMData.SaleZone" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.DimensionNo">Dimension No.</label>
+                    <input type="text" asp-for="ViewDOMData.DimensionNo" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.DiscountByConstant">ส่วนลดการค้าตายตัว (%)</label>
+                    <input type="text" asp-for="ViewDOMData.DiscountByConstant" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.DiscountByStep">ส่วนลดการค้าเป็นขั้น (%)</label>
+                    <input type="text" asp-for="ViewDOMData.DiscountByStep" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="CreditControl_DOM.PaymentMethod">เงื่อนไขการชำระเงิน</label>
+                    <table width="100%">
+                        @foreach (var item in Model.PaymentMethodList)
+                        {
+                            <tr>
+                                @if (Model.PaymentMethodTransSelected.Any(x => x.PaymentMethodId == item.Id))
+                                {
+                                    <td>
+                                        <label>
+                                            <input type="checkbox" name="PaymentMethod" disabled value="@item.Id" checked /> @item.MethodName
+                                        </label>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var t = Model.PaymentMethodTransSelected.Where(x => x.PaymentMethodId == item.Id).FirstOrDefault();
+                                        }
+                                        <input type="text" name="PaymentMethodText[]" readonly value="@t.Remark" class="form-control" />
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <label>
+                                            <input type="checkbox" name="PaymentMethod" disabled value="@item.Id" /> @item.MethodName
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="PaymentMethodText[]" readonly class="form-control" />
+                                    </td>
+                                }
+
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.TermOfDelivery">เงื่อนไขการส่งสินค้า</label>
+                    <input type="text" asp-for="ViewDOMData.TermOfDelivery" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.TermOfDelivery_Other">อื่นๆ</label>
+                    <input type="text" asp-for="ViewDOMData.TermOfDelivery_Other" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="h3 my-3">รายละเอียดของส่วนงานสินเชื่อ</div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.CreditLimited">วงเงินเครดิตที่เสนอขออนุมัติ</label>
+                    <input type="text" asp-for="ViewDOMData.CreditLimited" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.CreditRating">Credit Rating</label>
+                    <input type="text" asp-for="ViewDOMData.CreditRating" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.GuaranteeDOM_Check">หลักประกัน</label>
+                    <input type="text" asp-for="ViewDOMData.GuaranteeDOM_Check" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.GuaranteeDOM_BGTotal">จำนวน</label>
+                    <input type="text" asp-for="ViewDOMData.GuaranteeDOM_BGTotal" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.GuaranteeDOM_IssueDate">Issue Date</label>
+                    <input type="text" asp-for="ViewDOMData.GuaranteeDOM_IssueDate" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.GuaranteeDOM_ExpireDate">Expire Date</label>
+                    <input type="text" asp-for="ViewDOMData.GuaranteeDOM_ExpireDate" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="ViewDOMData.GuaranteeDOM_Other">Other</label>
+                    <input type="text" asp-for="ViewDOMData.GuaranteeDOM_Other" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    @* PaymentTermTable *@
+                    <label asp-for="ViewDOMData.TermOfPayment">ระยะเวลาสินเชื่อ</label>
+                    <input type="text" asp-for="ViewDOMData.TermOfPayment" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="h3 my-3">ความเห็นของฝ่ายขาย</div>
+
+        <textarea rows="5" class="form-control" asp-for="ViewDOMData.CommentFromSale" readonly></textarea>
+
+        <div class="h3 my-3">ความคิดเห็นเพิ่มเติมของผู้อนุมัติ</div>
+
+        <ul>
+            @if (Model.ApproveRemark.Count > 0)
+            {
+                @foreach (var item in Model.ApproveRemark)
+                {
+                    if (item.Remark == "" || item.Remark == null)
+                    {
+                        <li> - By <b>@item.Name</b></li>
+                    }
+                    else
+                    {
+                        <li>@item.Remark By <b>@item.Name</b></li>
+                    }
+                }
+            }
+        </ul>
+
+        <div class="h3 my-3">ไฟล์แนบ</div>
+
+        <ul>
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    <li><a href="/CreditControl/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                }
+            }
+            else
+            {
+                <li>ไม่พบไฟล์แนบ</li>
+            }
+        </ul>
+    </div>
+</div>
+

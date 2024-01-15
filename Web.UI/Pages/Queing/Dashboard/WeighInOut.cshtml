@@ -1,0 +1,257 @@
+@page "/Queing/Dashboard/WeighInOut"
+@model Web.UI.Pages.Queing.Dashboard.WeighInOutModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueingDashboard";
+}
+@{
+    ViewData["Title"] = "Queing WeighInOut";
+    ViewData["status"] = "0";
+    
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "คิวเข้ารับสินค้าต่างประเทศ" }
+    };
+}
+
+<style>
+    .boxlinear {
+        background: rgb(208,208,208);
+        background: linear-gradient(0deg, rgba(208,208,208,1) 8%, rgba(208,208,208,1) 90%);
+    } 
+    .boxlineartr {
+        background: rgb(208,208,208);
+        background: linear-gradient(0deg, rgba(208,208,208,1) 0%, rgba(255,177,130,1) 30%);
+    } 
+    .strokeheadorange{
+        color: #f37022;
+        font-size: 35px;
+        font-weight: 1000;
+        text-shadow: -2px -2px 0 white,
+				    -2px 2px 0 white,
+                    2px 2px 0 white,
+				    2px -2px 0 white;
+    }
+    .strokeheadorangesmall{
+        color: #f37022;
+        font-size: 25px;
+        font-weight: 1000;
+        text-shadow: -2px -2px 0 white,
+				    -2px 2px 0 white,
+                    2px 2px 0 white,
+				    2px -2px 0 white;
+    }
+    .strokeheadwhite{
+        color: white;
+        font-size: 25px;
+        -webkit-text-stroke: 1px #F8F8F8;
+        text-shadow: 0px 2px 4px black;
+    }
+    .strokeheadbluesmall{
+        color: #145c05;
+        font-size: 25px;
+        -webkit-text-stroke: 1px 145c05;
+        text-shadow: 0px 2px 4px #145c05;
+    }
+    .detail{
+        color: black;
+        font-size: 25px;
+        font-weight: bold;
+    }
+    table {
+        width: 100%;
+    }
+    tr td {
+        padding: 5px;
+    }
+    .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+</style>
+
+<div class="ontainer-fluid row mb-2">
+    <div class="col-md-6 themed-grid-col">
+        <body onload=cal__weightin();>
+            <div id="body_In"></div>
+        </body>
+    </div>
+    <div class="col-md-6 themed-grid-col">
+        <body onload=cal__weightout();>
+            <div id="body_Out"></div>
+        </body>
+    </div>
+</div>
+
+<br>
+<div class="footer">
+    <button class="btn btn-light btn-sm" onclick="openFullscreen();">
+        <i class="fa fa-expand" aria-hidden="true"></i>
+    </button>
+    <button class="btn btn-light btn-sm" onclick="closeFullscreen();">
+        <i class="fa fa-compress" aria-hidden="true"></i>
+    </button>
+</div>
+@section Scripts {
+    <script>
+        cal__weightin();
+        cal__weightout();
+        
+        var elem = document.documentElement;
+        function openFullscreen() {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function closeFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
+        }
+
+        function display_refresh(){
+            var refresh=60000; 
+            mytime=setTimeout('cal__weightin()',refresh)
+            mytime=setTimeout('cal__weightout()',refresh)
+        }
+
+        function displaytime (seconds) {
+            const format = val => `0${Math.floor(val)}`.slice(-2)
+            const hours = seconds / 3600
+            const minutes = (seconds % 3600) / 60
+
+            //return [hours, minutes, seconds % 60].map(format).join(':')
+            return [hours, minutes].map(format).join(':')
+        }
+
+        function cal__weightin(){
+            
+            var body_ = "";
+            var i = 0;
+            var no = 0;
+            var we_in = getIn('svo');
+            we_in.done(function(data) {
+                $.each(data, function(index, val) {
+                    no=data[0].no;
+                    var olddate = new Date ( val.checkindate),
+                    checkindate = new Date ( olddate );
+                    checkindate.setMinutes(checkindate.getMinutes() + 20);
+                    //console.log(('0'+checkindate.getHours()).substr(-2));
+                    //console.log( (checkindate.getMinutes()<10?'0':'') + checkindate.getMinutes() );
+                    
+                    var nowDate = new Date();
+                    // Do your operations
+                    //var endDate   = new Date("October 23, 2021 8:24:21.790");
+                    var seconds = (checkindate.getTime() - nowDate.getTime()) / 1000;
+
+                    //str_checkindate = ('0'+checkindate.getHours()).substr(-2)+" : "+(checkindate.getMinutes()<10?'0':'') + checkindate.getMinutes();
+                    
+                    //console.log(nowDate);
+                    //console.log(checkindate);
+                    //console.log(seconds);
+                    
+                    body_ += "<tr class='boxlineartr' style='text-align: center;'>";
+                    body_ += "<td class='detail'>"+val.no+"</td>";
+                    body_ += "<td class='detail' colspan='2'>"+val.truckid+"</td>";
+                    
+                    if(seconds<0){   
+                        body_ += "<td class='detail' colspan='2'>--:--</td>"; 
+                    }else{
+                        body_ += "<td class='detail' colspan='2'>"+displaytime(seconds)+"</td>"; 
+                    }
+                     
+                    body_ += "</tr>";  
+                    
+                    i++;
+                });
+                    if(i<6){
+                        for(r=0; r<(6-i); r++){
+                            body_ += "<tr style='text-align: center;'>";
+                            body_ += "<td class='detail'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";  
+                            body_ += "</tr>"; 
+                        }
+                    }
+                    $("#body_In").html("<table class='boxlinear'><tr><td><p class='strokeheadorange'>ชั่งเข้า</p></td><td align='right'><p class='strokeheadwhite'> เชิญลำดับที่ </p></td><td><p class='strokeheadorange'> "+no+" </p></td><td align='right'><p class='strokeheadwhite'> สถานที่ </p></td><td><p class='strokeheadorangesmall'> ตราชั่ง </p></td></tr><tr style='text-align: center;'><td><p class='strokeheadbluesmall'> ลำดับที่ </p></td><td colspan='2'><p class='strokeheadbluesmall'> ทะเบียนรถ </p></td><td colspan='2'><p class='strokeheadbluesmall'> เวลารอโดยประมาณ </p></td></tr>"+body_+"</table>")
+                
+            });
+
+            display_refresh();
+        }
+
+        function cal__weightout(){
+            
+            var body_ = "";
+            var i = 0;
+            var no = 0;
+            var we_out = getOut('svo');
+            we_out.done(function(data) {
+                $.each(data, function(index, val) {
+                    no=data[0].no;
+                    var olddate = new Date ( val.assignbaydate),
+                    assignbaydate = new Date ( olddate );
+                    assignbaydate.setMinutes(assignbaydate.getMinutes() + 20);
+                    
+                    var nowDate = new Date();
+                    
+                    var seconds = (assignbaydate.getTime() - nowDate.getTime()) / 1000;
+
+                    
+                    body_ += "<tr class='boxlineartr' style='text-align: center;'>";
+                    body_ += "<td class='detail'>"+val.no+"</td>";
+                    body_ += "<td class='detail' colspan='2'>"+val.truckid+"</td>";
+                    if(seconds<0){   
+                        body_ += "<td class='detail' colspan='2'>--:--</td>"; 
+                    }else{
+                        body_ += "<td class='detail' colspan='2'>"+displaytime(seconds)+"</td>"; 
+                    } 
+                    body_ += "</tr>";  
+                    i++;
+                });
+                    if(i<6){
+                        for(r=0; r<(6-i); r++){
+                            body_ += "<tr style='text-align: center;'>";
+                            body_ += "<td class='detail'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";
+                            body_ += "<td class='detail' colspan='2'>&nbsp;</td>";  
+                            body_ += "</tr>"; 
+                        }
+                    }
+                    $("#body_Out").html("<table class='boxlinear'><tr><td><p class='strokeheadorange'>ชั่งออก</p></td><td align='right'><p class='strokeheadwhite'> เชิญลำดับที่ </p></td><td><p class='strokeheadorange'> "+no+" </p></td><td align='right'><p class='strokeheadwhite'> สถานที่ </p></td><td><p class='strokeheadorangesmall'> ตราชั่ง </p></td></tr><tr style='text-align: center;'><td><p class='strokeheadbluesmall'> ลำดับที่ </p></td><td colspan='2'><p class='strokeheadbluesmall'> ทะเบียนรถ </p></td><td colspan='2'><p class='strokeheadbluesmall'> เวลารอโดยประมาณ </p></td></tr>"+body_+"</table>")
+                
+            });
+
+            display_refresh();
+        }
+
+        function getIn(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/WeighInOut?handler=In",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getOut(plant) {
+            return $.ajax({
+                url : "/Queing/Dashboard/WeighInOut?handler=Out",
+                type : 'get',
+                data : { plant : plant },
+                dataType : 'json',
+                cache : false
+            });
+        }
+    </script>
+}

@@ -1,0 +1,127 @@
+﻿@page "/S2E/Qtech/LABTest/{id}/{lineid}/{approvegroupid}/{approvestatus}/ApproveTrans"
+@model Web.UI.Pages.S2E.Qtech.LABTest.ApproveTransModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Transaction (Lab Test)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Qtech", Link = "/S2E/Qtech" },
+        new BreadcrumbModel { Text = "Lab Test Main", Link = $"/S2E/Qtech/LABTest/{@Model.PageBack}" },
+        new BreadcrumbModel { Text = "Approve Transaction (Lab Test)" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Approve Transaction (Lab Test)
+    </div>
+    <div class="card-body overflow-auto">
+        <form method="post">
+            <table id="gridApproveTrans" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        var gridApproveTrans = "#gridApproveTrans";
+
+        var dtApproveTrans = $(gridApproveTrans).DataTable({
+            serverSide: false,
+            processing: false,
+            destroy: true,
+            responsive: false,
+            "order": [[9, 'asc']],
+            ajax: {
+                url: "/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/@Model.ApproveGroupID/@Model.ApproveStatus/ApproveTrans?handler=Grid&id=@Model.LabID&approvegroupid=@Model.ApproveGroupID",
+                type: "post",
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                }
+            },
+            initComplete: function () {
+                $('.dataTables_filter input').unbind();
+                $('.dataTables_filter input').on("keyup", function (e) {
+                    if (e.keyCode == 13) {
+                        dtApproveTrans.search($(this).val()).draw();
+                    }
+                });
+            },
+            columns: [
+                { title: "Level", data: "approvelevel" },
+                { title: "Email", data: "email" },
+                { title: "Status", data: "isdone" },
+                { title: "Send Email Date", data: "sendemaildate" },
+                { title: "Approve Date", data: "approvedate" },
+                { title: "Reject Date", data: "rejectdate" },
+                { title: "Resend Email", data: null },
+                { title: "Remark", data: "remark" },
+                { title: "APPROVEMASTERID", data: "approvemasterid" },
+                { title: "id", data: "id" }
+
+            ],
+            columnDefs: [
+                {
+                    targets: 8,
+                    visible: false
+                },
+                {
+                    targets: 9,
+                    visible: false
+                },
+                {
+                    targets: 2,
+                    render: function (data, type, row) {
+                        if (data === 0 &&
+                            row.sendemaildate === null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-danger'>ยังไม่ได้ดำเนินการ</span>";
+                        } else if (data === 1 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate !== null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-success'>ดำเนินการแล้ว</span>";
+                        } else if (data === 1 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate === null &&
+                            row.rejectdate !== null) {
+                            return "<span class='badge badge-danger'>ดำเนินการแล้ว (Reject)</span>";
+                        } else if (data === 0 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-warning'>รอดำเนินการ</span>";
+                        } else if (data === 1 &&
+                            row.sendemaildate !== null &&
+                            row.approvedate === null &&
+                            row.rejectdate === null) {
+                            return "<span class='badge badge-success'>ดำเนินการโดย Level เดียวกัน</span>";
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 6,
+                    render: function (data, type, row) {
+
+                        var link = "";
+                        if (row.isdone === 0 && row.sendemaildate !== null &&
+                            row.approvedate === null && row.rejectdate === null)
+                         {
+
+                            link += actionResend("/S2E/Qtech/LABTest/@Model.LabID/@Model.LabLineID/@Model.ApproveGroupID/@Model.ApproveStatus/ApproveTrans?handler=ResendEmail&TranID=" + row.id + "&approvegroupid=@Model.ApproveGroupID&approvestatus=@Model.ApproveStatus", "fa fa-retweet", "<span> Resend Email </span>" );
+
+                         }
+                        return link ;
+
+                    }
+                }
+            ]
+        });
+    });
+
+    </script>
+}

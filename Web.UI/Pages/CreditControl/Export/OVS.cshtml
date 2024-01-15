@@ -1,0 +1,205 @@
+﻿@page "/CreditControl/Export/OVS/{id}"
+@model Web.UI.Pages.CreditControl.Export.OVSModel
+@{
+    Layout = null;
+
+    string IsNotEmpty(string txt)
+    {
+        if (txt != "" && txt != null)
+        {
+            return txt;
+        }
+        else
+        {
+            return "-";
+        }
+    }
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export OVS</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style='font-weight: bold; font-size: 1.2em; margin-bottom: 20px; text-align: center;'>
+        New Customer Application Form
+    </div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='1' style='font-weight: bold; width: 200px;'> Request No. </td>
+            <td colspan='1'>@Model.OvsData.RequestNumber</td>
+            <td colspan='1' style='font-weight: bold; width: 200px;'> Date </td>
+            <td colspan='5'>@Model.RequestDate</td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> New Customer Code </td>
+            <td colspan='7'> @IsNotEmpty(Model.OvsData.CustomerCode) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> Type of business </td>
+            <td colspan='7'> @Model.OvsData.TypeOfBusiness </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> Type of product </td>
+            <td colspan='7'> @IsNotEmpty(Model.OvsData.TypeOfProduct) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> Company's name </td>
+            <td colspan='7'> @Model.OvsData.CompanyName </td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='8' style='font-weight: bold; background: #eeeeee;'> ที่อยู่ที่สามารถติดต่อได้ </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> Address </td>
+            <td> @IsNotEmpty(Model.OvsData.AddressNo) </td>
+
+            <td style='font-weight: bold; width: 200px;'> Street name </td>
+            <td> @IsNotEmpty(Model.OvsData.Street) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> City </td>
+            <td> @IsNotEmpty(Model.OvsData.City) </td>
+
+            <td style='font-weight: bold; width: 200px;'> Country </td>
+            <td> @IsNotEmpty(Model.OvsData.Country) </td>
+
+            <td style='font-weight: bold; width: 200px;'> Zip Code </td>
+            <td> @IsNotEmpty(Model.OvsData.ZipCode.ToString()) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> Contact Person </td>
+            <td> @IsNotEmpty(Model.OvsData.ContactPerson1) </td>
+
+            <td style='font-weight: bold; width: 200px;'> Tel No. </td>
+            <td> @IsNotEmpty(Model.OvsData.ContactPerson1_Tel) </td>
+
+            <td style='font-weight: bold; width: 200px;'> Email </td>
+            <td> @IsNotEmpty(Model.OvsData.ContactPerson1_Email) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold; width: 200px;'> Contact Person </td>
+            <td> @IsNotEmpty(Model.OvsData.ContactPerson2) </td>
+
+            <td style='font-weight: bold; width: 200px;'> Tel No. </td>
+            <td> @IsNotEmpty(Model.OvsData.ContactPerson2_Tel) </td>
+
+            <td style='font-weight: bold; width: 200px;'> Email </td>
+            <td> @IsNotEmpty(Model.OvsData.ContactPerson2_Email) </td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='8' style='font-weight: bold; background: #eeeeee;'> Sale's Information </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> Sale name </td>
+            <td> @IsNotEmpty(Model.OvsData.SaleName) </td>
+
+            <td style='font-weight: bold;'> Country Zone </td>
+            <td> @IsNotEmpty(Model.OvsData.SaleZone) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> Currency </td>
+            <td> @IsNotEmpty(Model.OvsData.Currency) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> Condition Term of Payment </td>
+            <td> @IsNotEmpty(Model.OvsData.TermOfDelivery) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> Delivery Condition </td>
+            <td> @IsNotEmpty(Model.OvsData.DeliveryCondition) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> Credit Limited </td>
+            <td> @IsNotEmpty(Model.OvsData.CreditLimited) </td>
+        </tr>
+        <tr>
+            <td style='font-weight: bold;'> Guarantee </td>
+            <td>
+                @if (Model.OvsData.GuaranteeOVS_Check == "1")
+                {
+                    <span>@IsNotEmpty(Model.OvsData.GuaranteeOVS_StandbyLCAmount)</span>
+                }
+                else if (Model.OvsData.GuaranteeOVS_Check == "2")
+                {
+                    <span>@IsNotEmpty(Model.OvsData.GuaranteeOVS_SecurityDepositAmount)</span>
+                }
+                else
+                {
+                    <span>@IsNotEmpty(Model.OvsData.GuaranteeOVS_Other)</span>
+                }
+            </td>
+        </tr>
+
+
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='8' style='font-weight: bold; background: #eeeeee;'> Sale Comment </td>
+        </tr>
+        <tr>
+            <td> @IsNotEmpty(Model.OvsData.CommentFromSale) </td>
+        </tr>
+    </table>
+
+    <div style='margin: 10px 0;'></div>
+
+    <table width='100%' border='0' cellspacing='0' cellpadding='5'>
+        <tr>
+            <td colspan='8' style='font-weight: bold; background: #eeeeee;'>
+                Finance Comment
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <ul>
+                    @if (Model.ApproveRemark.Count > 0)
+                    {
+                        @foreach (var item in Model.ApproveRemark)
+                        {
+                            if (item.Remark == "" || item.Remark == null)
+                            {
+                                <li> - By <b>@item.Name</b></li>
+                            }
+                            else
+                            {
+                                <li>@item.Remark <b>By @item.Name</b></li>
+                            }
+                        }
+                    }
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <div style="width: 400px; margin: auto;">
+
+        <div class="text-align: left;">
+            <p>Created By @Model.RequesterInfo.Name</p>
+            @foreach (var item in Model.ApprovalRemark)
+            {
+                if (item.Name != "" && item.Name != null)
+                {
+                    <p>Approved By @item.Name</p>
+                }
+            }
+        </div>
+    </div>
+</body>
+</html>

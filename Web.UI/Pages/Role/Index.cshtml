@@ -1,0 +1,95 @@
+﻿@page
+@model Web.UI.Pages.Role.IndexModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Role";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Dashboard", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Role" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Role
+        <div class="mb-3">
+            <a class="btn btn-primary" href="/Role/Add"><i class="fa fa-user-plus"></i> Add</a>
+        </div>
+    </div>
+    <div class="card-body">
+        
+        <form method="post">
+            <table id="gridRole" width="100%" class="table table-hover"></table>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+  $(document).ready(function () {
+
+    var gridRole = "#gridRole";
+
+    var dtRole = $(gridRole).DataTable({
+      serverSide: true,
+      processing: true,
+      destroy: true,
+      ajax: {
+        url: "/Role/Index?handler=Grid",
+        type: "post",
+        headers: {
+          "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+        }
+      },
+      initComplete: function () {
+        $('.dataTables_filter input').unbind();
+        $('.dataTables_filter input').on("keyup", function (e) {
+          if (e.keyCode == 13) {
+            dtRole.search($(this).val()).draw();
+          }
+        });
+      },
+      columns: [
+        { title: "Description", data: "description" },
+        { title: "Active?", data: "isActive" },
+        { title: "Actions", data: null }
+      ],
+      columnDefs: [
+        {
+          targets: 1,
+          render: function (data, type, row) {
+            return data === 1 ? showBadge("Active", "success", "fa fa-check") : showBadge("Deactive", "danger", "fa fa-times");
+          }
+        },
+        {
+          targets: 2,
+          sortable: false,
+          render: function (data, type, row) {
+            var link = "";
+            link += actionLink("/Role/" + row.id + "/Edit", "fa fa-edit", "Edit");
+            link += actionLink("/Role/" + row.id + "/Copy", "fa fa-copy", "Copy");
+            link += actionLink("/Role/" + row.id + "/Permission", "fa fa-key", "Permission");
+            return link;
+          }
+        }
+      ],
+    });
+
+    $(gridRole + " thead th input[type=checkbox]").on("change", function () {
+      if (this.checked === true) {
+        $(gridRole + " tbody input[type=checkbox]").prop("checked", true);
+      } else {
+        $(gridRole + " tbody input[type=checkbox]").prop("checked", false);
+      }
+    });
+
+    $("body").on("keypress", function (e) {
+      if (e.which === 13) e.preventDefault();
+    });
+
+  });
+    </script>
+}

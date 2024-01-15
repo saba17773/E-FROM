@@ -1,0 +1,56 @@
+﻿@page "/Role/{id}/Edit"
+@model Web.UI.Pages.Role.EditModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Edit";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Dashboard", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Role", Link ="/Role" },
+        new BreadcrumbModel { Text = "Edit" }
+    };
+
+}
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Edit</h1>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="Description">Description</label>
+                <input type="text" asp-for="Description" class="form-control" autocomplete="off">
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="IsActive">Is Active?</label>
+                <select asp-for="IsActive" class="form-control">
+                    @if (Model.IsActive == 1)
+                    {
+                        <option value="0">Deactive</option>
+                        <option value="1" selected>Active</option>
+                    }
+                    else
+                    {
+                        <option value="0" selected>Deactive</option>
+                        <option value="1">Active</option>
+                    }
+                </select>
+                <span asp-validation-for="IsActive" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check"></i>
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

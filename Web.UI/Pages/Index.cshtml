@@ -1,0 +1,30 @@
+﻿@page
+@model IndexModel
+
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    @if (await authService.CanDisplay(nameof(CovidTrackerPermission.PROJECT_COVID_TRACKER)))
+    {
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-12 shadow border m-4 p-4">
+                <div class="d-flex flex-column justify-content-between align-items-center">
+                    <h1><i class="fa fa-search"></i> Covid Tracker</h1>
+                    <p>ระบบบันทึกข้อมูลและติดตาม COVID-19</p>
+                    <a href="/CovidTracker/VaccineInjection" class="btn btn-light">
+                        <i class="fa fa-sign-in"></i>
+                        เข้าสู่ระบบ
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+}

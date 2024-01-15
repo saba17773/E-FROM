@@ -1,0 +1,328 @@
+﻿@page
+@model Web.UI.Pages.Queing.Master.All.ContainerSizeModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "CONTAINER SIZE";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Queing", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Master ALL", Link = "/Queing/Master/All" },
+        new BreadcrumbModel { Text = "Container Size" }
+    };
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .table_modal {
+        padding: 5px;
+        width: 100%;
+        text-align: right;
+    }
+
+        .table_modal tr {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+    <div class="card mb-3">
+        <div class="card-header">
+            <span>Container Size</span>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <button class="btn btn-outline-primary" id="btnAdd">
+                    <i class="fa fa-user-plus"></i>
+                    Add New Container Size
+                </button>
+            </div>
+            <form method="post">
+                <table id="gridView" width="100%" class="table table-hover"></table>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Modal Add*@
+<div class="modal" tabindex="-1" id="modalAdd">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Container Size</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="form_add">
+                    <div class="form-group row">
+                        <label for="txtSize_Add" class="col-sm-2 col-form-label">Size : </label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Size_Add" class="form-control" id="txtSize_Add" autocomplete="off" />
+                        </div>
+                    </div>
+                    <fieldset class="form-group row">
+                        <legend class="col-form-label col-sm-2 float-sm-left pt-0">isActive : </legend>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input type="radio" asp-for="IsActive_Add" name="IsActive_Add"
+                                       id="IsActive_Add1" value="1" class="form-check-input" />
+                                <label class="form-check-label" for="IsActive_Add1">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" asp-for="IsActive_Add" name="IsActive_Add"
+                                       id="IsActive_Add2" value="2" class="form-check-input" />
+                                <label class="form-check-label" for="IsActive_Add2">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-group row">
+                        <div class="col-sm-10 text-right">
+                            <button type="submit" class="btn btn-success" value="add" name="add">
+                                <i class="fa fa-check-circle"></i>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Edit*@
+<div class="modal" tabindex="-1" id="modalEdit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Container Size</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="form_edit">
+                    <div class="form-group row">
+                        <label for="txtSize_Edit" class="col-sm-2 col-form-label">Size : </label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Size_Edit" class="form-control" id="txtSize_Edit" autocomplete="off" />
+                        </div>
+                    </div>
+                    <fieldset class="form-group row">
+                        <legend class="col-form-label col-sm-2 float-sm-left pt-0">isActive : </legend>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input type="radio" asp-for="IsActive_Edit" name="IsActive_Edit"
+                                       id="IsActive_Edit1" value="1" class="form-check-input" />
+                                <label class="form-check-label" for="IsActive_Edit1">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" asp-for="IsActive_Edit" name="IsActive_Edit"
+                                       id="IsActive_Edit2" value="2" class="form-check-input" />
+                                <label class="form-check-label" for="IsActive_Edit2">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input type="hidden" asp-for="SizeId_Edit" class="form-control" id="txtSizeId_Edit" autocomplete="off" />
+                    <div class="form-group row">
+                        <div class="col-sm-10 text-right">
+                            <button type="submit" class="btn btn-success" value="edit" name="edit">
+                                <i class="fa fa-check-circle"></i>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+
+        $("#btnAdd").on("click", function () {
+            $("#form_add").trigger("reset");
+            $("#modalAdd").modal({ backdrop: "static" });
+            $("#modalAdd").show();
+
+
+        });
+
+        function btnEdit(id, isactive) {
+
+            $("#form_edit").trigger("reset");
+
+            $("#txtSize_Edit").val("");
+            $("#txtSizeId_Edit").val(id);
+
+            if (isactive == 1) {
+                document.getElementById("IsActive_Edit1").checked = true;
+                document.getElementById("IsActive_Edit2").checked = false;
+            }
+            else {
+                document.getElementById("IsActive_Edit1").checked = false;
+                document.getElementById("IsActive_Edit2").checked = true;
+            }
+
+            $.ajax({
+                url: "/Queing/Master/All/ContainerSize?handler=ContainerMaster&id=" + id,
+                type: "get"
+            }).done(function (data) {
+                if (data != false) {
+
+                    $("#txtSize_Edit").val(data["sizedesc"]);
+                }
+            });
+
+
+            $("#modalEdit").modal({ backdrop: "static" });
+            $("#modalEdit").show();
+
+        }
+
+        $(document).ready(function () {
+
+            var gridView = "#gridView";
+
+            var dtGrid = $(gridView).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/Queing/Master/All/ContainerSize?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtGrid.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Size", data: "sizedescription" },
+                    { title: "isActive?", data: "isactive" },
+                    { title: "Edit", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        width: '60%'
+                    },
+                    {
+                        targets: 1,
+                        width: '20%',
+                        "className": "text-center",
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("", "success", "fa fa-check") : showBadge("", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 2,
+                        width: '20%',
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += "<button type='button' class='btn btn-outline-info btn-sm' onclick='btnEdit(" + row.id + "," + row.isactive + ")'>"
+                                 +  "<i class='fa fa-edit'></i> Edit";
+                                 +  "</button>";
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridView + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridView + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridView + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        $("#form_edit").submit(function (e) {
+            if ($("#txtSize_Edit").val() == "") {
+                alert("Please input Size!!");
+                return false;
+            }
+            $('#modalEdit').modal('hide');
+            $(".overlay").show();
+        });
+
+
+        $("#form_add").submit(function (e) {
+            if ($("#txtSize_Add").val() == "") {
+                alert("Please input Size!!");
+                return false;
+            }
+
+            $('#modalAdd').modal('hide');
+            $(".overlay").show();
+
+        });
+
+    </script>
+}

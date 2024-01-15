@@ -1,0 +1,131 @@
+﻿@page "/Queing/Process/OVS/{Plant}/Index"
+@model Web.UI.Pages.Queing.Process.OVS.IndexModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Queing Process";
+    ViewData["Plant"] = Model.PlantView;
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Process", Link = $"/Queing/Process/{Model.Plant}/Process" },
+        new BreadcrumbModel { Text = "Oversea (OVS)" }
+    };
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+</style>
+
+<form method="post" enctype="multipart/form-data" id="form_submit">
+    <div class="container2">
+        <h5> Select Process</h5>
+        <br />
+        <div class="row row-cols-1 row-cols-md-2">
+
+            <div class="col mb-4">
+                <div class="card text-center text-black bg-warning mb-3" style="max-width: 15rem;">
+                    <a href="/Queing/Process/OVS/@Model.Plant/CheckinList" class="card-body btn btn-warning">
+                        <h1 class="card-title">
+                            <i class="fa fa-thumb-tack"></i>
+                        </h1>
+                        <b class="card-text">
+                            CHECK IN
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-4">
+                <div class="card text-center text-black bg-warning mb-3" style="max-width: 15rem;">
+                    <a href="/Queing/Process/OVS/@Model.Plant/AssignBay" class="card-body btn btn-warning">
+                        <h1 class="card-title">
+                            <i class="fa fa-truck"></i>
+                        </h1>
+                        <b class="card-text">
+                            ASSIGN BAY
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-4">
+                <div class="card text-center text-black bg-warning mb-3" style="max-width: 15rem;">
+                    <a href="/Queing/Process/OVS/@Model.Plant/CheckOut" class="card-body btn btn-warning">
+                        <h1 class="card-title">
+                            <i class="fa fa-external-link-square"></i>
+                        </h1>
+                        <b class="card-text">
+                            CHECK OUT
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-4">
+                <div class="card text-center text-black bg-warning mb-3" style="max-width: 15rem;">
+                    <a href="/Queing/Process/OVS/@Model.Plant/Transaction" class="card-body btn btn-warning">
+                        <h1 class="card-title">
+                            <i class="fa fa-table"></i>
+                        </h1>
+                        <b class="card-text">
+                            TRANSACTION
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <br />
+        <div class="row">
+            <a href="/Queing/Process/@Model.Plant/Process" class="btn btn-light">
+                <i class="fa fa-reply"></i> Back
+            </a>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+
+    </script>
+}

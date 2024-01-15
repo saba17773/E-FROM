@@ -1,0 +1,98 @@
+﻿@page
+@model Web.UI.Pages.S2E.Qtech.MaterialRequestSampleTodolistModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "List Approve Material Request (LAB Sample)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "List Approve Material Request (LAB Sample)" }
+    };
+}
+<div class="h3 my-3">List Approve Material Request (LAB Sample)</div>
+
+<form method="post" enctype="multipart/form-data">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+            var dtList= $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Qtech/MaterialRequestSampleTodolist?handler=Grid&mail=@Model.EMAIL",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Request Code.", data: "requestcode" },
+                    { title: "No.", data: "no" },
+                    { title: "แผนก", data: "department" },
+                    { title: "ฝ่าย", data: "supgroup" },
+                    { title: "Supplier Name", data: "suppliername" },
+                    { title: "Item Name", data: "itemname" },
+                    { title: "จำนวน", data: "qty" },
+                    { title: "หน่วย", data: "unit" },
+                    { title: "Compounder", data: "requestby" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        visible: false
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row)
+                        {
+                            return commaSeparateNumber(data);
+                        }
+                    },
+                    {
+                        targets: 1,
+                        render: function (data, type, row)
+                        {
+                            return '<a href="/S2E/Qtech/MaterialRequestSampleApprove?RMReqSamID=' + row.rmreqsamid + '&RMReqSamLineID=' + row.rmreqsamlineid + '&TranID=' + row.approvetransid + '&nonce=' + row.noncekey + '&email=@Model.EMAIL">' + row.no + '</a>';
+                        }
+                    }
+
+                ]
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+            function commaSeparateNumber(val) {
+                while (/(\d+)(\d{3})/.test(val.toString())) {
+                    val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
+                }
+
+                return val;
+            }
+        });
+    </script>
+}

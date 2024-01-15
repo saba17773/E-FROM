@@ -1,0 +1,168 @@
+﻿@page
+@model Web.UI.Pages.Queing.Home.IndexModel
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "Queing";
+    ViewData["status"] = "0";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home" }
+    };
+}
+
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container2">
+
+    @if (User.Identity.IsAuthenticated && await authService.CanDisplay(nameof(QueingPermissionModel.ADMIN_QUEING)))
+    {
+        <div class="row">
+            <b> Admin </b>
+        </div>
+        <br />
+        <div class="row row-cols-1 row-cols-md-2">
+            <div class="col mb-3">
+                <div class="card text-center text-light bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/UserMapping" class="card-body btn btn-info">
+                        <h1 class="card-title">
+                            <i class="fa fa-users"></i>
+                        </h1>
+                        <b class="card-text">
+                            User Mapping Company
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3">
+                <div class="card text-center text-light bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/Role" class="card-body btn btn-info">
+                        <h1 class="card-title">
+                            <i class="fa fa-unlock-alt"></i>
+                        </h1>
+                        <b class="card-text">
+                            Role & Permission
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3"></div>
+
+        </div>
+    }
+
+    @if (User.Identity.IsAuthenticated && 
+        (await authService.CanDisplay(nameof(QueingPermissionModel.MASTERSETUP_QUEING)) || await authService.CanDisplay(nameof(QueingPermissionModel.ADMIN_QUEING))))
+    {
+        <div class="row">
+            <b> Master Setup </b>
+        </div>
+        <br />
+        <div class="row row-cols-1 row-cols-md-2">
+
+            <div class="col mb-3">
+                <div class="card text-center text-light bg-info mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Master/All" class="card-body btn btn-info">
+                        <h1 class="card-title">
+                            <i class="fa fa-cogs"></i>
+                        </h1>
+                        <b class="card-text">
+                            Master ALL
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+        
+            <div class="col mb-3">
+                <div class="card text-center text-light bg-warning mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Dashboard/All" class="card-body btn btn-warning">
+                        <h1 class="card-title">
+                            <i class="fa fa-tachometer"></i>
+                        </h1>
+                        <b class="card-text">
+                            DashBoard
+                        </b>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col mb-3"></div>
+
+        </div>
+    }
+
+    @if (User.Identity.IsAuthenticated &&
+   (await authService.CanDisplay(nameof(QueingPermissionModel.ADMIN_QUEING)) ||
+    await authService.CanDisplay(nameof(QueingPermissionModel.USER_QUEING))
+   ))
+    {
+        @*Process*@
+        <div class="row">
+            <b> Process </b>
+        </div>
+        <br />
+        <div class="row row-cols-1 row-cols-md-2">
+            <div class="col mb-4">
+                <div class="card text-center text-light bg-warning mb-3" style="max-width: 18rem;">
+                    <a href="/Queing/Process" class="card-body btn btn-warning">
+                        <h1 class="card-title">
+                            <i class="fa fa-ship"></i>
+                        </h1>
+                        <b class="card-text">
+                            Q-ING Process
+                        </b>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    <br />
+    <a href="/" class="btn btn-light">
+        <i class="fa fa-reply"></i> Back
+    </a>
+
+</div>
+
+@section Scripts {
+    <script>
+
+    </script>
+}

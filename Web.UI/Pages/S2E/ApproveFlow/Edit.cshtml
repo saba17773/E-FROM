@@ -1,0 +1,247 @@
+﻿@page "/S2E/ApproveFlow/{id}/Edit"
+@model Web.UI.Pages.S2E.ApproveFlow.EditModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Edit Approve Flow";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Approve Master", Link = "/S2E/ApproveMaster" },
+        new BreadcrumbModel { Text = "Approve Flow", Link = $"/S2E/ApproveFlow/{Model.FlowId}/View" },
+        new BreadcrumbModel { Text = "Edit Approve Flow" }
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        Edit Approve Flow
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <form method="post">
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.ApproveLevel">Approve Level</label>
+                        <input type="text" asp-for="ApproveFlow.ApproveLevel" class="form-control" />
+                        <span class="text-danger" asp-validation-for="ApproveFlow.ApproveLevel"></span>
+                    </div>
+
+                    <div class="form-check pl-0 my-2">
+                        @if (Model.ApproveFlow.IsKeyinWhenApprove == 1)
+                        {
+                            <input type="checkbox" asp-for="CanKeyinWhenApprove" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" asp-for="CanKeyinWhenApprove" />
+                        }
+
+                    <label asp-for="CanKeyinWhenApprove">สามารถกรอกข้อมูลตอน Approve ได้</label>
+                    </div>
+                    <div class="form-check pl-0 my-2">
+                        @if (Model.ApproveFlow.CanApprove == 1)
+                        {
+                            <input type="checkbox" asp-for="CanApprove" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" asp-for="CanApprove" />
+                        }
+
+                        <label asp-for="CanApprove">Can approve?</label>
+                    </div>
+                    <div class="form-check pl-0 my-2">
+                        @if (Model.ApproveFlow.IsFinalApprove == 1)
+                        {
+                            <input type="checkbox" asp-for="IsFinalApprove" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" asp-for="IsFinalApprove" />
+                        }
+
+                        <label asp-for="IsFinalApprove">Is final approve?</label>
+                    </div>
+                    <div class="form-check pl-0 my-2">
+                        @if (Model.ApproveFlow.ReceiveWhenComplete == 1)
+                        {
+                            <input type="checkbox" asp-for="ReceiveWhenComplete" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" asp-for="ReceiveWhenComplete" />
+                        }
+
+                        <label asp-for="ReceiveWhenComplete">Is receive when request complete?</label>
+                    </div>
+                    <div class="form-check pl-0 my-2">
+                        @if (Model.ApproveFlow.ReceiveWhenFailed == 1)
+                        {
+                            <input type="checkbox" asp-for="ReceiveWhenFailed" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" asp-for="ReceiveWhenFailed" />
+                        }
+
+                        <label asp-for="ReceiveWhenFailed">Is receive when request failed?</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.EmployeeId">Employee</label> <span id="selectEmployee" class="badge badge-info" style="cursor: pointer;"><i class="fa fa-search"></i> Search</span>
+                        <input type="text" asp-for="ApproveFlow.EmployeeId" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.EmployeeId"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.Name">Name</label>
+                        <input type="text" asp-for="ApproveFlow.Name" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.Name"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.LastName">Last Name</label>
+                        <input type="text" asp-for="ApproveFlow.LastName" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.LastName"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.Company">Company</label>
+                        <input type="text" asp-for="ApproveFlow.Company" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.Company"></span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.Email">Email</label>
+                        <input type="text" asp-for="ApproveFlow.Email" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.Email"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.BackupEmail">Backup Email</label>
+                        <input type="text" asp-for="ApproveFlow.BackupEmail" class="form-control" autocomplete="off"/>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.BackupEmail"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.Remark">Remark</label>
+                        <textarea asp-for="ApproveFlow.Remark" class="form-control" autocomplete="off"></textarea>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.Remark"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ApproveFlow.IsActive">Is Active</label>
+                        <select asp-for="ApproveFlow.IsActive" class="form-control">
+                            <option value="1">Active</option>
+                            <option value="0">Deactive</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ApproveFlow.IsActive"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa fa-check"></i>
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Model Employee *@
+<div class="modal" id="modalEmployee" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridEmployee" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridEmployee = "#gridEmployee";
+
+            $("#selectEmployee").on("click", function () {
+                $("#modalEmployee").modal({ backdrop: "static" });
+
+                var dtEmployee = $(gridEmployee).DataTable({
+                    serverSide: true,
+                    processing: true,
+                    destroy: true,
+                    responsive: false,
+                    ajax: {
+                        url: "/CreditControl/AddDOM?handler=EmployeeGrid",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    initComplete: function () {
+                        $('.dataTables_filter input').unbind();
+                        $('.dataTables_filter input').on("keyup", function (e) {
+                            if (e.keyCode == 13) {
+                                dtEmployee.search($(this).val()).draw();
+                            }
+                        });
+                    },
+                    columns: [
+                        { title: "Employee Id", data: "employeeId" },
+                        { title: "Name", data: "name" },
+                        { title: "Last Name", data: "lastName" },
+                        { title: "Name Eng", data: "nameEng" },
+                        { title: "Company", data: "company" },
+                        { title: "Position", data: "positionName" },
+                        { title: "Division", data: "divisionName" },
+                        { title: "Department", data: "departmentName" },
+                        { title: "Old Employee Id", data: "employeeIdOld" },
+                        { title: "Email", data: "email" }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 0,
+                            render: function (data, type, row) {
+                                var _name = row.name + " " + row.lastName;
+                                return data + "<div class='mt-2'><span style='cursor: pointer;' class='badge badge-secondary' onclick='selectEmp(" + row.employeeId + ", \"" + row.name + "\", \"" + row.lastName + "\", \"" + row.company + "\", \"" + row.email + "\", \"" + row.positionName + "\")'>เลือก</span></div>";
+                            }
+                        }
+                    ],
+                });
+            });
+
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function selectEmp(empid, name, lastname, company, email, positionname) {
+            $("#ApproveFlow_EmployeeId").val(empid);
+            $("#ApproveFlow_Name").val(name);
+            $("#ApproveFlow_LastName").val(lastname);
+            $("#ApproveFlow_Company").val(company);
+            $("#ApproveFlow_Email").val(email);
+            $("#ApproveFlow_Position").val(positionname);
+
+            $("#modalEmployee").modal("hide");
+        }
+    </script>
+}

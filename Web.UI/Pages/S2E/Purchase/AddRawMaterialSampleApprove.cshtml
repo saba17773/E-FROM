@@ -1,0 +1,411 @@
+﻿@page
+@model Web.UI.Pages.S2E.Purchase.AddRawMaterialSampleApproveModel
+@using Infrastructure.Models
+@using Interfaces
+@inject IAuthService authService
+@{
+    ViewData["Title"] = "Approve ใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (LAB Sample)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "Main", Link = "/S2E/Purchase/AddRawMaterialSample/Main" },
+        new BreadcrumbModel { Text = "Approve ใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (LAB Sample)" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: right;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>Approve ใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (SAMPLE)</h3>
+</div>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <b>
+        <label>REQUEST DATE : @DateTime.Now.ToString("dd/MM/yyyy")</label>
+    </b>
+</div>
+<div>
+    <form method="post" enctype="multipart/form-data" id="form_submit">
+        <div class="container2">
+            <b>รายละเอียดผู้ขาย</b>
+            <table style="width:90%">
+                <tr>
+                    <td> Request Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="RequestCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"> รหัสผู้ขาย/ผู้ผลิต : </td>
+                    <td width="35%">
+                        <div class="input-group">
+                            <input type="text" asp-for="VendorID" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td> ตัวแทนจำหน่าย : </td>
+                    <td>
+                        <div class="input-group">
+                            <textarea asp-for="SupplierName" rows="2" style="white-space:normal;display:block;"
+                                      class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ที่อยู่ของตัวแทนจำหน่าย : </td>
+                    <td colspan="3">
+                        <div class="input-group">
+                            <textarea asp-for="DealerAddress" rows="2" style="white-space:normal;display:block;"
+                                      autocomplete="off" class="form-control" readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Item Name : </td>
+                    <td colspan="3">
+                        <div class="input-group">
+                            <input type="text" asp-for="ItemName" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> ราคา : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Price" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td>Currency Code : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="CurrencyCode" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td> จำนวน :</td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Qty" class="form-control" autocomplete="off"
+                                   onkeyup="this.value=addCommas(this.value);" asp-format="{0:#,##0.#0}" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td> หน่วย : </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" asp-for="Unit" class="form-control" autocomplete="off" readonly />
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="text-align:left">
+                    <td width="15%" style="text-align:right">Plant เพิ่มวัตถุดิบ : </td>
+                    <td width="35%">
+                        <label for="Plant1">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant1" value="DSL" class="radio2" disabled />
+                            <b>DSL</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant2">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant2" value="DRB" class="radio2" disabled />
+                            <b>DRB</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant3">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant3" value="DSI" class="radio2" disabled />
+                            <b>DSI</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant4">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant4" value="DSR" class="radio2" disabled />
+                            <b>DSR</b>
+                        </label> &nbsp;&nbsp;
+                        <label for="Plant5">
+                            <input type="radio" asp-for="Plant" name="Plant" id="Plant5" value="STR" class="radio2" disabled />
+                            <b>STR</b>
+                        </label>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="container2">
+
+            <b>ส่วนของผู้อนุมัติ</b>
+
+
+            @if (Model.isKeyin == 1)
+            {
+                <br />
+                <div class="container2">
+                    <br />
+                    <table width="60%" id="UploadTable" align="left">
+                        <tr style="text-align: left;">
+                            <th>File Upload</th>
+                            <th>Delete</th>
+                        </tr>
+                        <tr style="text-align: left;" id="tablerow0">
+                            <td width="80%">
+                                <input type="file" id="f0" name="FileUpload" style="width:90%;" />
+                            </td>
+                            <td width="20%">
+                                <button type="button" class="btn btn-danger" id="b0" onclick="removeTr(0);"> ลบ </button>
+                            </td>
+                        </tr>
+                        <tr style="text-align: left;" id="tablerow1">
+                            <td width="80%">
+                                <input type="file" id="f1" name="FileUpload" style="width:90%;" />
+                            </td>
+                            <td width="20%">
+                                <button type="button" class="btn btn-danger" id="b1" onclick="removeTr(1);"> ลบ </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <table width="70%">
+                        <tr>
+                            <td style="text-align:right;">
+                                <button type="button" class="btn btn-primary" id="add"><i class="fa fa-plus"> เพิ่มไฟล์ </i></button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <b>ผู้ที่อนุมัติ</b>
+                <br />
+                <table id="gridViewApprove" style="text-align:left;" width="50%" class="table table-hover"></table>
+                <br />
+                <b>File (จากผู้อนุมัติ)</b>
+                <br />
+                <table id="gridViewFileUpload" style="text-align:left;" width="50%" class="table table-hover"></table>
+            }
+
+            <br />
+            <table style="width:70%">
+                <tr style="text-align:left;">
+                    <td width="20%">
+                        <label>
+                            <input type="radio" asp-for="ApproveResult" id="Approve" value="1" class="radio2" />
+                            <b>รับวัตถุดิบ</b>
+                        </label>
+                    </td>
+                    <td width="20%">
+                        <label>
+                            <input type="radio" asp-for="ApproveResult" id="Reject" value="2" class="radio2" />
+                            <b>ต้องการข้อมูลเพิ่มเติม</b>
+                        </label>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+            <table style="width:50%">
+                <tr>
+                    <td width="15%" style="text-align:right">
+                        <b>เหตุผล : </b>
+                    </td>
+                    <td width="35%">
+                        <textarea rows="2" style="white-space:normal;display:block;"
+                                  asp-for="ApproveRemark" id="ApproveRemark" class="form-control" readonly></textarea>
+                    </td>
+                    <td width="15%"></td>
+                    <td width="35%"></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success" onclick="return confirm('ต้องการดำเนินการต่อหรือไม่?')">
+                        <i class="fa fa-check"></i>
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+            if (@Model.isKeyin != 1)
+            {
+                var gridViewFileUpload = "#gridViewFileUpload";
+
+                $(gridViewFileUpload).DataTable({
+                    serverSide: false,
+                    processing: false,
+                    destroy: false,
+                    responsive: true,
+                    dom: 'lrtip',
+                    bInfo: false,
+                    bLengthChange: false,
+                    ajax: {
+                        url: "/S2E/Purchase/AddRawMaterialSampleApprove?handler=GridViewFileUpload&AddRMSampleID=@Model.AddRMSampleId",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    columns: [
+                        { title: "FILE NAME", data: "filename" },
+                        { title: "UPLOADDATE", data: "createdate" },
+                        { title: "Download", data: null }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 0,
+                            "className": "text-left"
+                        },
+                        {
+                            targets: 2,
+                            render: function (data, type, row) {
+                                return actionLink("/S2E/Purchase/AddRawMaterialSampleApprove?handler=DownloadFileUpload&AddRMSampleID=@Model.AddRMSampleId&Fileid=" + row.id, "fa fa-download", "<span> Download </span>");
+                             }
+                        }
+                    ]
+                });
+
+                var gridViewApprove = "#gridViewApprove";
+                $(gridViewApprove).DataTable({
+                    serverSide: false,
+                    processing: false,
+                    destroy: false,
+                    responsive: true,
+                    dom: 'lrtip',
+                    bInfo: false,
+                    bLengthChange: false,
+                    ajax: {
+                        url: "/S2E/Purchase/AddRawMaterialSampleApprove?handler=GridViewApprove&AddRMSampleID=@Model.AddRMSampleId",
+                        type: "post",
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    },
+                    columns: [
+                        { title: "Approve Date", data: "approvedate" },
+                        { title: "Approve By", data: "email" },
+                        { title: "Approve Remark", data: "remark" }
+                    ]
+                });
+
+            }
+        });
+        var resultapprove = 0;
+        $(":radio[name=ApproveResult]").on("change", function () {
+
+            var val = $(this).val();
+            resultapprove = val;
+
+            if (val == 2) {
+                document.getElementById("ApproveRemark").readOnly = false;
+                $("#ApproveRemark").val("");
+            }
+            else {
+                document.getElementById("ApproveRemark").readOnly = true;
+                $("#ApproveRemark").val("");
+            }
+        });
+
+        $("#form_submit").submit(function (e) {
+            var file = $("input[type=file]").val();
+
+            if ((file == "" || file == null) && @Model.isKeyin == 1 && resultapprove == 1 ) {
+
+                alert("กรุณา Upload File ก่อน");
+
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btn_submit').html("Submit...");
+        });
+
+        var counter = 2;
+        $("#add").click(function () {
+
+            $('<tr style="text-align: left;" id="tablerow' + counter + '">' +
+                '<td width="80%">' +
+                '<input type="file" id="f' + counter + '" name="FileUpload" style="width:90%;" />' +
+                '</td>' +
+                '<td>' +
+                '<button type="button" class="btn btn-danger" id="b' + counter + '" onclick="removeTr(' + counter + ');"> ลบ </button>' +
+                '</td>' +
+                '</tr>'
+            ).appendTo('#UploadTable');
+
+            counter++;
+
+            return false;
+        });
+
+        function removeTr(index) {
+            if (counter > 1) {
+                $('#tablerow' + index).remove();
+                counter--;
+            }
+            return false;
+        }
+
+    </script>
+}
+
+

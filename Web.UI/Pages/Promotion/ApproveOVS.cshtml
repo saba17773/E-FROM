@@ -1,0 +1,1389 @@
+﻿@page
+@model Web.UI.Pages.Promotion.ApproveOVSModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Approve OVS";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Promotion Discount", Link = "/Promotion" },
+        new BreadcrumbModel { Text = "Approve OVS" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+    
+    [type="radio"] {
+        width: 20px;
+        height: 20px;
+    }
+    
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Approve OVS
+    </div>
+    <div class="card-body">
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.RequestNumber">เลขที่คำขอ</label>
+                    <input type="text" asp-for="Promotion_OVS.RequestNumber" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.RequestDate">วันที่</label>
+                    <input type="text" asp-for="Promotion_OVS.RequestDate" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="TypeOfProduct">กลุ่มผลิตภัณฑ์</label>
+                    <input type="text" asp-for="TypeOfProduct" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.Pattern">ชื่อเรื่อง </label>
+                    <input type="text" asp-for="Promotion_OVS.Pattern" class="form-control" readonly/>
+                    <span class="text-danger" asp-validation-for="Promotion_OVS.Pattern"></span>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.CustomerName">ลูกค้า/Area </label>
+                    <input type="text" asp-for="Promotion_OVS.CustomerName" class="form-control" readonly/>
+                    <span class="text-danger" asp-validation-for="Promotion_OVS.CustomerName"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="TypeOf">ประเภทโปรโมชั่น </label>
+                    <input type="text" asp-for="TypeOf" class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.TypeOfRemark">อื่นๆ </label>
+                    <input type="text" asp-for="Promotion_OVS.TypeOfRemark" class="form-control" readonly/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="CustomerGroup">กลุ่มลูกค้า </label>
+                    <input type="text" asp-for="CustomerGroup" class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.CustomerGroupRemark">ระบุ </label>
+                    <input type="text" asp-for="Promotion_OVS.CustomerGroupRemark" class="form-control" readonly/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.PaymentType">เงื่อนไขการชำระเงิน</label>
+                    <input type="text" asp-for="Promotion_OVS.PaymentType" class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.FromDate"> FromDate</label>
+                    <input type="text" asp-for="Promotion_OVS.FromDate" class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.ToDate">ToDate</label>
+                    <input type="text" asp-for="Promotion_OVS.ToDate" class="form-control" readonly/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="TypeFrom">รูปแบบโปรโมชั่น</label>
+                    <input type="text" asp-for="TypeFrom" class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.TypeFromRemark">อื่นๆ</label>
+                    <input type="text" asp-for="Promotion_OVS.TypeFromRemark" class="form-control" readonly/>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="Promotion_OVS.Objective">วัตถุประสงค์ </label>
+                    <textarea rows="7" class="form-control" asp-for="Promotion_OVS.Objective" readonly></textarea>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <div class="row">
+            <div class="col-12">
+                <label asp-for="Promotion_OVS.Objective">ประมาณการ </label>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">รายละเอียด</th>
+                            <th scope="col">ยอดขายปัจจุบัน</th>
+                            <th scope="col">ยอดขายประมาณการ</th>
+                            <th scope="col">เปลี่ยนแปลง (%)</th>
+                            <th scope="col">หมายเหตุ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">ยอดขาย(บาท)</th>
+                            <td><input type="text" id="SalesPresentBath" value="@Model.SalesPresentBath" class="form-control" readonly></td>
+                            <td><input type="text" id="SalesForecastBath" value="@Model.SalesForecastBath" class="form-control" readonly/></td>
+                            <td><input type="text" id="SalesChangeBath" value="@Model.SalesChangeBath" class="form-control" readonly/></td>
+                            <td><input type="text" asp-for="Promotion_OVS.SalesRemarkBath" class="form-control" readonly/></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ยอดขาย(เส้น)</th>
+                            <td><input type="text" id="SalesPresentQty" value="@Model.SalesPresentQty" class="form-control" readonly/></td>
+                            <td><input type="text" id="SalesForecastQty" value="@Model.SalesForecastQty" class="form-control" readonly/></td>
+                            <td><input type="text" id="SalesChangeQty" value="@Model.SalesChangeQty" class="form-control" readonly/></td>
+                            <td><input type="text" asp-for="Promotion_OVS.SalesRemarkQty" class="form-control" readonly/></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">งบประมาณโปรโมชั่น(บาท)</th>
+                            <td><input type="text" id="BudgetPresent" value="@Model.BudgetPresent" class="form-control" readonly/></td>
+                            <td><input type="text" id="BudgetForecast" value="@Model.BudgetForecast" class="form-control" readonly/></td>
+                            <td><input type="text" id="BudgetChange" value="@Model.BudgetChange" class="form-control"readonly/></td>
+                            <td><input type="text" asp-for="Promotion_OVS.BudgetRemark" class="form-control" readonly/></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">งบประมาณต่อยอดขาย(%)</th>
+                            <td><input type="text" asp-for="Promotion_OVS.BudgetPresentBath" class="form-control" readonly/></td>
+                            <td><input type="text" asp-for="Promotion_OVS.BudgetForecastBath" class="form-control" readonly/></td>
+                            <td><input type="text" asp-for="Promotion_OVS.BudgetChangeBath" class="form-control" readonly/></td>
+                            <td><input type="text" asp-for="Promotion_OVS.BudgetRemarkBath" class="form-control" readonly/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            
+        <hr>
+        <div class="row">
+            <div class="col-12">
+                <label>เงื่อนไขโปรโมชั่น </label>
+                <table class="table table-borderless" width="100%">
+                    <tr>
+                        <td width="20%" align="center"> สินค้าจากรายการส่งเสริมการขายนี้จะ </td>
+                        <td>
+                            @if (Model.Promotion_OVS.GetDiscount == 1)
+                            {
+                                <input type="text" value="ได้รับส่วนลดรายเดือน, ไตรมาส, ปี" class="form-control" readonly/>
+                            }
+                            @if (Model.Promotion_OVS.GetDiscount == 0)
+                            {
+                                <input type="text" value="ไม่ได้รับส่วนลดรายเดือน, ไตรมาส, ปี" class="form-control" readonly/>
+                            }
+                        </td>
+                        <td>
+                            @if (Model.Promotion_OVS.GetPoint == 1)
+                            {
+                                <input type="text" value="ได้รับคะแนนสะสม" class="form-control" readonly/>
+                            }
+                            @if (Model.Promotion_OVS.GetPoint == 0)
+                            {
+                                <input type="text" value="ไม่ได้รับคะแนนสะสม" class="form-control" readonly/>
+                            }
+                        </td>
+                        <td width="30%"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <textarea rows="7" class="form-control" asp-for="Promotion_OVS.PromotionConditions" readonly></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <hr>
+        <div class="row">
+            <div class="col-12">
+                <label>อื่นๆ </label>
+                <table class="table table-borderless" width="100%">
+                    <tr>
+                        <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                    </tr>
+                        @if (Model.AttachFile.Count > 0)
+                        {
+                            foreach (var item in Model.AttachFile)
+                            {
+                                if(item.FileLevel==0)
+                                {
+                                    <tr>
+                                        <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                    </tr>
+                                }
+                            }
+                        }
+                </table>
+            </div>
+        </div>
+
+        <hr>
+        <form method="post" enctype="multipart/form-data" id="form_submit">
+            
+            @if (Model.OVSLevel == 1){
+                @if (Model.IsFile == 1){
+                    <div class="row">
+                        <div class="col-12">
+                            <label>เอกสารแนบ / เอกสารอ้างอิง </label>
+                            <table class="table table-borderless" width="100%">
+                                <tr>
+                                    <td width="3%"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>1.)</td>
+                                    <td><input type="text" asp-for="FileLevel1_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel1_1" /></td>
+                                </tr>
+                                <tr>
+                                    <td>2.)</td>
+                                    <td><input type="text" asp-for="FileLevel1_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel1_2" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ</label>
+                            <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                            <span class="text-danger" asp-validation-for="ApproveRemark"></span>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+
+            @if (Model.OVSLevel == 2){
+                
+                 <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==1)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark1">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL1
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark1" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                @if (Model.IsFile == 1){
+                    <div class="row">
+                        <div class="col-12">
+                            <label>เอกสารแนบ / เอกสารอ้างอิง </label>
+                            <table class="table table-borderless" width="100%">
+                                <tr>
+                                    <td width="3%"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>1.)</td>
+                                    <td><input type="text" asp-for="FileLevel2_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel2_1" /></td>
+                                </tr>
+                                <tr>
+                                    <td>2.)</td>
+                                    <td><input type="text" asp-for="FileLevel2_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel2_2" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ </label>
+                            <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+
+            @if (Model.OVSLevel == 3){
+                
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==1)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark1">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL1
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark1" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==2)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark2">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL2
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark2" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                @if (Model.IsFile == 1){
+                    <div class="row">
+                        <div class="col-12">
+                            <label>เอกสารแนบ / เอกสารอ้างอิง </label>
+                            <table class="table table-borderless" width="100%">
+                                <tr>
+                                    <td width="3%"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>1.)</td>
+                                    <td><input type="text" asp-for="FileLevel3_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel3_1" /></td>
+                                </tr>
+                                <tr>
+                                    <td>2.)</td>
+                                    <td><input type="text" asp-for="FileLevel3_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel3_2" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ </label>
+                            <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+
+            @if (Model.OVSLevel == 4){
+                
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==1)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark1">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL1
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark1" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==2)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark2">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL2
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark2" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==3)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark3">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL3
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark3" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                @if (Model.IsFile == 1){
+                    <div class="row">
+                        <div class="col-12">
+                            <label>เอกสารแนบ / เอกสารอ้างอิง </label>
+                            <table class="table table-borderless" width="100%">
+                                <tr>
+                                    <td width="3%"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>1.)</td>
+                                    <td><input type="text" asp-for="FileLevel4_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel4_1" /></td>
+                                </tr>
+                                <tr>
+                                    <td>2.)</td>
+                                    <td><input type="text" asp-for="FileLevel4_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel4_2" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ </label>
+                            <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+
+            @if (Model.OVSLevel == 5){
+                
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==1)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark1">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL1
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark1" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==2)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark2">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL2
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark2" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==3)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark3">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL3
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark3" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==4)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark4">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL4
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark4" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                @if (Model.IsFile == 1){
+                    <div class="row">
+                        <div class="col-12">
+                            <label>เอกสารแนบ / เอกสารอ้างอิง </label>
+                            <table class="table table-borderless" width="100%">
+                                <tr>
+                                    <td width="3%"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>1.)</td>
+                                    <td><input type="text" asp-for="FileLevel5_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel5_1" /></td>
+                                </tr>
+                                <tr>
+                                    <td>2.)</td>
+                                    <td><input type="text" asp-for="FileLevel5_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel5_2" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ </label>
+                            <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+
+            @if (Model.OVSLevel == 6){
+                
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==1)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark1">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL1
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark1" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==2)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark2">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL2
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark2" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==3)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark3">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL3
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark3" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==4)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark4">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL4
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark4" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==5)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark5">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL5 
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark5" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                @if (Model.IsFile == 1){
+                    <div class="row">
+                        <div class="col-12">
+                            <label>เอกสารแนบ / เอกสารอ้างอิง </label>
+                            <table class="table table-borderless" width="100%">
+                                <tr>
+                                    <td width="3%"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>1.)</td>
+                                    <td><input type="text" asp-for="FileLevel6_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel6_1" /></td>
+                                </tr>
+                                <tr>
+                                    <td>2.)</td>
+                                    <td><input type="text" asp-for="FileLevel6_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel6_2" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ </label>
+                            <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+
+            @if (Model.OVSLevel == 7){
+                
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==1)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark1">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL1
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark1" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==2)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark2">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL2
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark2" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==3)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark3">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL3
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark3" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==4)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark4">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL4
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark4" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==5)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark5">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL5 
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark5" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-borderless" width="100%">
+                            <tr>
+                                <td>เอกสารแนบ / เอกสารอ้างอิง</td>
+                            </tr>
+                                @if (Model.AttachFile.Count > 0)
+                                {
+                                    foreach (var item in Model.AttachFile)
+                                    {
+                                        if(item.FileLevel==6)
+                                        {
+                                            <tr>
+                                                <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Remark6">ความคิดเห็นของผู้อนุมัติ 
+                                <span class="text-danger font-weight-bold">
+                                    @Model.NameL6 
+                                </span>
+                            </label>
+                            <textarea rows="4" class="form-control" asp-for="Remark6" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                @if (Model.IsFile == 1){
+                    <div class="row">
+                        <div class="col-12">
+                            <label>เอกสารแนบ / เอกสารอ้างอิง </label>
+                            <table class="table table-borderless" width="100%">
+                                <tr>
+                                    <td width="3%"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>1.)</td>
+                                    <td><input type="text" asp-for="FileLevel7_1" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel7_1" /></td>
+                                </tr>
+                                <tr>
+                                    <td>2.)</td>
+                                    <td><input type="text" asp-for="FileLevel7_2" class="form-control form-control-sm" autocomplete="off"/></td>
+                                    <td><input type="file" name="UploadFileLevel7_2" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ApproveRemark">ความคิดเห็นของผู้อนุมัติ </label>
+                            <textarea rows="4" class="form-control" asp-for="ApproveRemark"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+
+            @* <hr>
+            <div class="row">
+                <div class="col-12">
+                    <label>อ้างอิง </label>
+                    <table class="table table-borderless" width="100%">
+                        <tr>
+                            <td>เอกสารแนบเดิม</td>
+                        </tr>
+                            @if (Model.AttachFileRef.Count > 0)
+                            {
+                                foreach (var item in Model.AttachFileRef)
+                                {
+                                    <tr>
+                                        <td><li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li></td>
+                                    </tr>
+                                }
+                            }
+                    </table>
+                </div>
+            </div> *@
+            
+           @* @if (Model.OVSLevel == Model.Promotion_OVS.CurrentApproveStep){*@
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <span class="mr-3">
+                                <label>
+                                    <input type="radio" asp-for="ApproveResult" id="1" value="1" /> @Model.OVSLevel
+                                </label>
+                            </span>
+                            <span>
+                                <label>
+                                    <input type="radio" asp-for="ApproveResult" id="2" value="2" /> @Model.Promotion_OVS.CurrentApproveStep
+                                </label>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group d-flex justify-content-center align-items-center my-3">
+                    <button type="submit" class="btn btn-success mr-3" id="btn_submit">
+                        <i class="fa fa-check"></i>
+                        ยืนยัน
+                    </button>
+                </div>
+          @*  }*@
+
+        </form>
+
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            
+            $("#form_submit").submit(function(e) {
+                $(".overlay").show();
+                $('#btn_submit').html("Submit...");
+            });
+
+            var SalesPresentBath = numberWithCommas($("#SalesPresentBath").val());
+            var SalesForecastBath = numberWithCommas($("#SalesForecastBath").val());
+            var SalesChangeBath = numberWithCommas($("#SalesChangeBath").val());
+            var SalesPresentQty = numberWithCommas($("#SalesPresentQty").val());
+            var SalesForecastQty = numberWithCommas($("#SalesForecastQty").val());
+            var SalesChangeQty = numberWithCommas($("#SalesChangeQty").val());
+            var BudgetPresent = numberWithCommas($("#BudgetPresent").val());
+            var BudgetForecast = numberWithCommas($("#BudgetForecast").val());
+            var BudgetChange = numberWithCommas($("#BudgetChange").val());
+
+            $("#SalesPresentBath").val(SalesPresentBath);
+            $("#SalesForecastBath").val(SalesForecastBath);
+            $("#SalesChangeBath").val(SalesChangeBath);
+            $("#SalesPresentQty").val(SalesPresentQty);
+            $("#SalesForecastQty").val(SalesForecastQty);
+            $("#SalesChangeQty").val(SalesChangeQty);
+            $("#BudgetPresent").val(BudgetPresent);
+            $("#BudgetForecast").val(BudgetForecast);
+            $("#BudgetChange").val(BudgetChange);
+            
+            function numberWithCommas(x) {
+                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+        });
+    </script>
+}

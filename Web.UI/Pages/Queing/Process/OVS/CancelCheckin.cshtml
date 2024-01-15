@@ -1,0 +1,200 @@
+﻿@page "/Queing/Process/OVS/{plant}/{id}/CancelCheckin"
+@model Web.UI.Pages.Queing.Process.OVS.CancelCheckinModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "CANCEL CHECK IN OVS";
+    ViewData["Plant"] = Model.PlantView;
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Process", Link = $"/Queing/Process/{Model.Plant}/Process" },
+        new BreadcrumbModel { Text = "Oversea (OVS)", Link = $"/Queing/Process/OVS/{Model.Plant}/Index" } ,
+        new BreadcrumbModel { Text = "List", Link = $"/Queing/Process/OVS/{Model.Plant}/CheckinList"  },
+        new BreadcrumbModel { Text = "Cancel" }
+    };
+
+    ViewData["status"] = "0";
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+<form method="post" enctype="multipart/form-data" id="form_submit">
+    <div class="container2">
+        <h5>Oversea</h5>
+        <br />
+        <div class="card">
+            <div class="card-body text-white bg-info">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label><b>Work Order Number</b></label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber1" value="LSWR" readonly />
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label style="color:#17a2b8;">year</label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber2" readonly />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label style="color:#17a2b8;">number</label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber3" readonly />
+                    </div>
+                    <div class="form-group col-md-1"></div>
+                    <div class="form-group col-md-3">
+                        <label>
+                            <b>Load ID (WMS)</b>
+                        </label>
+                        <input type="text" class="form-control" id="txtLoadid" asp-for="Loadid" readonly />
+                    </div>
+
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Agent</b>
+                        </label>
+                        <select class="form-control" asp-for="Agent" asp-items="Model.AgentMaster" disabled>
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2"></div>
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Booking Number</b>
+                        </label>
+                        <input type="text" class="form-control" asp-for="BookingNumber" readonly />
+                    </div>
+                </div>
+                <div class="form-row">
+
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Invoice No</b>
+                        </label>
+                        <input type="text" class="form-control" asp-for="InvoiceNo" readonly />
+                    </div>
+                    <div class="form-group col-md-2"></div>
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Seal No</b>
+                        </label>
+                        <input type="text" class="form-control" asp-for="SealNo" readonly />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label> <b>ประเภทรถ</b></label>
+                        <select class="form-control" asp-for="CateTruck" asp-items="Model.CateTruckMaster" disabled>
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>ทะเบียนรถ</b>
+                        </label>
+                        <input type="text" class="form-control" asp-for="TruckId" readonly />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label><b>DriverID</b></label>
+                        <input type="text" class="form-control" asp-for="DriverId" readonly />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><b>ชื่อคนขับ</b></label>
+                        <input type="text" class="form-control" asp-for="DriverName" readonly />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><b>เบอร์โทร</b></label>
+                        <input type="text" class="form-control" asp-for="DriverTel" readonly />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>Container Size</b>
+                        </label>
+                        <select class="form-control" asp-for="ContainerSizeId" asp-items="Model.ContainerSizeMaster" disabled>
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>
+                            <b>Container No</b>
+                        </label>
+                        <input type="text" class="form-control" asp-for="ContainerNo" readonly />
+                    </div>
+                    <div class="form-group col-md-1"></div>
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>Route</b>
+                        </label>
+                        <select class="form-control" asp-for="RouteId" asp-items="Model.RouteMaster" disabled></select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Remark</b>
+                        </label>
+                        <textarea asp-for="Remark" rows="2" style="white-space:normal;display:block;"
+                                  autocomplete="off" class="form-control" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white text-right">
+                <button class="btn btn-danger" id="btnCancel" type="submit" onclick="return confirm('Are you sure?')">
+                    <i class="fa fa-ban"></i> Cancel
+                </button>
+            </div>
+        </div>
+
+
+    </div> .
+</form>
+
+<br />
+<div class="row">
+    <a href="/Queing/Process/OVS/@Model.Plant/CheckinList" class="btn btn-light">
+        <i class="fa fa-reply"></i> Back
+    </a>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        $("#form_submit").submit(function (e) {
+            $(".overlay").show();
+            $('#btnCancel').html("Loading...");
+        });
+    </script>
+}

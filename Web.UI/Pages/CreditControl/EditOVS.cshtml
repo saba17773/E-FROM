@@ -1,0 +1,553 @@
+﻿@page "/CreditControl/{id}/EditOVS"
+@model Web.UI.Pages.CreditControl.EditOVSModel
+
+@using Infrastructure.Models
+
+@{
+    ViewData["Title"] = "Edit OVS";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "E-Form", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Credit Control", Link = "/CreditControl" },
+        new BreadcrumbModel { Text = "Edit OVS" }
+    };
+
+}
+
+<div class="card">
+    <div class="card-header">
+        Edit
+    </div>
+    <div class="card-body">
+
+        <div class="text-danger" asp-validation-summary="All"></div>
+
+        <form method="post" enctype="multipart/form-data">
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.RequestNumber">Request No.</label>
+                        <input type="text" asp-for="CreditControl_OVS.RequestNumber" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.RequestNumber"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.RequestDate">Date</label>
+                        <input type="text" asp-for="CreditControl_OVS.RequestDate" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.RequestDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.CustomerCode">New Customer Code</label>
+                        <input type="text" asp-for="CreditControl_OVS.CustomerCode" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.CustomerCode"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">Customer's Information</div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.TypeOfBusiness">Type Of Business <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="CreditControl_OVS.TypeOfBusiness" asp-items="Model.CustomerTypeMaster" class="form-control">
+                            <option value="">--- Choose ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.TypeOfBusiness"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.TypeOfProduct">Type Of Product <span class="text-danger font-weight-bold">*</span></label>
+
+                        <table width="100%">
+                            @foreach (var item in Model.CustomerTypeTrans)
+                            {
+                                <tr>
+                                    <td>
+                                        <label>
+                                            @if ((int)item.CustomerByProductId == 0)
+                                            {
+                                                <input type="checkbox" name="TypeOfCustomer" value="@item.Id" /> @item.ByName
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="TypeOfCustomer" value="@item.Id" checked /> @item.ByName
+                                            }
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input type="text" value="@item.CustomerCode" readonly />
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">Company Registration Name</div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.CompanyName">Full Company's Name <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="CreditControl_OVS.CompanyName" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.CompanyName"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.IsHeadQuarter">Company Type <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="CreditControl_OVS.IsHeadQuarter" class="form-control">
+                            <option value="">--- Choose ---</option>
+                            <option value="1">Head Office</option>
+                            <option value="2">Branch</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.IsHeadQuarter"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.Branch">Branch</label>
+                        <input type="text" asp-for="CreditControl_OVS.Branch" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.Branch"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.AddressNo">Address <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Address_OVS.AddressNo" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.AddressNo"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.Street">Street name <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Address_OVS.Street" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.Street"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.District">City <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Address_OVS.City" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.City"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.Country">Country <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Address_OVS.Country" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.Country"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.ZipCode">Zip Code <span class="text-danger font-weight-bold">*</span></label>
+                        <input type="text" asp-for="Address_OVS.ZipCode" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.ZipCode"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.ContactPerson1">Contact Person </label>
+                        <input type="text" asp-for="Address_OVS.ContactPerson1" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.ContactPerson1"></span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.ContactPerson1_Tel">Telephone </label>
+                        <input type="text" asp-for="Address_OVS.ContactPerson1_Tel" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.ContactPerson1_Tel"></span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.ContactPerson1_Email">Email </label>
+                        <input type="text" asp-for="Address_OVS.ContactPerson1_Email" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.ContactPerson1_Email"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.ContactPerson2">Contact Person </label>
+                        <input type="text" asp-for="Address_OVS.ContactPerson2" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.ContactPerson2"></span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.ContactPerson2_Tel">Telephone </label>
+                        <input type="text" asp-for="Address_OVS.ContactPerson2_Tel" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.ContactPerson2_Tel"></span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Address_OVS.ContactPerson2_Email">Email </label>
+                        <input type="text" asp-for="Address_OVS.ContactPerson2_Email" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Address_OVS.ContactPerson2_Email"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">Sale's information</div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.SaleEmployeeId">Sale name </label> <span style="cursor: pointer;" class="badge badge-info" id="selectEmployee"><i class="fa fa-search"></i> Search</span>
+                        <input type="hidden" asp-for="CreditControl_OVS.SaleEmployeeId" class="form-control" />
+                        <input type="text" asp-for="SaleName" class="form-control" readonly />
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.SaleEmployeeId"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.SaleZone">Country Zone </label>
+                        <select asp-for="CreditControl_OVS.SaleZone" asp-items="Model.SalesRegionMaster" class="form-control">
+                            <option value="">--- Choose ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.SaleZone"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.Currency">Currency </label>
+                        <select asp-for="CreditControl_OVS.Currency" asp-items="Model.CurrencyMaster" class="form-control">
+                            <option value="">--- Choose ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.Currency"></span>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.DeliveryCondition">Delivery Condition (Incoterm) </label>
+                        <select asp-for="CreditControl_OVS.DeliveryCondition" asp-items="Model.DeliveryTermMaster" class="form-control">
+                            <option value="">--- Choose ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.DeliveryCondition"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="CreditControl_OVS.DestinationPort">Destination Port </label>
+                        <input type="text" asp-for="CreditControl_OVS.DestinationPort" class="form-control" />
+                        <span class="text-danger" asp-validation-for="CreditControl_OVS.DestinationPort"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h3 my-3">Customer's company documentation(Identify proof document)</div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_1" />
+                        1. Company Registration (English version only)
+                    </label>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_2" />
+                        2. Copy Passport
+                    </label>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_3" />
+                        3. Tax ID
+                    </label>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_4" />
+                        4. Current finanacial statement (3 months)
+                    </label>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_5" />
+                        5. Trade Registration Company (English version only)
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_6" />
+                        6. Verify authoriized signature and company's stamp
+                    </label>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+
+                    <label>
+                        <input type="checkbox" asp-for="FileCheck_7" />
+                        7. Other
+                    </label>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>
+                        <input type="file" name="FileUpload" multiple />
+                    </label>
+                </div>
+            </div>
+
+            @if (Model.EditCreditLimit)
+            {
+                <div class="h3 my-3">Credit Control Information</div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_OVS.CreditLimited">Credit Limited </label>
+                            <input type="text" asp-for="CreditControl_OVS.CreditLimited" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_OVS.CreditLimited"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_OVS.GuaranteeOVS_Check">Guarantee</label>
+                            <select asp-for="CreditControl_OVS.GuaranteeOVS_Check" class="form-control">
+                                <option value="">--- Choose ---</option>
+                                <option value="1">StandBy LC Amount (USD)</option>
+                                <option value="2">Security Deposit Amount</option>
+                                <option value="3">Other</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="CreditControl_OVS.GuaranteeOVS_Check"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_OVS.GuaranteeOVS_StandbyLCAmount"> StandBy LC Amount (USD)</label>
+                            <input type="text" asp-for="CreditControl_OVS.GuaranteeOVS_StandbyLCAmount" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_OVS.GuaranteeOVS_StandbyLCAmount"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_OVS.GuaranteeOVS_IssueDate">Issue Date</label>
+                            <input type="text" asp-for="CreditControl_OVS.GuaranteeOVS_IssueDate" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_OVS.GuaranteeOVS_IssueDate"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_OVS.GuaranteeOVS_ExpireDate">Expire Date</label>
+                            <input type="text" asp-for="CreditControl_OVS.GuaranteeOVS_ExpireDate" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_OVS.GuaranteeOVS_ExpireDate"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_OVS.GuaranteeOVS_SecurityDepositAmount">Security Deposit Amount</label>
+                            <input type="text" asp-for="CreditControl_OVS.GuaranteeOVS_SecurityDepositAmount" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_OVS.GuaranteeOVS_SecurityDepositAmount"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="CreditControl_OVS.GuaranteeOVS_Other">Other</label>
+                            <input type="text" asp-for="CreditControl_OVS.GuaranteeOVS_Other" class="form-control" />
+                            <span class="text-danger" asp-validation-for="CreditControl_OVS.GuaranteeOVS_Other"></span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="h3 my-3">Sale Comment</div>
+
+            <textarea rows="5" class="form-control" asp-for="CreditControl_OVS.CommentFromSale"></textarea>
+            <span class="text-danger" asp-validation-for="CreditControl_OVS.CommentFromSale"></span>
+
+            <div class="h3 my-3">Appover Comment</div>
+
+            <textarea rows="5" class="form-control" asp-for="CreditControl_OVS.CommentFromApproval"></textarea>
+            <span class="text-danger" asp-validation-for="CreditControl_OVS.CommentFromApproval"></span>
+
+            <div class="form-group d-flex justify-content-center align-items-center my-3">
+                <button type="submit" name="SendApprove" value="1" class="btn btn-outline-info mr-3">
+                    <i class="fa fa-send"></i>
+                    Send Approve
+                </button>
+                <button type="submit" name="SendApprove" value="0" class="btn btn-success mr-3">
+                    <i class="fa fa-check"></i>
+                    บันทึก
+                </button>
+                <button type="reset" class="btn btn-danger">
+                    <i class="fa fa-times"></i>
+                    ยกเลิก
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<div class="modal" id="modalEmployee" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="table-responsive">
+                        <table id="gridEmployee" class="table table-hover"></table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#CreditControl_OVS_TypeOfBusiness").select2({ filter: true });
+            $("#CreditControl_OVS_TypeOfProduct").select2({ filter: true });
+
+            $("select[name=GuaranteeOVS_Check]").select2({ filter: true });
+            $("#CreditControl_OVS_SaleZone").select2({ filter: true });
+            $("#CreditControl_OVS_Currency").select2({ filter: true });
+            $("#CreditControl_OVS_DeliveryCondition").select2({ filter: true });
+
+            $("#CreditControl_OVS_IsHeadQuarter").select2({ filter: true });
+
+            $("#CreditControl_OVS_GuaranteeOVS_ExpireDate").datepicker();
+            $("#CreditControl_OVS_GuaranteeOVS_IssueDate").datepicker();
+
+            $("#selectEmployee").on("click", function () {
+                $("#modalEmployee").modal({ backdrop: "static" });
+            });
+
+            var dtEmployee = $(gridEmployee).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/CreditControl/AddDOM?handler=EmployeeGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtEmployee.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "Employee Id", data: "employeeId" },
+                    { title: "Name", data: "name" },
+                    { title: "Last Name", data: "lastName" },
+                    { title: "Name Eng", data: "nameEng" },
+                    { title: "Company", data: "company" },
+                    { title: "Position", data: "positionName" },
+                    { title: "Division", data: "divisionName" },
+                    { title: "Department", data: "departmentName" },
+                    { title: "Old Employee Id", data: "employeeIdOld" },
+                    { title: "Email", data: "email" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function (data, type, row) {
+                            var _name = row.name + " " + row.lastName;
+                            return data + "<div class='mt-2'><span style='cursor: pointer;' class='badge badge-secondary' onclick='selectEmp(" + row.employeeId + ", \"" + _name + "\")'>เลือก</span></div>";
+                        }
+                    }
+                ],
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        function selectEmp(empid, name) {
+            $("#CreditControl_OVS_SaleEmployeeId").val(empid);
+            $("input[name=SaleName]").val(name);
+            $("#modalEmployee").modal("hide");
+        }
+    </script>
+}

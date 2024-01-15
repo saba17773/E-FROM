@@ -1,0 +1,81 @@
+@using Microsoft.Extensions.Configuration
+
+@using Interfaces
+@using Infrastructure.Models
+
+@inject IAuthService authService
+@inject IConfiguration configuration
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @configuration["Config:SiteTitle"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/DataTables-1.10.20/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/FixedColumns-3.3.0/css/fixedColumns.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/KeyTable-2.5.1/css/keyTable.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/Responsive-2.2.3/css/responsive.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/Select-1.3.1/css/select.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        
+        <nav class="navbar navbar-expand-md navbar-toggleable-md navbar-light bg-white border-bottom box-shadow mb-3">
+            <a class="navbar-brand mb-1" href="/Index">
+                <img src="/images/header_logo.png" width="150" />
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            @* role = group admin *@
+            @if (User.Identity.IsAuthenticated && authService.GetClaim().RoleId==1)
+            {
+            <div class="navbar-collapse collapse">
+                @await Html.PartialAsync("_LeftMenu.cshtml")
+                @await Html.PartialAsync("_RightMenu.cshtml")
+            </div>
+            }
+            
+        </nav>
+        
+    </header>
+    <div class="container-fluid">
+
+        @await Html.PartialAsync("_Alert.cshtml")
+        @await Html.PartialAsync("_Breadcrumb.cshtml")
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    @await Html.PartialAsync("_Footer.cshtml")
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/datatables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/lib/datatables/FixedColumns-3.3.0/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/lib/datatables/KeyTable-2.5.1/js/dataTables.keyTable.min.js"></script>
+    <script src="~/lib/datatables/Responsive-2.2.3/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/datatables/Responsive-2.2.3/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/lib/datatables/Select-1.3.1/js/dataTables.select.min.js"></script>
+    <script src="~/lib/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/lib/blockui/jquery.blockUI.min.js"></script>
+    <script src="~/lib/select2/select2.min.js"></script>
+    <script src="~/lib/dayjs/dayjs.min.js"></script>
+    <script src="~/lib/jquery-mask/jquery.mask.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,135 @@
+﻿@page
+@model Web.UI.Pages.S2E.Purchase.AddRawMaterialSample.MainModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "หน้าหลักใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (LAB Sample)";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "หน้าหลักใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (LAB Sample)" }
+    };
+}
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>หน้าหลักใบร้องขอเพิ่มวัตถุดิบเข้าระบบ (LAB Sample)</h3>
+</div>
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Purchase/AddRawMaterialSample/Main?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST NO", data: "projectrefno" },
+                    { title: "VENDOR ID", data: "vendorid" },
+                    { title: "SUPPLIER NAME", data: "suppliername" },
+                    { title: "Request By", data: "requestby" },
+                    { title: "Status", data: "addrmsampleapprovestatus" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 5,
+                        render: function (data, type, row) {
+                            //ADDRMSAMPLEAPPROVESTATUS
+                            if (row.assessapprovestatus === 5 && row.addrmsampleapprovestatus === 0) {
+                                return "<span class='badge badge-warning'>Waiting Add Raw Material Sample</span>";
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 0) {
+                                return "<span class='badge badge-warning'>Waiting Add Raw Material Sample</span>";
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 3) {
+                                return "<span class='badge badge-info'>Wait For Approve<span>";
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 8) {
+                                return "<span class='badge badge-secondary'>Draft</span>";
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 9) {
+                                return "<span class='badge badge-warning'>More Detail<span>";
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 5) {
+                                return "<span class='badge badge-primary'>Complete</span>";
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 7) {
+                                return "<span class='badge badge-success'>Successfully</span>";
+                            }
+                        }
+                    },
+                    {
+                        targets: 6,
+                        render: function (data, type, row) {
+                            var link = "";
+                            if (row.assessapprovestatus === 5 && row.addrmsampleapprovestatus === 0) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.assessmentid + "/Create", "fa fa-plus", "Add Raw Material Sample");
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 0) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.assessmentid + "/Create", "fa fa-plus", "Add Raw Material Sample");
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 3) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/" + row.approvegroupid + "/" + row.addrmsampleapprovestatus + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/ViewInfo", "fa fa-eye", "View");
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 9) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/" + row.approvegroupid + "/" + row.addrmsampleapprovestatus + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/ViewInfo", "fa fa-eye", "View");
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/Edit", "fa fa-pencil-square-o", "Edit");
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 8) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/" + row.approvegroupid + "/" + row.addrmsampleapprovestatus + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/ViewInfo", "fa fa-eye", "View");
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/Edit", "fa fa-pencil-square-o", "Edit");
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 5) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/" + row.approvegroupid + "/" + row.addrmsampleapprovestatus + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/ViewInfo", "fa fa-eye", "View");
+                            }
+                            if (row.assessapprovestatus === 7 && row.addrmsampleapprovestatus === 7) {
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/" + row.approvegroupid + "/" + row.addrmsampleapprovestatus + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+                                link += actionLink("/S2E/Purchase/AddRawMaterialSample/" + row.addrmsampleid + "/ViewInfo", "fa fa-eye", "View");
+                            }
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

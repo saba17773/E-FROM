@@ -1,0 +1,974 @@
+@page "/Promotion/Export/DOM/{id}"
+@model Web.UI.Pages.Promotion.Export.DOMModel
+@{
+    Layout = "_LayoutReport";
+}
+<style>
+    .tablemain {
+        border-collapse: collapse;
+        border: 1px solid black;
+    }
+    td, tr, th {
+        font-size: 10px;
+    }
+    hr {
+        margin-top: 0.1em;
+        margin-bottom: 0.1em;
+        border: 0;
+        height: 0;
+        border-bottom: 1px solid black;
+    } 
+</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export DOM</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <table width="100%" cellpadding="5">
+        <tr>
+            <td valign="top" width="30%" align="left">
+                 @if (@Model.isExpDate == 0)
+                {
+                    <img src="/images/header_logo.png" width="200px;" height="40px;">
+                }
+                else
+                {
+                    <img src="/images/dsc_logo.png" width="200px;" height="70px;">
+                }
+            </td>
+            <td valign="center" width="40%" align="center" style='font-weight: bold; font-size: 1.2em; margin-bottom: 20px; text-align: center;'>@Model.HeaderType</td>
+            <td valign="top" width="30%" align="right" style="text-align: left;">
+                <b>เลขที่คำขอ : </b>@Model.Promotion_DOM.RequestNumber
+                <br>
+                <b>DateRequest : </b>@Model.ReqDateStr
+                @if(@Model.RefExp!=""){
+                    <br>
+                    <b>อ้างอิงเลขที่ : </b>@Model.RefExp
+                }
+            </td>
+        </tr>
+    </table>
+    <table width="100%" class="tablemain" cellpadding="3">
+        <tr>
+            <td width="20%">
+                <b>กลุ่มผลิตภัณฑ์</b>
+            </td>
+            @if (@Model.Promotion_DOM.TypeOfProduct == 6)
+            {
+                <td width="15%"><input type="checkbox" checked> MC</td>
+            }
+            else
+            {
+                <td width="15%"><input type="checkbox"> MC</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeOfProduct == 7)
+            {
+                <td width="10%"><input type="checkbox" checked> BC</td>
+            }
+            else
+            {
+                <td width="10%"><input type="checkbox"> BC</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeOfProduct == 8)
+            {
+                <td width="15%"><input type="checkbox" checked> BIAS</td>
+            }
+            else
+            {
+                <td width="15%"><input type="checkbox"> BIAS</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeOfProduct == 9)
+            {
+                <td width="10%"><input type="checkbox" checked> RADIAL</td>
+            }
+            else
+            {
+                <td width="10%"><input type="checkbox"> RADIAL</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeOfProduct == 10)
+            {
+                <td><input type="checkbox" checked> TBR</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> TBR</td>
+            }
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            @if (@Model.Promotion_DOM.TypeOfProduct == 14)
+            {
+                <td><input type="checkbox" checked> 2W</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> 2W</td>
+            }
+            @if (@Model.Promotion_DOM.TypeOfProduct == 15)
+            {
+                <td colspan="5"><input type="checkbox" checked> 4W</td>
+            }
+            else
+            {
+                <td colspan="5"><input type="checkbox"> 4W</td>
+            }
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>
+                <b>ประเภทโปรโมชั่น</b>
+            </td>
+            @if (@Model.Promotion_DOM.TypeOf == 9)
+            {
+                <td><input type="checkbox" checked> Trade Discount</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> Trade Discount</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeOf == 10)
+            {
+                <td><input type="checkbox" checked> Rebate</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> Rebate</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeOf == 11)
+            {
+                <td><input type="checkbox" checked> A&P</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> A&P</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeOf == 12)
+            {
+                <td colspan="3">
+                    <input type="checkbox" checked> อื่น ๆ
+                    <u>@Model.Promotion_DOM.TypeOfRemark</u>
+                </td>
+            }
+            else
+            {
+                <td colspan="3"><input type="checkbox"> อื่น ๆ</td>
+            }
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>
+                <b>ลูกค้า</b>
+            </td>
+            @if (@Model.Promotion_DOM.CustomerGroup == 3)
+            {
+                <td colspan="7">
+                    <input type="checkbox" checked> ต่างประเทศ(OVS)
+                    <u> @Model.Promotion_DOM.CustomerGroupRemark</u>
+                </td>
+            }
+            else
+            {
+                <td colspan="7"><input type="checkbox"> ต่างประเทศ</td>
+            }
+        </tr>
+
+        <tr>
+            <td>
+                <b>ชื่อลูกค้า</b>
+            </td>
+            <td colspan="7">
+                @Model.Promotion_DOM.CustomerName
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <b>เงื่อนไขการชำระเงิน</b>
+            </td>
+            <td colspan="7">
+                @Model.Promotion_DOM.PaymentType
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <b>ระยะเวลา</b>
+            </td>
+            <td>
+                From
+                @Model.FromDateStr
+            </td>
+            <td colspan="6">
+                To
+                @Model.ToDateStr
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <b>รูปแบบโปรโมชั่น</b>
+            </td>
+            @if (@Model.Promotion_DOM.TypeFrom == 1)
+            {
+                <td><input type="checkbox" checked> รายเดือน</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> รายเดือน</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeFrom == 2)
+            {
+                <td><input type="checkbox" checked> รายไตรมาส</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> รายไตรมาส</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeFrom == 3)
+            {
+                <td><input type="checkbox" checked> รายครึ่งปี</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> รายครึ่งปี</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeFrom == 4)
+            {
+                <td><input type="checkbox" checked> รายปี</td>
+            }
+            else
+            {
+                <td><input type="checkbox"> รายปี</td>
+            }
+
+            @if (@Model.Promotion_DOM.TypeFrom == 5)
+            {
+                <td colspan="2">
+                    <input type="checkbox" checked> อื่นๆ
+                    <u> @Model.Promotion_DOM.TypeFromRemark </u>
+                </td>
+            }
+            else
+            {
+                <td colspan="2"><input type="checkbox"> อื่นๆ</td>
+            }
+            <td></td>
+        </tr>
+
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <b>วัตถุประสงค์</b>
+            </td>
+            <td colspan="7" valign="top">
+                @Html.Raw(@Model.txtObjective)
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+
+        @if (@Model.HeaderType == "Promotion Request")
+        {
+            <tr>
+                <td colspan="8">
+                    <b>ประมาณการ</b><br>
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">รายละเอียด</th>
+                                <th scope="col">ยอดขายปัจจุบัน</th>
+                                <th scope="col">ยอดขายประมาณการ</th>
+                                <th scope="col">เปลี่ยนแปลง (%)</th>
+                                <th scope="col">หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">ยอดขาย(บาท)</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesPresentBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesForecastBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesChangeBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesRemarkBath)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">ยอดขาย(เส้น)</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesPresentQty)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesForecastQty)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesChangeQty)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesRemarkQty)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">งบประมาณโปรโมชั่น</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetPresent)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetForecast)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetChange)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetRemark)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">งบประมาณต่อยอดขาย</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetPresentBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetForecastBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetChangeBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetRemarkBath)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="8">
+                    <b>ผลต่าง Exceptional</b><br>
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">รายละเอียด</th>
+                                <th scope="col">ส่วนลดปัจจุบัน</th>
+                                <th scope="col">ส่วนลด Exceptional</th>
+                                <th scope="col">เปลี่ยนแปลง (%)</th>
+                                <th scope="col">หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">ยอดขาย(บาท)</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesPresentBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesForecastBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesChangeBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesRemarkBath)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">ยอดขาย(เส้น)</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesPresentQty)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesForecastQty)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesChangeQty)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.SalesRemarkQty)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">งบประมาณโปรโมชั่น</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetPresent)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetForecast)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetChange)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetRemark)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">งบประมาณต่อยอดขาย</th>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetPresentBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetForecastBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetChangeBath)</td>
+                                <td>@String.Format("{0:n}", Model.Promotion_DOM.BudgetRemarkBath)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+        }
+
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top">
+                <b>เงื่อนไขโปรโมชั่น</b>
+            </td>
+            <td colspan="2" valign="top">
+                สินค้าจากรายการส่งเสริมการขายนี้จะ
+            </td>
+            @if (@Model.Promotion_DOM.GetDiscount == 1)
+            {
+                <td colspan="2">
+                    <input type="checkbox" checked> ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                    <br><br><input type="checkbox"> ไม่ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                </td>
+            }
+            @if (@Model.Promotion_DOM.GetPoint == 1)
+            {
+                <td colspan="3">
+                    <input type="checkbox" checked> ได้รับคะแนนสะสม
+                    <br><br><input type="checkbox"> ไม่ได้รับคะแนนสะสม
+                </td>
+            }
+
+            @if (@Model.Promotion_DOM.GetDiscount == 0)
+            {
+                <td colspan="2">
+                    <input type="checkbox"> ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                    <br><br><input type="checkbox" checked> ไม่ได้รับส่วนลดรายเดือน, ไตรมาส, ปี
+                </td>
+            }
+            @if (@Model.Promotion_DOM.GetPoint == 0)
+            {
+                <td colspan="3">
+                    <input type="checkbox"> ได้รับคะแนนสะสม
+                    <br><br><input type="checkbox" checked> ไม่ได้รับคะแนนสะสม
+                </td>
+            }
+
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="7">
+                @Html.Raw(@Model.txtPromotionConditions)
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="8">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <b>เอกสารแนบ/อ้างอิง</b>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                @if (Model.AttachFile.Count > 0)
+                {
+                    foreach (var item in Model.AttachFile)
+                    {
+                        <ul>
+                            @if (item.FileLevel == 0)
+                            {
+                                <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                            }
+                        </ul>
+                    }
+                }
+            </td>
+        </tr>
+
+        @* Level1 *@
+        <tr>
+            @if (Model.AttachFile.Count > 0)
+            {
+                foreach (var item in Model.AttachFile)
+                {
+                    @if (item.FileLevel == 1)
+                    {
+                    <tr>
+                        <td colspan="8">
+                            <hr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <b>เอกสารแนบ/อ้างอิง @Model.PositionName2</b>
+                        </td>
+                        <td colspan="6">
+                            <ul>
+                                <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                }
+                }
+            }
+            </tr>
+            <tr>
+                <td valign="top">
+                    <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName2)</b>
+                </td>
+                <td colspan="7" valign="top">
+                    @if (Model.ApproveTrans.Count > 0)
+                    {
+                        foreach (var item in Model.ApproveTrans)
+                        {
+                            @if (item.ApproveLevel == 1 && !String.IsNullOrEmpty(@item.Remark))
+                            {
+                                @Html.Raw(@Model.remarkTrans1)
+                            }
+                            @if (item.ApproveLevel == 1 && String.IsNullOrEmpty(@item.Remark))
+                            {
+                                <b>-</b>
+                            }
+                        }
+                    }
+                </td>
+            </tr>
+
+            @* Level2 *@
+            @if (Model.ApproveTrans.Count > 0)
+            {
+                @if (Model.AttachFile.Count > 0)
+                {
+                    foreach (var item in Model.AttachFile)
+                    {
+                        @if (item.FileLevel == 2)
+                        {
+                            <tr>
+                                <td colspan="8">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top">
+                                    <b>เอกสารแนบ/อ้างอิง @Model.PositionName3</b>
+                                </td>
+                                <td colspan="7">
+                                    <ul>
+                                        <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                foreach (var item in Model.ApproveTrans)
+                {
+                    @if (item.ApproveLevel == 2)
+                    {
+                        <tr>
+                            <td valign="top">
+                                <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName3)</b>
+                            </td>
+                            <td colspan="7">
+                                @if (!String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    @Html.Raw(@Model.remarkTrans2)
+                                }
+                                @if (String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    <b>-</b>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+
+            @* Level3 *@
+            @if (Model.ApproveTrans.Count > 0)
+            {
+                @if (Model.AttachFile.Count > 0)
+                {
+                    foreach (var item in Model.AttachFile)
+                    {
+                        @if (item.FileLevel == 3)
+                        {
+                            <tr>
+                                <td colspan="8">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top">
+                                    <b>เอกสารแนบ/อ้างอิง @Model.PositionName4</b>
+                                </td>
+                                <td colspan="7">
+                                    <ul>
+                                        <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                foreach (var item in Model.ApproveTrans)
+                {
+                    @if (item.ApproveLevel == 3)
+                    {
+                        <tr>
+                            <td valign="top">
+                                <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName4)</b>
+                            </td>
+                            <td colspan="7">
+                                @if (!String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    @Html.Raw(@Model.remarkTrans3)
+                                }
+                                @if (String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    <b>-</b>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+
+            @* Level4 *@
+            @if (Model.ApproveTrans.Count > 0)
+            {
+                @if (Model.AttachFile.Count > 0)
+                {
+                    foreach (var item in Model.AttachFile)
+                    {
+                        @if (item.FileLevel == 4)
+                        {
+                            <tr>
+                                <td colspan="8">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top">
+                                    <b>เอกสารแนบ/อ้างอิง @Model.PositionName5</b>
+                                </td>
+                                <td colspan="7">
+                                    <ul>
+                                        <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                foreach (var item in Model.ApproveTrans)
+                {
+                    @if (item.ApproveLevel == 4)
+                    {
+                        <tr>
+                            <td valign="top">
+                                <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName5)</b>
+                            </td>
+                            <td colspan="7">
+                                @if (!String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    @Html.Raw(@Model.remarkTrans4)
+                                }
+                                @if (String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    <b>-</b>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+
+            @* Level5 *@
+            @if (Model.ApproveTrans.Count > 0)
+            {
+                @if (Model.AttachFile.Count > 0)
+                {
+                    foreach (var item in Model.AttachFile)
+                    {
+                        @if (item.FileLevel == 5)
+                        {
+                            <tr>
+                                <td colspan="8">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top">
+                                    <b>เอกสารแนบ/อ้างอิง @Model.PositionName6</b>
+                                </td>
+                                <td colspan="6">
+                                    <ul>
+                                        <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                foreach (var item in Model.ApproveTrans)
+                {
+                    @if (item.ApproveLevel == 5)
+                    {
+                        <tr>
+                            <td valign="top">
+                                <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName6)</b>
+                            </td>
+                            <td colspan="7">
+                                @if (!String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    @Html.Raw(@Model.remarkTrans5)
+                                }
+                                @if (String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    <b>-</b>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+
+            @* Level6 *@
+            @if (Model.ApproveTrans.Count > 0)
+            {
+                @if (Model.AttachFile.Count > 0)
+                {
+                    foreach (var item in Model.AttachFile)
+                    {
+                        @if (item.FileLevel == 6)
+                        {
+                            <tr>
+                                <td colspan="8">
+                                    <hr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top">
+                                    <b>เอกสารแนบ/อ้างอิง @Model.PositionName7</b>
+                                </td>
+                                <td colspan="6">
+                                    <ul>
+                                        <li><a href="/Promotion/Index?handler=Download&id=@item.Id" target="_blank">@item.FileName</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                foreach (var item in Model.ApproveTrans)
+                {
+                    @if (item.ApproveLevel == 6)
+                    {
+                        <tr>
+                            <td valign="top">
+                                <b>ข้อคิดเห็นเพิ่มเติม(@Model.PositionName7)</b>
+                            </td>
+                            <td colspan="7">
+                                @if (!String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    @Html.Raw(@Model.remarkTrans6)
+                                }
+                                @if (String.IsNullOrEmpty(@item.Remark))
+                                {
+                                    <b>-</b>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+
+            <tr>
+                <td colspan="8">
+                    <hr>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" colspan="8">
+                    <b>Approval Section</b>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="8">
+                    <table class="table table-bordered" style="text-align: center;">
+                        <thead class="thead-light">
+                            <tr>
+                                @if (!String.IsNullOrEmpty(@Model.LevelName1))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName1
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName2))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName2
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName3))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName3
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName4))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName4
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName5))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName5
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName6))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName6
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName7))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName7
+                                    </th>
+                                }
+                                @if (!String.IsNullOrEmpty(@Model.LevelName8))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.StatusName8
+                                    </th>
+                                }
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                @if (!String.IsNullOrEmpty(@Model.LevelName1))
+                                {
+                                    <td>
+                                        @Model.LevelName1
+                                    </td>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName2))
+                                {
+                                    <td>
+                                        @Model.LevelName2
+                                    </td>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName3))
+                                {
+                                    <td>
+                                        @Model.LevelName3
+                                    </td>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName4))
+                                {
+                                    <td>
+                                        @Model.LevelName4
+                                    </td>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName5))
+                                {
+                                    <td>
+                                        @Model.LevelName5
+                                    </td>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName6))
+                                {
+                                    <td>
+                                        @Model.LevelName6
+                                    </td>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName7))
+                                {
+                                    <td>
+                                        @Model.LevelName7
+                                    </td>
+                                }
+                                @if (!String.IsNullOrEmpty(@Model.LevelName8))
+                                {
+                                    <td>
+                                        @Model.LevelName8
+                                    </td>
+                                }
+
+                            </tr>
+
+                            <tr>
+                                @if (!String.IsNullOrEmpty(@Model.LevelName1))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName1
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName2))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName2
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName3))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName3
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName4))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName4
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName5))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName5
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName6))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName6
+                                    </th>
+                                }
+
+                                @if (!String.IsNullOrEmpty(@Model.LevelName7))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName7
+                                    </th>
+                                }
+                                @if (!String.IsNullOrEmpty(@Model.LevelName8))
+                                {
+                                    <th scope="col" style="width: 200px;">
+                                        @Model.PositionName8
+                                    </th>
+                                }
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+        </table>
+</body>
+</html>
+@section Scripts {
+    <script>
+    
+    </script>
+}

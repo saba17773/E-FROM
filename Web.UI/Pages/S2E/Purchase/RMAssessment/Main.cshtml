@@ -1,0 +1,161 @@
+﻿@page
+@model Web.UI.Pages.S2E.Purchase.RMAssessment.MainModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "RM Assessment Request Main";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "S2E", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Purchase", Link = "/S2E/Purchase" },
+        new BreadcrumbModel { Text = "ใบขอประเมินวัตถุดิบ" }
+    };
+}
+<style>
+    td {
+        padding: 5px;
+    }
+
+    tr {
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .container2 {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .radio2 {
+        width: 20px;
+        height: 20px;
+        padding: 15px;
+    }
+
+    .checkbox2 {
+        width: 26px;
+        height: 20px;
+        padding: 15px;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h3>ใบขอประเมินวัตถุดิบ</h3>
+</div>
+
+<form method="post">
+    <table id="gridList" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridList = "#gridList";
+
+            var dtList = $(gridList).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/S2E/Purchase/RMAssessment/Main?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtList.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "ID", data: "id" },
+                    { title: "ASSESSMENT ID", data: "assessmentid" },
+                    { title: "REQUEST CODE", data: "requestcode" },
+                    { title: "REQUEST NO", data: "requestno" },
+                    { title: "PLANT", data: "plant" },
+                    { title: "SUPPLIER NAME", data: "suppliername" },
+                    { title: "Request By", data: "requestby" },
+                    { title: "Status", data: "approvestatus" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        visible: false
+                    },
+                    {
+                        targets: 1,
+                        visible: false
+                    },
+                    {
+                        targets: 4,
+                        visible: false
+                    },
+                    {
+                        targets: 7,
+                        render: function (data, type, row) {
+
+                            if (row.approvestatus === 3) {
+                                return "<span class='badge badge-info'>Waiting For Approve</span>";
+                            }
+                            if (row.approvestatus === 4) {
+                                return "<span class='badge badge-danger'>Reject</span>";
+                            }
+                            if (row.approvestatus === 8) {
+                                return "<span class='badge badge-secondary'>Draft</span>";
+                            }
+                            if (row.approvestatus === 5) {
+                                return "<span class='badge badge-light'>Wait For Add Raw Material Sample</span>";
+                            }
+                            if (row.approvestatus === 7) {
+                                return "<span class='badge badge-success'>Successfully</span>";
+                            }
+                        }
+                    },
+                    {
+                        targets: 8,
+                        render: function (data, type, row) {
+                            var link = "";
+
+                            link += actionLink("/S2E/Purchase/RMAssessment/" + row.assessmentid + "/" + row.approvegroupid + "/" + row.approvestatus + "/ApproveTrans", "fa fa-list", "Approve Transaction");
+
+                            link += actionLink("/S2E/Purchase/RMAssessment/" + row.assessmentid + "/ViewInfo", "fa fa-eye", "View");
+
+                            if (row.approvestatus === 4 || row.approvestatus === 8 ) {
+                                link += actionLink("/S2E/Purchase/RMAssessment/" + row.assessmentid + "/Edit", "fa fa-pencil-square-o", "Edit");
+                            }
+
+                            if (row.approvestatus === 4 || row.approvestatus === 3) {
+                                link += actionLink("/S2E/Purchase/RMAssessment/" + row.assessmentid + "/Cancel", "fa fa-ban", "Cancel");
+                            }
+
+                            //if (row.approvestatus === 7) {
+                            //    link += actionLinkBlank("/S2E/Export/RMAssessment/" + row.assessmentid + "?handler=PDF", "fa fa-print", "Print", true);
+                            //}
+
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridList + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridList + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}

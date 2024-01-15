@@ -1,0 +1,625 @@
+@page "/FixAssets/AddAssets"
+@model Web.UI.Pages.FixAssets.AddAssetsModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutAssets";
+}
+@{
+    ViewData["Title"] = "Add Assets";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "FixAssets"},
+        new BreadcrumbModel { Text = "Transection", Link = "/FixAssets/" },
+        new BreadcrumbModel { Text = "Add Assets", Link = "/FixAssets/AddAssets/" }
+    };
+}
+
+<style>
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+    input[type=checkbox] {
+        width: 20px;
+        height: 20px;
+    }
+    .table {
+        text-align: center;
+    }
+    .fa-plus-circle:hover {
+        color: black;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">แบบฟอร์ม ร้องขอการตัดจำหน่ายทรัพย์สินและโอนย้ายทรัพย์สินถาวร</div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id="form_submit">
+            
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Assets.Company">ทรัพย์สินของบริษัท <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Assets.Company" asp-items="Model.CompanyMaster" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Assets.Company"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Assets.AssetCategory">ระบุประเภท <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Assets.AssetCategory" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                            <option value="1" disabled> ตัดทรัพย์สินถาวร </option>
+                            <option value="2"> โอนย้ายทรัพย์สิน </option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Assets.AssetCategory"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Assets.AssetType">ชนิดรายการ <span class="text-danger font-weight-bold">*</span></label>
+                        <select asp-for="Assets.AssetType" class="form-control">
+                            <option value="">--- เลือกรายการ ---</option>
+                            <option value="2"> แจ้งเปลี่ยนผู้ถือครอง </option>
+                            <option value="3"> แจ้งเปลี่ยนผู้ถือครอง & เคลื่อนย้ายอุปปกรณ์ </option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Assets.AssetType"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>รายการและรายละเอียดทรัพย์สิน</label> 
+                        <span id="selectAssetsNumber" class="badge badge-info" style="cursor: pointer;"> เพิ่มทรัพย์สิน
+                        <i class="fa fa-plus-circle fa-2x"></i> 
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card-body">
+                        <div id="form_assetsnumber"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="tableCategory">
+                <div class="col-12">
+                    <div class="card-body">
+                        <table class='table table-bordered' style='width: 100%'>
+                            <tr>
+                                <td class='table-secondary' style='width: 10%; text-align: center; vertical-align: middle;'>
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                        ย้ายจากที่
+                                </td>
+                                <td style='width: 30%; text-align:left;'>
+                                    <div class="form-group">
+                                        <label>บริษัท </label>
+                                        <select name="CompanyLocation" id="CompanyLocation" class="form-control" asp-items="Model.CompanyMaster" disabled>
+                                            <option value="">--- เลือกรายการ ---</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td style='width: 20%; text-align:left;'>
+                                    <div class="form-group">
+                                        <label>สถานที่/อาคาร </label>
+                                        <select name="Location" id="Location" class="form-control" asp-items="Model.LocationMaster" disabled></select>
+                                    </div>
+                                </td>
+                                <td style='width: 20%; text-align:left;'>
+                                    <div class="form-group">
+                                        <label>ชั้น </label>
+                                        <select name="FloorLocation" id="FloorLocation" class="form-control" asp-items="Model.FloorMaster" disabled></select>
+                                    </div>
+                                </td>
+                                <td style='width: 20%'>
+                                    <div class="form-group">
+                                        <label>ห้อง </label>
+                                        <select name="RoomLocation" id="RoomLocation" class="form-control" asp-items="Model.RoomMaster" readonly="true"></select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class='table-secondary' style='width: 10%; text-align: center; vertical-align: middle;'>
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                        ย้ายไปที่
+                                </td>
+                                <td style='width: 30%; text-align:left;'>
+                                    <div class="form-group">
+                                        <label>บริษัท </label>
+                                        <select name="CompanyLocationTo" id="CompanyLocationTo" class="form-control" asp-items="Model.CompanyMaster">
+                                            <option value="">--- เลือกรายการ ---</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td style='width: 20%; text-align:left;'>
+                                    <div class="form-group">
+                                        <label>สถานที่/อาคาร </label>
+                                        <select name="LocationTo" id="LocationTo" class="form-control"></select>
+                                    </div>
+                                </td>
+                                <td style='width: 20%; text-align:left;'>
+                                    <div class="form-group">
+                                        <label>ชั้น </label>
+                                        <select name="FloorLocationTo" id="FloorLocationTo" class="form-control"></select>
+                                    </div>
+                                </td>
+                                <td style='width: 20%'>
+                                    <div class="form-group">
+                                        <label>ห้อง </label>
+                                        <select name="RoomLocationTo" id="RoomLocationTo" class="form-control"></select>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Assets.AssetCondition">สภาพทรัพย์สินและประมาณการค่าใช้จ่ายในการซ่อมแซ่มให้ใช้งานได้ </label>
+                        <textarea rows="4" class="form-control" asp-for="Assets.AssetCondition" autocomplete="off"></textarea>
+                        <span class="text-danger" asp-validation-for="Assets.AssetCondition"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Assets.AssetCause">ชี้แจงสาเหตุในการตัดสินใจที่จะทำการจัดการ/โอนย้ายทรัพย์สินถาวรตามรายการที่เลือก </label>
+                        <textarea rows="4" class="form-control" asp-for="Assets.AssetCause" autocomplete="off"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row" id="tableReceive">
+                <div class="col-12">
+                    <div class="card-body">
+                        <table class='table table-bordered' width="100%">
+                            <tr>
+                                <td class='table-secondary' width="20%" style='text-align: center; vertical-align: middle;'>
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                        ข้อมูลผู้รับปลายทาง
+                                </td>
+                                <td class='table-secondary' width="30%" style='text-align: center; vertical-align: middle;'>
+                                    <div class="input-group">
+                                        <input type="text" id="ReceiveEmployeeId" name="ReceiveEmployeeId" class="form-control">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-info" type="button" onclick="selectReceiveEmp();"><i class="fa fa-plus-circle fa-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class='table-secondary' style='text-align: center; vertical-align: middle;'>
+                                    <input type="text" class="form-control" id="ReceiveEmployeeName" name="ReceiveEmployeeName">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>Attached File </label>
+                        <input type="file" name="UploadFileAsset" class="form-control"/>
+                    </div>
+                </div>
+            </div>    
+            <div class="form-group d-flex justify-content-center align-items-center my-3">
+                <button type="submit" class="btn btn-secondary mr-3" name="draft" value="draft">
+                    <i class="fa fa-file"></i>
+                    บันทึก
+                </button>
+                <button type="submit" class="btn btn-success mr-3" id="btn_submit" name="save" value="save">
+                    <i class="fa fa-check"></i>
+                    ส่งคำร้อง
+                </button>
+                <button type="reset" class="btn btn-danger">
+                    <i class="fa fa-times"></i>
+                    ล้าง
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@* Model AssetsNumber *@
+<div class="modal" id="modalAssetsNumber" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assets Number</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table id="gridSO" class="table table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Model Employee *@
+<div class="modal" id="modalEmployee" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table id="gridEmployee" class="table table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+        
+        $(document).ready(function () {
+            $("#form_submit").submit(function (e) {
+                if ($("#Assets_AssetCategory").val() == 2) {
+                    if ($("#ReceiveEmployeeId").val() == "") {
+                        alert("Please select Receiver");
+                        return false;
+                    }
+                }
+                if ($("#Assets_AssetType").val() == 3) {
+                    if ($("#RoomLocationTo").val() == undefined) {
+                        alert("Please select Location");
+                        return false;
+                    }
+                }
+                $(".overlay").show();
+                $('#btn_submit').html("กำลังส่งคำร้อง...");
+            });
+
+            var num = 1;
+            $("#selectAssetsNumber").bind("click", function () {
+                //$("#modalAssetsNumber").modal({ backdrop: "static" });
+                var tableid = "tableid"+num;
+                var _assetnumber = "_assetnumber"+num;
+                var _assetqty = "_assetqty"+num;
+                var _assetdescription = "_assetdescription"+num;
+                var _employee = "_employee"+num;
+                var _location = "_location"+num;
+                var itemdata = '';
+                    itemdata += "<tr>";
+                    itemdata += "<td>";
+                    itemdata += "<div class='input-group'><input type='text' id='"+_assetnumber+"' name='_assetnumber[]' class='form-control'><div class='input-group-append'><button class='btn btn-info' type='button' onclick='selectItem(\""+_assetnumber+"\",\""+_assetdescription+"\",\""+_employee+"\",\""+_location+"\");'><i class='fa fa-plus-circle fa-lg'></i></button></div></div>";
+                    itemdata += "</td>";
+                    itemdata += "<td>";
+                    itemdata += "<input type='text' id='"+_assetqty+"' name='_assetqty[]' value=1 class='form-control'>";
+                    itemdata += "</td>";
+                    itemdata += "<td>";
+                    itemdata += "<input type='text' id='"+_assetdescription+"' name='_assetdescription[]' class='form-control'>";
+                    itemdata += "</td>";
+                    itemdata += "<td>";
+                    itemdata += "<input type='text' id='"+_employee+"' name='_employee[]' class='form-control'>";
+                    itemdata += "</td>";
+                    itemdata += "<td>";
+                    itemdata += "<input type='text' id='"+_location+"' name='_location[]' class='form-control'>";
+                    itemdata += "</td>";
+                    itemdata += "<td>";
+                    itemdata += "<button class='btn btn-danger' onclick='removeEle("+tableid+")' type='button'><i class='fa fa-minus-circle fa-lg'></i></button>";
+                    itemdata += "</td>";
+                    itemdata += "</tr>";
+
+                $("#form_assetsnumber").append("<table id="+tableid+" class='table table-bordered' style='width: 100%'><tr class='table-secondary'><td style='width: 20%'>เลขที่ทรัพย์สินถาวร</td><td style='width: 10%'>จำนวน</td><td style='width: 35%'>รายละเอียด</td><td style='width: 15%'>ปัจจุบันถือครองโดย</td><td style='width: 15%'>สถานที่</td><td style='width: 5%'></td></tr>"+itemdata+"</table>");
+                num++;
+            });
+
+            $("#tableCategory").hide();
+            $("#tableReceive").hide();
+            $("#Assets_AssetCategory").on('change', function() {
+                if ($("#Assets_AssetCategory").val() == 2) {
+                    if ($("#Assets_AssetType").val() == 3) {
+                        $("#tableCategory").show();
+                    }
+                    $("#tableReceive").show();
+                    //$("#CompanyLocation").val($("#Assets_Company").val());
+                    $("#Location").val('');
+                    $("#FloorLocation").val('');
+                    $("#RoomLocation").val('');
+                }else{
+                    $("#tableCategory").hide();
+                    $("#tableReceive").hide();
+                }
+            });
+            $("#Assets_AssetType").on('change', function () {
+                if ($("#Assets_AssetType").val() == 3) {
+                    $("#tableCategory").show();
+                } else {
+                    $("#tableCategory").hide();
+                }
+                $("#tableReceive").show();
+                $("#Location").val('');
+                $("#FloorLocation").val('');
+                $("#RoomLocation").val('');
+            });
+
+            //MOVE FROM
+            $("#CompanyLocation").on('change', function() {
+                //$("#CompanyLocation").val($("#Assets_Company").val());
+                //$("#Location").val('');
+                //$("#FloorLocation").val('');
+                //$("#RoomLocation").val('');
+
+                //$("#location").html('');
+
+                getLocation($("#CompanyLocation").val())
+                    .done(function (data) {
+                        $("#Location").html("<option value=''>--- เลือกรายการ ---</option>");
+                        $.each(data, function(indax, val) {
+                            $("#Location").append('<option value="'+val.location+'">'+val.location+'</option>');
+                    });
+                });
+            });
+            
+            $("#Location").on('change', function() {
+                getFloorLocation($("#CompanyLocation").val(),$("#Location").val())
+                .done(function(data) {
+                    $("#FloorLocation").html("<option value=''>--- เลือกรายการ ---</option>");
+                        $.each(data, function(indax, val) {
+                            $("#FloorLocation").append('<option value="'+val.floor+'">'+val.floor+'</option>');
+                    });
+                });
+            });
+
+            $("#FloorLocation").on('change', function() {
+                getRoomLocation($("#CompanyLocation").val(),$("#Location").val(),$("#FloorLocation").val())
+                .done(function(data) {
+                    $("#RoomLocation").html("<option value=''>--- เลือกรายการ ---</option>");
+                        $.each(data, function(indax, val) {
+                            $("#RoomLocation").append('<option value="'+val.id+'">'+val.room+'</option>');
+                    });
+                });
+            });
+
+            //MOVE TO
+            $("#CompanyLocationTo").on('change', function() {
+                $("#LocationTo").val('');
+                $("#FloorLocationTo").val('');
+                $("#RoomLocationTo").val('');
+
+                getLocation($("#CompanyLocationTo").val())
+                .done(function(data) {
+                    $("#LocationTo").html("<option value=''>--- เลือกรายการ ---</option>");
+                        $.each(data, function(indax, val) {
+                        $("#LocationTo").append('<option value="'+val.location+'">'+val.location+'</option>');
+                    });
+                });
+            });
+            
+            $("#LocationTo").on('change', function() {
+                getFloorLocation($("#CompanyLocationTo").val(),$("#LocationTo").val())
+                .done(function(data) {
+                    $("#FloorLocationTo").html("<option value=''>--- เลือกรายการ ---</option>");
+                        $.each(data, function(indax, val) {
+                        $("#FloorLocationTo").append('<option value="'+val.floor+'">'+val.floor+'</option>');
+                    });
+                });
+            });
+
+            $("#FloorLocationTo").on('change', function() {
+                getRoomLocation($("#CompanyLocationTo").val(),$("#LocationTo").val(),$("#FloorLocationTo").val())
+                .done(function(data) {
+                    $("#RoomLocationTo").html("<option value=''>--- เลือกรายการ ---</option>");
+                        $.each(data, function(indax, val) {
+                        $("#RoomLocationTo").append('<option value="'+val.id+'">'+val.room+'</option>');
+                    });
+                });
+            });
+
+        });
+
+        function selectItem(param,paramname,paramempname,paramloca){
+            $("#modalAssetsNumber").modal({ backdrop: "static" });
+            var company = $("#Assets_Company").val();
+
+            var dtSO = $(gridSO).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                pageLength : 5,
+                ajax: {
+                    url: "/FixAssets/AddAssets?handler=AssetsGrid",
+                    type: "post",
+                    data : { company : company },
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtSO.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "NameAlias", data: "nameAlias" },
+                    { title: "Name", data: "name" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += "<div class='mt-0'><span style='cursor: pointer;' class='badge badge-info' onclick='selectNumber(\"" + row.nameAlias + "\", \"" + param + "\", \"" + row.name + "\", \"" + paramname + "\", \"" + paramempname + "\", \"" + paramloca + "\")'>เลือก</span></div>";
+                            return link;
+                        
+                        }
+                    }
+                ],
+                
+            });
+        }
+
+        function removeEle(divid){
+            $(divid).remove(); 
+        }  
+
+        function selectNumber(assetsnumber,idnumber,assetsname,idname,idempname,idloca) {
+            $("#"+idnumber+"").val(assetsnumber);
+            $("#"+idname+"").val(assetsname);
+            //var a = getRefAssetIt(assetsnumber);
+            //$("#RoomLocation").prop('disabled', true);
+            getRefAssetIt(assetsnumber)
+                .done(function(data) {
+                    $("#"+idempname+"").val("-");
+                    $("#"+idloca+"").val("-");
+                    if(data.length > 0){
+                        $.each(data, function (indax, val) {
+                            console.log(val);
+                            $("#" + idempname + "").val(val.employeeName);
+                            $("#" + idloca + "").val(val.roomName);
+
+                            $("#CompanyLocation").val(val.idLocation);
+                            if (val.idLocation) {
+                                $("#CompanyLocation").val(val.companyId);
+                            }
+                            
+                            $("#Location").val(val.idLocation);
+                            $("#FloorLocation").val(val.idLocation);
+                            $("#RoomLocation").val(val.idLocation);
+
+                        });
+                    }
+                });
+            $("#modalAssetsNumber").modal("hide");
+        }
+
+        function selectReceiveEmp(){
+            $("#modalEmployee").modal({ backdrop: "static" });
+            var company = $("#Assets_Company").val();
+
+            var dtSO = $(gridEmployee).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                pageLength : 5,
+                ajax: {
+                    url: "/FixAssets/AddAssets?handler=EmployeeGrid",
+                    type: "post",
+                    data : { company : company },
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtSO.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "EmployeeId", data: "employeeId" },
+                    { title: "Name", data: "name" },
+                    { title: "LastName", data: "lastName" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 3,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += "<div class='mt-0'><span style='cursor: pointer;' class='badge badge-info' onclick='selectEmployeeId(\"" + row.employeeId + "\", \"" + row.name +" "+ row.lastName + "\")'>เลือก</span></div>";
+                            return link;
+                        
+                        }
+                    }
+                ],
+                
+            });
+        }
+        
+        function selectEmployeeId(employeeId,name) {
+            $("#ReceiveEmployeeId").val(employeeId);
+            $("#ReceiveEmployeeName").val(name);
+            $("#modalEmployee").modal("hide");
+        }
+
+        function getLocation(company) {
+            return $.ajax({
+                url: "/FixAssets/AddAssets?handler=Location",
+                type : 'get',
+                data : { company : company },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getFloorLocation(company,location) {
+            return $.ajax({
+                url : "/FixAssets/AddAssets?handler=LocationFloor",
+                type : 'get',
+                data : { company : company,location : location },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getRoomLocation(company,location,floor) {
+            return $.ajax({
+                url : "/FixAssets/AddAssets?handler=LocationRoom",
+                type : 'get',
+                data : { company : company,location : location,floor : floor },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+        function getRefAssetIt(asset) {
+            return $.ajax({
+                url : "/FixAssets/AddAssets?handler=RefAssetIt",
+                type : 'get',
+                data : { asset : asset },
+                dataType : 'json',
+                cache : false
+            });
+        }
+
+    </script>
+}

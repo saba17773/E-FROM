@@ -1,0 +1,728 @@
+﻿@page "/Queing/Process/DOM/{Plant}/Checkin"
+@model Web.UI.Pages.Queing.Process.DOM.CheckinModel
+@using Infrastructure.Models
+@{
+    Layout = "_LayoutQueing";
+}
+@{
+    ViewData["Title"] = "CHECK IN DOM";
+    ViewData["Plant"] = Model.PlantView;
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Home", Link = "/Queing/Home" },
+        new BreadcrumbModel { Text = "Company", Link = "/Queing/Process" },
+        new BreadcrumbModel { Text = "Process", Link = $"/Queing/Process/{Model.Plant}/Process" },
+        new BreadcrumbModel { Text = "Domestic (DOM)", Link = $"/Queing/Process/DOM/{Model.Plant}/Index" } ,
+        new BreadcrumbModel { Text = "List", Link = $"/Queing/Process/DOM/{Model.Plant}/CheckinList"  },
+        new BreadcrumbModel { Text = "Check In" }
+    };
+
+    ViewData["status"] = "1";
+
+    ViewData["status1"] = "CHECK IN";
+    ViewData["status2"] = "ASSIGN BAY";
+    ViewData["status3"] = "CHECK OUT";
+
+    ViewData["status1href"] = $"/Queing/Process/DOM/{Model.Plant}/CheckinList";
+    ViewData["status2href"] = $"/Queing/Process/DOM/{Model.Plant}/AssignBay";
+    ViewData["status3href"] = $"/Queing/Process/DOM/{Model.Plant}/CheckOut";
+}
+<style>
+    .container2 {
+        border-radius: 5px;
+        background-color: white;
+        padding: 15px;
+    }
+
+    .overlay {
+        background: #f9f6f3;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+    }
+
+    .imgloading {
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        width: 5%;
+    }
+
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<form method="post" enctype="multipart/form-data" id="form_submit">
+    <div class="container2">
+        <h5>Domestic</h5>
+
+        <div class="card">
+            <div class="card-body text-white bg-info">
+
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label><b>Work Order Number</b></label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber1" value="LSWR" readonly />
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label style="color:#17a2b8;">year</label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber2" id="WorkOrderNumber2" value="@System.DateTime.Now.Year" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label style="color:#17a2b8;">number</label>
+                        <input type="text" class="form-control" asp-for="WorkOrderNumber3" id="WorkOrderNumber3" autocomplete="off" />
+                    </div>
+                    <div class="form-group col-md-1"></div>
+                    <div class="form-group col-md-3">
+
+                        <label>
+                            <b>Load ID (WMS)</b>
+                            &nbsp;
+                            @if (Model.Plant != "STR")
+                            {
+                                <span id="selectLoadID" class="badge badge-light" style="cursor: pointer;">
+                                    <i class="fa fa-search"></i>
+                                    search
+                                </span>
+                            }
+                        </label>
+                        <input type="text" class="form-control" id="txtLoadid" asp-for="Loadid" readonly />
+
+
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>ประเภทขนส่ง</b>
+                        </label>
+                        <select class="form-control" id="TranspotCateId" asp-for="TranspotCateId" asp-items="Model.TranspotCateMaster">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>
+                            <b>ทะเบียนรถ</b>
+                            &nbsp;
+                            <span id="selectTruck" class="badge badge-light" style="cursor: pointer;">
+                                <i class="fa fa-search"></i>
+                                search
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" id="txtTruckID" asp-for="TruckId" readonly />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label><b>รายละเอียดรถ</b></label>
+                        <input type="text" class="form-control" id="txtTruckDESC" asp-for="TruckDesc" readonly />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label><b>DriverID</b></label>
+                        <input type="text" class="form-control" id="txtDriverID" asp-for="DriverId" readonly />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label><b>ชื่อคนขับ</b></label>
+                        &nbsp;
+                        <span id="selectDriver" class="badge badge-light" style="cursor: pointer;">
+                            <i class="fa fa-search"></i>
+                            search
+                        </span>
+                        <input type="text" class="form-control" id="txtDrivername" asp-for="DriverName" autocomplete="off" maxlength="25" readonly />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label><b>เบอร์โทร (EX:0800000000)</b></label>
+                        <input type="text" class="form-control" id="txtTel" asp-for="DriverTel"
+                               autocomplete="off" maxlength="10" pattern="[0-9]{10}" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>
+                            <b>Route</b>
+                            &nbsp;
+                            <span id="selectProvince" class="badge badge-light" style="cursor: pointer;">
+                                <i class="fa fa-search"></i>
+                                search
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" id="txtProvincesName" asp-for="ProvincesName" readonly />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label> <b>ประเภทรถ</b></label>
+                        <select class="form-control" id="selectCateTruck" asp-for="CateTruck" asp-items="Model.CateTruckMaster">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label><b>STD Time</b></label>
+                        <input type="text" class="form-control" id="txtStdTime" asp-for="StdTime" autocomplete="off" />
+                    </div>
+                    <div class="form-group col-md-1"></div>
+                    <div class="form-group col-md-2">
+                        <label> <b>Agent</b></label>
+                        <select class="form-control" id="Agent" name="Agent" asp-for="Agent" asp-items="Model.AgentMaster">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>
+                            <b>Remark</b>
+                        </label>
+                        <textarea asp-for="Remark" rows="2" style="white-space:normal;display:block;"
+                                  autocomplete="off" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <input type="hidden" class="form-control" id="txtProvincesId" asp-for="ProvincesId" readonly />
+                <input type="hidden" class="form-control" id="txtPlant" value="@Model.Plant" autocomplete="off" />
+            </div>
+            <div class="card-footer bg-white text-right">
+                <button class="btn btn-warning" type="submit">
+                    <i class="fa fa-thumb-tack"></i> Check in
+                </button>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <a href="/Queing/Process/DOM/@Model.Plant/CheckinList" class="btn btn-light">
+                <i class="fa fa-reply"></i> Back
+            </a>
+        </div>
+
+    </div>
+</form>
+
+<!-- Modal Truck -->
+<div class="modal" id="modalTruck" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Truck</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalTruck_Body">
+                <div class="table-responsive">
+                    <table id="gridTruck" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Driver -->
+<div class="modal" id="modalDriver" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Driver</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalDriver_Body">
+                <div class="table-responsive">
+                    <table id="gridDriver" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal LoadID -->
+<div class="modal" id="modalLoadID" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Load ID</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalLoadID_Body">
+                <div class="table-responsive">
+                    <table id="gridLoadID" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Province -->
+<div class="modal" id="modalProvince" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Province</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalProvince_Body">
+                <div class="table-responsive">
+                    <table id="gridProvince" width="95%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ModalAlert -->
+<div class="modal" id="modalAlert" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="color:red;"> Warning &nbsp; <i class="fa fa-exclamation-triangle"></i> </h5>
+            </div>
+            <div class="modal-body" id="modalAlert_Body">
+                <div class="table-responsive">
+                    <h4>
+                        <label id="txtAlert"></label>
+                    </h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-times"></i> &nbsp; Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Picking List -->
+<div class="modal" id="modalPickingList" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <b class="modal-title">Search Load ID</b>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalPickingList_Body">
+                <div class="table-responsive">
+                    <table id="gridPickingList" width="100%" class="table table-hover"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Loading*@
+<div class="overlay container-fluid">
+    <img class="imgloading" src="/images/loading.gif" alt="Loading..." />
+</div>
+
+@section Scripts {
+    <script>
+
+        document.getElementById("Agent").disabled = true;
+        document.getElementById("txtTruckID").readOnly = true;
+        document.getElementById("txtTruckDESC").readOnly = true;
+        document.getElementById("txtDrivername").readOnly = true;
+
+        $("#selectTruck").on("click", function () {
+
+            $("#modalTruck").modal({ backdrop: "static" });
+            $("#modalTruck").show();
+
+            gridTruck = "#gridTruck";
+            var dtTruck = $(gridTruck).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Queing/Process/DOM/@Model.Plant/Checkin?handler=TruckGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtTruck.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "ทะเบียนรถ", data: "truckid" },
+                    { title: "ข้อมูล", data: "truckdesc" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='selectTruckdata(\"" + row.truckid + "\",\"" + row.truckdesc + "\")'> " +
+                                "<i class='fa fa-check'></i>" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function selectTruckdata(truckid, truckdesc) {
+            $("#txtTruckID").val(truckid);
+            $("#txtTruckDESC").val(truckdesc);
+
+            $("#modalTruck").modal("hide");
+        }
+
+        $("#selectDriver").on("click", function () {
+
+            $("#modalDriver").modal({ backdrop: "static" });
+            $("#modalDriver").show();
+
+            gridDriver = "#gridDriver";
+            var dtDriver = $(gridDriver).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Queing/Process/DOM/@Model.Plant/Checkin?handler=DriverGrid&plant=@Model.Plant",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtDriver.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "ชื่อคนขับ", data: "fullname" },
+                    { title: "เบอร์โทรศัพท์", data: "phone" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='selectDriverdata(\"" + row.driverid + "\",\"" + row.fullname + "\",\"" + row.phone + "\")'> " +
+                                "<i class='fa fa-check'></i>" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+        });
+
+        function selectDriverdata(driverid, fullname, phone) {
+            $("#txtDrivername").val(fullname);
+            $("#txtTel").val(phone);
+            $("#txtDriverID").val(driverid);
+            $("#modalDriver").modal("hide");
+        }
+
+        $("#selectLoadID").on("click", function () {
+
+            $("#modalLoadID").modal({ backdrop: "static" });
+            $("#modalLoadID").show();
+
+
+            gridLoadID = "#gridLoadID";
+
+            $(gridLoadID).DataTable({
+                serverSide: false,
+                processing: false,
+                destroy: true,
+                responsive: true,
+                dom: 'lrtip',
+                bInfo: false,
+                bLengthChange: false,
+                "order": [[1, 'asc']],
+                ajax: {
+                    url: "/Queing/Process/DOM/@Model.Plant/Checkin?handler=LoadidGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                columns: [
+                    { title: "", data: null },
+                    { title: "Load ID", data: "loadid" },
+                    { title: "Route", data: "route" },
+                    { title: "Door", data: "door" },
+                    { title: "Seal Number", data: "sealnumber" },
+                    { title: "Appointment Time", data: "appointmenttime" },
+                    { title: "Trailer Id", data: "trailerid" },
+                    { title: "Driver Name", data: "drivername" },
+                    { title: "ENDLOADTIME", data: "endloadtime" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='selectLoadiddata(\"" + row.loadid + "\")'> " +
+                                "<i class='fa fa-check'></i>" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+        });
+
+
+        function selectLoadiddata(loadid) {
+            $("#txtLoadid").val(loadid);
+            $("#modalLoadID").modal("hide");
+        }
+
+        $("#selectCateTruck").on("change", function () {
+            var id = $("#selectCateTruck").val();
+
+            $.ajax({
+                url: "/Queing/Process/DOM/@Model.Plant/Checkin?handler=SelectCate&Cateid=" + id,
+                type: "get"
+            }).done(function (data)
+            {
+                if (data == false) {
+                    $("#txtStdTime").val(0);
+                }
+
+                $("#txtStdTime").val(data);
+                return false;
+            });
+        });
+
+        var isAgent = 0;
+
+        $("#TranspotCateId").on("change", function () {
+            var id = $("#TranspotCateId").val();
+
+            $.ajax({
+                url: "/Queing/Process/DOM/@Model.Plant/Checkin?handler=SelectTransportCate&id=" + id,
+                type: "get"
+            }).done(function (data)
+            {
+                if (data == false) {
+                    document.getElementById("Agent").disabled = true;
+                    $("#Agent").val("0");
+
+                    document.getElementById("txtTruckID").readOnly  = true;
+                    document.getElementById("txtTruckDESC").readOnly  = true;
+                    document.getElementById("txtDrivername").readOnly  = true;
+                    $("#txtTruckID").val("");
+                    $("#txtTruckDESC").val("");
+                    $("#txtDriverID").val("");
+                    $("#txtDrivername").val("");
+
+                    isAgent = 0;
+                }
+                else {
+                    document.getElementById("Agent").disabled = false;
+
+                    document.getElementById("txtTruckID").readOnly  = false;
+                    document.getElementById("txtTruckDESC").readOnly  = false;
+                    document.getElementById("txtDrivername").readOnly = false;
+                    $("#txtTruckID").val("");
+                    $("#txtTruckDESC").val("");
+                    $("#txtDriverID").val("");
+                    $("#txtDrivername").val("");
+
+                    isAgent = 1;
+                }
+            });
+        });
+
+        $("#selectProvince").on("click", function () {
+
+            $("#modalProvince").modal({ backdrop: "static" });
+            $("#modalProvince").show();
+
+            gridProvince = "#gridProvince";
+            var dtProvince = $(gridProvince).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: false,
+                ajax: {
+                    url: "/Queing/Process/DOM/@Model.Plant/Checkin?handler=ProvincesGrid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtProvince.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: " Province Name", data: "provincesname" },
+                    { title: "Action", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 1,
+                        width:"20%",
+                        render: function (data, type, row) {
+                            return "<button type='button' class='btn btn-info btn-sm' " +
+                                "onclick='selectProvinceData(" + row.provincesid + ",\"" + row.provincesname + "\")'> " +
+                                "<i class='fa fa-check'></i>" +
+                                "</button>";
+                        }
+                    }
+                ],
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+
+        function selectProvinceData(provincesid, provincesname)
+        {
+            $("#txtProvincesId").val(provincesid);
+            $("#txtProvincesName").val(provincesname);
+
+            $("#modalProvince").modal("hide");
+        }
+
+        $("#form_submit").submit(function (e) {
+
+            if ($("#WorkOrderNumber2").val() == "" || $("#WorkOrderNumber3").val() == "")
+            {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Work Order Number !!");
+
+                return false;
+            }
+
+            if ($("#txtLoadid").val() == "" && $("#txtPlant").val() != "STR") {
+                    $("#modalAlert").modal({ backdrop: "static" });
+                    $("#modalAlert").show();
+
+                    $('#txtAlert').text("Plase select Load ID !!");
+
+                    return false;
+            }
+
+            if ($("#txtTel").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Telephone number !!");
+
+                return false;
+            }
+
+            if ($("#txtTruckID").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Truck ID !!");
+
+                return false;
+            }
+
+            if (($("#txtDriverID").val() == "" ||
+                $("#txtDrivername").val() == "") && isAgent == 0 )
+            {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Driver Detail  !!");
+
+                return false;
+            }
+
+            if ( $("#txtDrivername").val() == "" && isAgent == 1) {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Driver Detail  !!");
+
+                return false;
+            }
+
+            if ($("#selectCateTruck").val() == "0") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase select Category Truck !!");
+
+                return false;
+            }
+
+            if ($("#TranspotCateId").val() == "0") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase select Transpot Category !!");
+
+                return false;
+            }
+
+            if ($("#txtStdTime").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input STD Time !!");
+
+                return false;
+            }
+
+            if ($("#txtRoute").val() == "") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase input Route !!");
+
+                return false;
+            }
+
+            if (isAgent == 1 && $("#Agent").val() == "0") {
+                $("#modalAlert").modal({ backdrop: "static" });
+                $("#modalAlert").show();
+
+                $('#txtAlert').text("Plase select Agent !!");
+
+                return false;
+            }
+
+            $(".overlay").show();
+            $('#btnAddMapping').html("Loading...");
+        });
+
+
+    </script>
+}

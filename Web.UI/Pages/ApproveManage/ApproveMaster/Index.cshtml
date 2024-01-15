@@ -1,0 +1,92 @@
+﻿@page
+@model Web.UI.Pages.ApproveManage.ApproveMaster.IndexModel
+@using Infrastructure.Models
+@{
+    ViewData["Title"] = "Approve Master Page";
+
+    ViewData["Breadcrumb"] = new List<BreadcrumbModel> {
+        new BreadcrumbModel { Text = "Approve Manage", Link = "javascript:void();" },
+        new BreadcrumbModel { Text = "Master" }
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h1>Approve Master</h1>
+
+    <div>
+        <a class="btn btn-primary" href="/ApproveManage/ApproveMaster/Add"><i></i> Add New Master</a> @*class="fa fa-user-plus"*@
+    </div>
+</div>
+
+<form method="post">
+    <table id="gridMaster" width="100%" class="table table-hover"></table>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var gridMaster = "#gridMaster";
+
+            var dtApproveMaster = $(gridMaster).DataTable({
+                serverSide: true,
+                processing: true,
+                destroy: true,
+                responsive: true,
+                ajax: {
+                    url: "/ApproveManage/ApproveMaster/Index?handler=Grid",
+                    type: "post",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').on("keyup", function (e) {
+                        if (e.keyCode == 13) {
+                            dtApproveMaster.search($(this).val()).draw();
+                        }
+                    });
+                },
+                columns: [
+                    { title: "ID", data: "id" },
+                    { title: "Group Description", data: "groupDescription" },
+                    { title: "Is Active?", data: "isActive" },
+                    { title: "Actions", data: null }
+                ],
+                columnDefs: [
+                    {
+                        targets: 2,
+                        render: function (data, type, row) {
+                            return data === 1 ? showBadge("Active", "success", "fa fa-check") : showBadge("Deactive", "danger", "fa fa-times");
+                        }
+                    },
+                    {
+                        targets: 3,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            var link = "";
+                            link += actionLink("/ApproveManage/ApproveMaster/" + row.id + "/Edit", "fa fa-edit", "Edit");
+                            link += actionLink("/ApproveManage/ApproveFlow/" + row.id + "/View", "fa fa-eye", "Approve Flow");
+                            link += actionLink("/ApproveManage/ApproveMaster?handler=Delete&id=" + row.id, "fa fa-edit", "Delete");
+                            return link;
+                        }
+                    }
+                ],
+            });
+
+            $(gridMaster + " thead th input[type=checkbox]").on("change", function () {
+                if (this.checked === true) {
+                    $(gridMaster + " tbody input[type=checkbox]").prop("checked", true);
+                } else {
+                    $(gridMaster + " tbody input[type=checkbox]").prop("checked", false);
+                }
+            });
+
+            $("body").on("keypress", function (e) {
+                if (e.which === 13) e.preventDefault();
+            });
+
+        });
+    </script>
+}
